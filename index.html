@@ -196,12 +196,21 @@
         
         <!-- ヘッダー情報バー -->
         <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
-          <div class="flex items-center gap-3">
+          <div class="flex flex-wrap items-center gap-2.5">
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
               <span class="text-xs font-black uppercase tracking-wider text-white">2D リアルタイム展開モニター</span>
             </div>
             <span id="animStatusBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">発走前</span>
+
+            <!-- ★ 展開パターン選択セレクタ ★ -->
+            <div class="flex items-center bg-slate-950/90 rounded-xl p-0.5 border border-slate-800 text-[11px] ml-1">
+              <span class="px-2 text-slate-400 font-bold hidden sm:inline">展開指定:</span>
+              <button onclick="setAnimPattern('individual')" id="animPatternIndividual" class="anim-pattern-btn px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-black transition shadow-sm">🏇 各馬の出遅れ癖・発馬戦法 (個性実戦)</button>
+              <button onclick="setAnimPattern('middle')" id="animPatternMiddle" class="anim-pattern-btn px-2 py-1 rounded-lg text-slate-400 hover:text-white transition font-medium">⚖️ 王道実力</button>
+              <button onclick="setAnimPattern('high')" id="animPatternHigh" class="anim-pattern-btn px-2 py-1 rounded-lg text-slate-400 hover:text-white transition font-medium">🔥 前崩れハイ</button>
+              <button onclick="setAnimPattern('slow')" id="animPatternSlow" class="anim-pattern-btn px-2 py-1 rounded-lg text-slate-400 hover:text-white transition font-medium">🐢 前残りスロー</button>
+            </div>
           </div>
 
           <!-- 距離・タイムメーター -->
@@ -676,7 +685,7 @@
                     ],
                     "formEval": "絶頂期",
                     "jockeyRank": "S",
-                    "jockeyTactic": "剛腕先行・勝負根性強化 (ゴール前の競り合い抜かせない)",
+                    "jockeyTactic": "剛腕先行・勝負根性強化 (ゴール前の競り合い抜かせない)", "gateHabit": "好発 (センス抜群)", "gateDelayRate": 0.02, "gateComment": "ゲートセンス抜群。好スタートからスムーズに先行好位へ。",
                     "trainingTime": "栗東CW 6F 80.6 - 11.0 (一杯・抜群)",
                     "trainingGrade": "S",
                     "last3F_record": "33.1s",
@@ -708,7 +717,7 @@
                     ],
                     "formEval": "平行線",
                     "jockeyRank": "B",
-                    "jockeyTactic": "好位イン追走・最短距離走法",
+                    "jockeyTactic": "好位イン追走・最短距離走法", "gateHabit": "出脚モタつき (ズブい)", "gateDelayRate": 0.38, "gateComment": "陣営コメント通り年齢でズブさが出ており、ゲートを出てから行き脚がつかない。",
                     "trainingTime": "栗東坂路 4F 52.1 - 12.0 (馬なり)",
                     "trainingGrade": "B",
                     "last3F_record": "33.8s",
@@ -740,7 +749,7 @@
                     ],
                     "formEval": "上昇",
                     "jockeyRank": "A",
-                    "jockeyTactic": "外目スムーズ進出・末脚全開ロングスパート",
+                    "jockeyTactic": "外目スムーズ進出・末脚全開ロングスパート", "gateHabit": "出遅れ癖 (発馬不安)", "gateDelayRate": 0.45, "gateComment": "過去G1でもゲート内で落ち着きがなく、ポコッと出遅れて後方からになる癖がある。",
                     "trainingTime": "美南W 6F 80.8 - 11.1 (馬なり・抜群)",
                     "trainingGrade": "S",
                     "last3F_record": "32.8s (最速)",
@@ -772,7 +781,7 @@
                     ],
                     "formEval": "充実",
                     "jockeyRank": "A+",
-                    "jockeyTactic": "典ポツン・後方完全待機からの大外一気奇襲",
+                    "jockeyTactic": "典ポツン・後方完全待機からの大外一気奇襲", "gateHabit": "やや遅い", "gateDelayRate": 0.25, "gateComment": "出足がゆっくりで中団後方に構える。",
                     "trainingTime": "栗東CW 6F 82.0 - 11.4 (強め)",
                     "trainingGrade": "B",
                     "last3F_record": "33.6s",
@@ -804,7 +813,7 @@
                     ],
                     "formEval": "復調途上",
                     "jockeyRank": "B+",
-                    "jockeyTactic": "力感あふれる豪快追込み・タフ消耗戦対応",
+                    "jockeyTactic": "力感あふれる豪快追込み・タフ消耗戦対応", "gateHabit": "発馬難 (後方一手)", "gateDelayRate": 0.42, "gateComment": "スタートが苦手でほぼ確実に後方からの競馬になる。",
                     "trainingTime": "美南W 6F 82.8 - 11.6 (馬なり)",
                     "trainingGrade": "B",
                     "last3F_record": "33.9s",
@@ -836,7 +845,7 @@
                     ],
                     "formEval": "好調キープ",
                     "jockeyRank": "A",
-                    "jockeyTactic": "折り合い重視の2〜3番手追走・しぶとい粘り",
+                    "jockeyTactic": "折り合い重視の2〜3番手追走・しぶとい粘り", "gateHabit": "安定 (好発)", "gateDelayRate": 0.04, "gateComment": "スタートはおとなしく枠なりにポンと出られる。",
                     "trainingTime": "栗東CW 6F 81.2 - 11.3 (一杯)",
                     "trainingGrade": "A",
                     "last3F_record": "33.5s",
@@ -868,7 +877,7 @@
                     ],
                     "formEval": "絶好調",
                     "jockeyRank": "S+",
-                    "jockeyTactic": "東京マイスター・外目進路確保で詰まりゼロ・神騎乗",
+                    "jockeyTactic": "東京マイスター・外目進路確保で詰まりゼロ・神騎乗", "gateHabit": "ルメール好発 (安定)", "gateDelayRate": 0.02, "gateComment": "ルメールの抜群のゲート誘導で出遅れリスクが極めて低い。",
                     "trainingTime": "美南W 6F 80.2 - 11.0 (一杯・絶好)",
                     "trainingGrade": "S",
                     "last3F_record": "32.9s",
@@ -900,7 +909,7 @@
                     ],
                     "formEval": "上向き",
                     "jockeyRank": "B",
-                    "jockeyTactic": "内の先行馬を見ながらロスなく運ぶ",
+                    "jockeyTactic": "内の先行馬を見ながらロスなく運ぶ", "gateHabit": "標準", "gateDelayRate": 0.15, "gateComment": "平均的なスタート。",
                     "trainingTime": "栗東CW 6F 81.6 - 11.2 (強め)",
                     "trainingGrade": "A",
                     "last3F_record": "33.2s",
@@ -932,7 +941,7 @@
                     ],
                     "formEval": "充実期",
                     "jockeyRank": "A+",
-                    "jockeyTactic": "インベタ強襲の鬼・最内最短距離を突く単騎逃げ",
+                    "jockeyTactic": "インベタ強襲の鬼・最内最短距離を突く単騎逃げ", "gateHabit": "抜群 (テン最速)", "gateDelayRate": 0.01, "gateComment": "発馬ダッシュ力はメンバー最速。抜群の飛び出しでハナを奪う。",
                     "trainingTime": "美南W 6F 81.4 - 11.2 (一杯)",
                     "trainingGrade": "A",
                     "last3F_record": "34.0s",
@@ -964,7 +973,7 @@
                     ],
                     "formEval": "安定",
                     "jockeyRank": "S",
-                    "jockeyTactic": "先行抜け出しの絶対的精度・絶妙な追い出しタイミング",
+                    "jockeyTactic": "先行抜け出しの絶対的精度・絶妙な追い出しタイミング", "gateHabit": "川田好発", "gateDelayRate": 0.03, "gateComment": "川田がスタートを完璧に決めて好位へ。",
                     "trainingTime": "栗東CW 6F 81.0 - 11.2 (馬なり)",
                     "trainingGrade": "A",
                     "last3F_record": "33.6s",
@@ -996,7 +1005,7 @@
                     ],
                     "formEval": "重賞制覇の勢い",
                     "jockeyRank": "B",
-                    "jockeyTactic": "器用なコーナリング・中団からのソツない立ち回り",
+                    "jockeyTactic": "器用なコーナリング・中団からのソツない立ち回り", "gateHabit": "標準", "gateDelayRate": 0.14, "gateComment": "平均的なゲート。",
                     "trainingTime": "栗東CW 6F 82.2 - 11.5 (馬なり)",
                     "trainingGrade": "B",
                     "last3F_record": "33.7s",
@@ -1028,7 +1037,7 @@
                     ],
                     "formEval": "地力上位",
                     "jockeyRank": "A",
-                    "jockeyTactic": "3〜4コーナー捲り・無尽蔵のスタミナ持続力勝負",
+                    "jockeyTactic": "3〜4コーナー捲り・無尽蔵のスタミナ持続力勝負", "gateHabit": "標準", "gateDelayRate": 0.18, "gateComment": "標準的だが無理に出さず中団へ。",
                     "trainingTime": "美南W 6F 81.0 - 11.1 (強め)",
                     "trainingGrade": "A",
                     "last3F_record": "33.4s",
@@ -1060,7 +1069,7 @@
                     ],
                     "formEval": "3歳屈指の器",
                     "jockeyRank": "A",
-                    "jockeyTactic": "56kgの斤量利を生かした好位差し",
+                    "jockeyTactic": "56kgの斤量利を生かした好位差し", "gateHabit": "安定", "gateDelayRate": 0.08, "gateComment": "駐立が落ち着いておりスタート無難。",
                     "trainingTime": "美南W 6F 81.8 - 11.3 (馬なり)",
                     "trainingGrade": "A",
                     "last3F_record": "33.3s",
@@ -1092,7 +1101,7 @@
                     ],
                     "formEval": "一変狙い",
                     "jockeyRank": "A+",
-                    "jockeyTactic": "ミルコの大外一気・直線豪快な追い比べ",
+                    "jockeyTactic": "ミルコの大外一気・直線豪快な追い比べ", "gateHabit": "出遅れ癖 (後方待機)", "gateDelayRate": 0.4, "gateComment": "出足が遅く、ミルコも最初から溜める競馬をする。",
                     "trainingTime": "栗東坂路 4F 51.8 - 12.0 (一杯)",
                     "trainingGrade": "B",
                     "last3F_record": "33.8s",
@@ -1124,7 +1133,7 @@
                     ],
                     "formEval": "順調",
                     "jockeyRank": "A",
-                    "jockeyTactic": "若手ホープの果敢な先行策・しぶとい粘り込み",
+                    "jockeyTactic": "若手ホープの果敢な先行策・しぶとい粘り込み", "gateHabit": "好発", "gateDelayRate": 0.06, "gateComment": "大外だがスタート良く出していける。",
                     "trainingTime": "美南W 6F 82.0 - 11.4 (馬なり)",
                     "trainingGrade": "B",
                     "last3F_record": "34.0s",
@@ -1156,7 +1165,7 @@
                     ],
                     "formEval": "堅実",
                     "jockeyRank": "A",
-                    "jockeyTactic": "中団外目追走・折り合い重視のスパート",
+                    "jockeyTactic": "中団外目追走・折り合い重視のスパート", "gateHabit": "標準", "gateDelayRate": 0.16, "gateComment": "平均的。",
                     "trainingTime": "栗東CW 6F 81.8 - 11.4 (強め)",
                     "trainingGrade": "B",
                     "last3F_record": "33.7s",
@@ -1188,7 +1197,7 @@
                     ],
                     "formEval": "ダービー馬の威厳",
                     "jockeyRank": "S",
-                    "jockeyTactic": "東京マイスター戸崎・大外枠を克服する完璧なエスコート",
+                    "jockeyTactic": "東京マイスター戸崎・大外枠を克服する完璧なエスコート", "gateHabit": "大外慎重発馬", "gateDelayRate": 0.2, "gateComment": "大外17番枠。無理に前へ行かず折り合い優先でそろっと出す。",
                     "trainingTime": "栗東CW 6F 80.4 - 11.0 (一杯・迫力満点)",
                     "trainingGrade": "S",
                     "last3F_record": "33.2s",
@@ -1596,7 +1605,8 @@
                   <h3 class="text-sm font-black text-white">${h.name}</h3>
                   <span class="text-[11px] text-slate-400 font-mono-num">${h.sexAge || ''} / ${h.weight || 58}kg</span>
                   <span class="px-2 py-0.5 rounded-full border text-[10px] font-extrabold ${styleBadges[h.style]}">${styleNames[h.style]}</span>
-                  <span class="text-[11px] bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 px-2.5 py-0.5 rounded-full font-bold">騎手: ${h.jockey || '未定'} [ランク ${h.jockeyRank || 'A'}]</span>
+                  <span class="text-[11px] bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-bold">騎手: ${h.jockey || '未定'} [${h.jockeyRank || 'A'}]</span>
+                  <span class="text-[10px] ${h.gateHabit && h.gateHabit.includes('出遅れ') ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' : h.gateHabit && h.gateHabit.includes('好発') ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-slate-800 text-slate-300 border-slate-700'} border px-2 py-0.5 rounded-full font-bold">発馬: ${h.gateHabit || '標準'}</span>
                 </div>
               </div>
             </div>
@@ -1889,21 +1899,46 @@
 
     function initAnimationState() {
       const race = RACE_DATABASE[state.currentRaceKey];
+
+      // ★ 展開パターンの決定
+      if (currentAnimPattern === 'individual') {
+        const roll = Math.random();
+        if (roll < 0.22) currentAnimActivePace = "high";
+        else if (roll > 0.78) currentAnimActivePace = "slow";
+        else currentAnimActivePace = "middle";
+      } else {
+        currentAnimActivePace = currentAnimPattern;
+      }
+
       state.horsesAnimState = race.horses.map((h, i) => {
-        // 出遅れ判定 (ゲート能力依存)
-        const hasDelay = Math.random() < ((100 - h.gate) * 0.002);
-        const delaySec = hasDelay ? (0.2 + Math.random() * 0.4) : 0;
+        // 当日の体調・コンディションのブレ (微細なゆらぎ)
+        const dailyCondition = (Math.random() - 0.5) * 0.35;
+
+        // ★ 各馬固有の出遅れ癖・発馬特性判定
+        // レガレイラ(45%)やエルトンバローズ(38%)、シャンパンカラー(42%)は高確率でモタつく！
+        // クロワデュノール(2%)やホウオウビスケッツ(1%)、ルメール(2%)はほぼ100%好発！
+        const delayRisk = h.gateDelayRate || ((100 - h.gate) * 0.0025);
+        const hasDelay = Math.random() < delayRisk;
+        const delaySec = hasDelay ? (0.35 + Math.random() * 0.75) : 0;
+
+        // 一世一代の大激走判定 (約5%の確率で末脚爆発)
+        const hasGreatRun = Math.random() < 0.05;
 
         return {
           num: h.num,
           name: h.name,
           jockey: h.jockey,
+          jockeyRank: h.jockeyRank,
+          jockeyTactic: h.jockeyTactic,
           style: h.style,
           speedAttr: h.speed,
           spurtAttr: h.spurt,
           staminaAttr: h.stamina,
           gateAttr: h.gate,
+          pedigreeFit: h.pedigreeFit,
           delaySec: delaySec,
+          dailyCondition: dailyCondition,
+          hasGreatRun: hasGreatRun,
           stamina: 100, // 現在のスタミナ
           distCovered: 0,
           currentVelocity: 0, // 現在速度
@@ -1920,7 +1955,10 @@
       document.getElementById('animDistRemaining').textContent = race.distance;
       document.getElementById('animStatusBadge').textContent = "発走前";
       document.getElementById('animStatusBadge').className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700";
-      document.getElementById('animLiveCommentary').textContent = "各馬ゲートイン完了、まもなく発走です。";
+
+      const paceNotice = currentAnimActivePace === 'high' ? "【想定: ハイペース前崩れ】" :
+                         currentAnimActivePace === 'slow' ? "【想定: スロー前残り】" : "【想定: 王道ミドル】";
+      document.getElementById('animLiveCommentary').textContent = `${paceNotice} 各馬ゲートイン完了、まもなく発走です。`;
       document.getElementById('podiumStatusTag').textContent = "発走前";
 
       updateLiveHUDAndStrip();
@@ -2372,7 +2410,33 @@
 
     // --- 予算別・自動資金配分ロジック (展開別シナリオ＆払戻金計算対応) ---
     let currentBetStyle = "trifecta";
-    let currentPaceScenario = "middle"; // "middle", "high", "slow" 
+    let currentPaceScenario = "middle";
+
+    // --- アニメーション展開パターン管理 ---
+    let currentAnimPattern = "individual"; // "individual", "middle", "high", "slow"
+    let currentAnimActivePace = "middle"; // 実行中の実際のペース
+
+    window.setAnimPattern = function(pattern) {
+      currentAnimPattern = pattern;
+      document.querySelectorAll('.anim-pattern-btn').forEach(b => {
+        b.className = "anim-pattern-btn px-2 py-1 rounded-lg text-slate-400 hover:text-white transition font-medium";
+      });
+      const activeBtn = document.getElementById('animPattern' + pattern.charAt(0).toUpperCase() + pattern.slice(1));
+      if (activeBtn) {
+        activeBtn.className = "anim-pattern-btn px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-black transition shadow-sm";
+      }
+
+      const patternNames = {
+        individual: "🏇 個性・発馬戦法：レガレイラの出遅れ癖やホウオウの抜群スタートなど、各馬固有の癖を完全反映！",
+        middle: "⚖️ 王道ミドル：実力上位の先行・差し馬が順当に激突",
+        high: "🔥 前崩れハイペース：逃げ争い激化で前全滅、差し追込が大外強襲！",
+        slow: "🐢 前残りスロー：単騎逃げと好位インの伏兵が逃げ粘る開幕週展開！"
+      };
+      showToast(`展開指定: ${patternNames[pattern]}`);
+
+      resetAnimation();
+    };
+ // "middle", "high", "slow" 
 
     function initBudgetBetting() {
       // 予算入力
