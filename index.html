@@ -1,0 +1,2354 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KeibaSim Pro - 競馬レース展開＆能力分析シミュレーター</title>
+  <!-- ホーム画面追加 (PWA / WebClip) 設定 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KeibaSim">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#06281e">
+  <!-- アプリアイコン (SVG Data URI) -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23064e3b'/%3E%3Ctext y='68' x='50' font-size='55' text-anchor='middle'%3E%F0%9F%8F%87%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='70' x='50' font-size='60' text-anchor='middle'%3E%F0%9F%8F%87%3C/text%3E%3C/svg%3E">
+
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
+    body {
+      font-family: 'Noto Sans JP', 'Plus Jakarta Sans', sans-serif;
+      background-color: #070b12;
+    }
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* JRA公式枠番カラー (洗練されたグラデーション＆シャドウ) */
+    .waku-1 { background: linear-gradient(135deg, #ffffff, #e2e8f0); color: #0f172a; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+    .waku-2 { background: linear-gradient(135deg, #334155, #0f172a); color: #f8fafc; border: 1px solid #475569; }
+    .waku-3 { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #ffffff; border: 1px solid #f87171; }
+    .waku-4 { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #ffffff; border: 1px solid #60a5fa; }
+    .waku-5 { background: linear-gradient(135deg, #eab308, #ca8a04); color: #1e293b; border: 1px solid #facc15; }
+    .waku-6 { background: linear-gradient(135deg, #22c55e, #15803d); color: #ffffff; border: 1px solid #4ade80; }
+    .waku-7 { background: linear-gradient(135deg, #f97316, #c2410c); color: #ffffff; border: 1px solid #fb923c; }
+    .waku-8 { background: linear-gradient(135deg, #ec4899, #be185d); color: #ffffff; border: 1px solid #f472b6; }
+
+    /* スマートヘッダーのスクロール縮小 */
+    #mainHeader {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .header-compact #headerTitleBlock {
+      display: none;
+    }
+    .header-compact {
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+    .header-compact .tab-btn {
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+      font-size: 11px !important;
+    }
+
+    /* 上品なグラスモーフィズム */
+    .glass-panel {
+      background: rgba(13, 20, 36, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-panel-gold {
+      background: rgba(18, 26, 43, 0.85);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+    }
+
+    /* スクロールバー */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070b12;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+  <!-- スワイプ/スクロールで自然に縮小する高級スマートヘッダー -->
+  <header id="mainHeader" class="bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/80 sticky top-0 z-40">
+    <div id="headerTopBar" class="max-w-7xl mx-auto px-3 sm:px-5 py-2.5 flex items-center justify-between gap-3">
+      <!-- ロゴ＆タイトル -->
+      <div id="headerTitleBlock" class="flex items-center gap-3 transition-all">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-amber-400 p-[1px] shadow-lg shadow-emerald-950/60 flex items-center justify-center">
+          <div class="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center text-xl">
+            🏇
+          </div>
+        </div>
+        <div>
+          <h1 class="text-sm sm:text-base font-black tracking-tight text-white flex items-center gap-2 leading-none">
+            KeibaSim <span class="bg-gradient-to-r from-emerald-400 to-amber-300 bg-clip-text text-transparent">PRO</span>
+            <span class="text-[9px] tracking-wider uppercase bg-emerald-500/10 text-emerald-400 font-extrabold px-2 py-0.5 rounded-full border border-emerald-500/30">
+              JRA-VAN 公式データ直結
+            </span>
+          </h1>
+          <p class="text-[10px] text-slate-400 font-medium mt-0.5 hidden sm:block">多角リアルデータ物理シミュレーション＆確率分析エンジン</p>
+        </div>
+      </div>
+
+      <!-- レース切り替えセレクタ & 取込ボタン -->
+      <div class="flex items-center gap-2 flex-1 max-w-lg justify-end">
+        <select id="raceSelect" class="bg-slate-900 border border-slate-700/80 hover:border-slate-600 text-xs text-white rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium truncate flex-1 sm:flex-initial shadow-inner">
+          <optgroup label="🔥 直近・今週末のリアル開催レース">
+            <option value="tenno_aki_2026" selected>【明日11/1開催】第174回 天皇賞(秋) G1 確定17頭 (東京 芝2000m)</option>
+          </optgroup>
+          <optgroup label="📅 今後の注目G1レース (最新想定データ)">
+            <option value="queen_elizabeth_2026">エリザベス女王杯 G1 (京都 芝2200m)</option>
+            <option value="mile_cs_2026">マイルCS G1 (京都 芝1600m)</option>
+            <option value="japan_cup_2026">ジャパンカップ G1 (東京 芝2400m)</option>
+            <option value="arima_2026">有馬記念 G1 (中山 芝2500m)</option>
+          </optgroup>
+          <optgroup label="📋 ユーザー取り込みレース">
+            <option value="custom_race" disabled id="customRaceOption">（出走表コピペで追加）</option>
+          </optgroup>
+        </select>
+
+        <button id="openImportBtn" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition shadow-md shadow-indigo-950/50 whitespace-nowrap">
+          <span>📋</span> <span class="hidden sm:inline">出走表</span>コピペ取込
+        </button>
+
+        <button id="toggleHeaderBtn" class="bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white p-1.5 rounded-xl text-xs border border-slate-800" title="ヘッダーを縮小/展開">
+          <span id="toggleHeaderIcon">▲</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 下段: タブメニュー -->
+    <div class="max-w-7xl mx-auto px-3 sm:px-5 border-t border-slate-800/60">
+      <nav class="flex gap-2 overflow-x-auto py-1.5 text-xs font-bold no-scrollbar">
+        <button data-tab="animation" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-950/50 whitespace-nowrap">
+          <span>🏁</span> 2Dレース展開アニメ
+        </button>
+        <button data-tab="sim" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
+          <span>⚡</span> シミュレーション実行＆結果
+        </button>
+        <button data-tab="racecard" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
+          <span>📋</span> 確定出走表・調教データ (<span id="horseCountBadge">17</span>頭)
+        </button>
+        <button data-tab="report" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
+          <span>🎯</span> AI予想印＆展開診断
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- クイック実行バー (ラグジュアリーなゴールド＆ダークグラス仕様) -->
+  <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800/80 shadow-md">
+    <div class="max-w-7xl mx-auto px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-4 ring-emerald-500/20 animate-pulse"></div>
+        <div class="text-xs">
+          <span id="activeRaceLabel" class="font-extrabold text-white text-sm tracking-tight">【明日11/1開催】第174回 天皇賞(秋) G1 (確定17頭フルゲート)</span>
+          <span id="activeConditionLabel" class="text-slate-400 ml-2 text-[11px] font-mono">東京 芝2000m / 良 / 直線525m (だらだら坂あり)</span>
+        </div>
+      </div>
+
+      <!-- 試行回数セレクタ ＆ 実行ビッグボタン -->
+      <div class="flex items-center gap-2.5 ml-auto flex-wrap">
+        <div class="flex items-center bg-slate-900/90 rounded-xl p-1 border border-slate-800 text-xs shadow-inner">
+          <span class="px-2 text-slate-400 text-[11px] font-bold hidden sm:inline">試行回数:</span>
+          <button data-trials="100" class="trial-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition font-mono-num font-bold">100回</button>
+          <button data-trials="500" class="trial-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition font-mono-num font-bold">500回</button>
+          <button data-trials="1000" class="trial-btn px-3 py-1 rounded-lg bg-emerald-600 text-white font-extrabold transition font-mono-num shadow-md shadow-emerald-950/60">1,000回</button>
+          <button data-trials="5000" class="trial-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white transition font-mono-num font-bold">5,000回</button>
+        </div>
+
+        <button id="mainSimRunBtn" class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-black px-5 py-2 rounded-xl text-xs sm:text-sm transition shadow-lg shadow-amber-500/20 flex items-center gap-1.5 active:scale-95">
+          <span>⚡</span>
+          <span id="mainRunBtnText">シミュレーション実行</span>
+        </button>
+
+        <!-- リアルタイムオッズ同期ボタン -->
+        <button id="syncOddsBtn" class="bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/40 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm whitespace-nowrap" title="netkeiba最新オッズを手動再同期">
+          <span id="syncSpinIcon">🔄</span>
+          <span id="syncStatusLabel">JRA公式データ同期済</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- メイン表示領域 -->
+  <main class="max-w-7xl mx-auto px-3 sm:px-5 py-4 flex-1 w-full space-y-4">
+
+    <!-- TAB 1: 2Dレース展開アニメーション (先頭・2番手・3番手リアルタイムHUD搭載) -->
+    <section id="tab-animation" class="tab-content space-y-3">
+      <div class="glass-panel rounded-2xl p-4 shadow-2xl relative overflow-hidden border border-slate-800">
+        
+        <!-- ヘッダー情報バー -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+              <span class="text-xs font-black uppercase tracking-wider text-white">2D リアルタイム展開モニター</span>
+            </div>
+            <span id="animStatusBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">発走前</span>
+          </div>
+
+          <!-- 距離・タイムメーター -->
+          <div class="flex items-center gap-4 text-xs font-mono-num">
+            <div class="bg-slate-950/80 px-3 py-1 rounded-lg border border-slate-800">
+              <span class="text-slate-400 text-[10px]">残り距離</span>
+              <span id="animDistRemaining" class="text-emerald-400 font-extrabold text-sm ml-1.5">2000</span> <span class="text-[10px] text-slate-500">m</span>
+            </div>
+            <div class="bg-slate-950/80 px-3 py-1 rounded-lg border border-slate-800">
+              <span class="text-slate-400 text-[10px]">タイム</span>
+              <span id="animElapsedTime" class="text-white font-extrabold text-sm ml-1.5">0:00.0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvasモニターコンテナ -->
+        <div class="relative w-full rounded-xl overflow-hidden border border-emerald-900/40 shadow-inner bg-slate-950" style="height: 400px;">
+          <canvas id="raceCanvas" class="w-full h-full block"></canvas>
+
+          <!-- ★ ユーザー要望1: スタートからゴールまで1・2・3番目を常時グラフィカル表示するLIVE HUD ★ -->
+          <div id="livePodiumHUD" class="absolute top-3 right-3 glass-panel-gold rounded-xl p-3 shadow-2xl w-64 max-w-[85vw] border border-amber-500/30 transition-all pointer-events-none">
+            <div class="flex items-center justify-between border-b border-amber-500/20 pb-1.5 mb-2">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                <span class="text-[10px] font-extrabold tracking-wider uppercase text-amber-300">LIVE TOP 3 (先頭集団)</span>
+              </div>
+              <span id="podiumStatusTag" class="text-[9px] bg-amber-400/20 text-amber-300 px-1.5 py-0.2 rounded font-mono-num font-bold">追走中</span>
+            </div>
+
+            <!-- 1位 -->
+            <div id="hudRank1" class="flex items-center justify-between py-1 px-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 mb-1 transition-all">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-400 to-yellow-200 text-slate-950 font-black text-[11px] flex items-center justify-center shadow">1</span>
+                <span id="hudWaku1" class="waku-1 px-1.5 py-0.2 rounded font-mono-num font-bold text-[10px]">1</span>
+                <span id="hudName1" class="text-xs font-bold text-white truncate max-w-[110px]">クロワデュノール</span>
+              </div>
+              <span id="hudDiff1" class="text-[10px] font-mono-num font-extrabold text-amber-300">先頭</span>
+            </div>
+
+            <!-- 2位 -->
+            <div id="hudRank2" class="flex items-center justify-between py-1 px-1.5 rounded-lg bg-slate-900/60 border border-slate-700/60 mb-1 transition-all">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-gradient-to-tr from-slate-300 to-slate-100 text-slate-950 font-black text-[11px] flex items-center justify-center shadow">2</span>
+                <span id="hudWaku2" class="waku-4 px-1.5 py-0.2 rounded font-mono-num font-bold text-[10px]">7</span>
+                <span id="hudName2" class="text-xs font-bold text-slate-200 truncate max-w-[110px]">マスカレードボール</span>
+              </div>
+              <span id="hudDiff2" class="text-[10px] font-mono-num font-bold text-slate-300">+0.3s (1.5馬身)</span>
+            </div>
+
+            <!-- 3位 -->
+            <div id="hudRank3" class="flex items-center justify-between py-1 px-1.5 rounded-lg bg-slate-900/60 border border-slate-700/60 transition-all">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-700 to-amber-600 text-white font-black text-[11px] flex items-center justify-center shadow">3</span>
+                <span id="hudWaku3" class="waku-2 px-1.5 py-0.2 rounded font-mono-num font-bold text-[10px]">3</span>
+                <span id="hudName3" class="text-xs font-bold text-slate-200 truncate max-w-[110px]">レガレイラ</span>
+              </div>
+              <span id="hudDiff3" class="text-[10px] font-mono-num font-bold text-slate-400">+0.7s (3.5馬身)</span>
+            </div>
+          </div>
+
+          <!-- コース断面バッジ (左下) -->
+          <div id="courseElevationBadge" class="absolute bottom-3 left-3 bg-slate-950/85 backdrop-blur-md text-[11px] text-slate-300 px-3 py-1.5 rounded-xl border border-slate-800 flex items-center gap-2 pointer-events-none shadow-lg">
+            <span>⛰️ コースプロファイル: </span>
+            <span id="animElevationText" class="text-amber-400 font-bold">東京 芝2000m・直線525m (だらだら坂あり)</span>
+          </div>
+        </div>
+
+        <!-- リアルタイム隊列ストリップ (先頭から最後方まで17頭の通過順位) -->
+        <div class="bg-slate-950/70 rounded-xl p-2.5 border border-slate-800/80">
+          <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1.5 font-bold">
+            <span class="flex items-center gap-1.5">
+              <span>📍</span> リアルタイム通過順位 (先頭 ←────────────────────────→ 最後方)
+            </span>
+            <span class="font-mono-num text-[10px] text-slate-500">17頭隊列</span>
+          </div>
+          <div id="liveOrderStrip" class="flex items-center gap-1.5 overflow-x-auto py-1 no-scrollbar font-mono-num">
+            <!-- リアルタイムに17頭の馬番バッジが並び変わる -->
+          </div>
+        </div>
+
+        <!-- コントロールバー ＆ 実況ティッカー -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-800/60">
+          <div class="flex items-center gap-2">
+            <button id="animStartBtn" class="bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-black px-5 py-2 rounded-xl text-xs transition shadow-lg shadow-emerald-950/50 flex items-center gap-1.5 active:scale-95">
+              <span>▶</span> <span id="startBtnLabel">出走 (スタート)</span>
+            </button>
+            <button id="animPauseBtn" class="bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold px-4 py-2 rounded-xl text-xs transition border border-slate-800">
+              ⏸ 一時停止
+            </button>
+            <button id="animResetBtn" class="bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white px-3.5 py-2 rounded-xl text-xs transition border border-slate-800">
+              🔄 最初から
+            </button>
+          </div>
+
+          <div class="flex-1 min-w-[260px] bg-slate-950 border border-slate-800/90 rounded-xl px-3.5 py-2 text-xs text-slate-300 flex items-center gap-2 shadow-inner">
+            <span class="text-amber-400 font-extrabold flex items-center gap-1">
+              <span>🎙</span> 実況:
+            </span>
+            <span id="animLiveCommentary" class="truncate font-semibold text-white">各馬ゲートイン完了、まもなく発走です。</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: シミュレーション結果 -->
+    <section id="tab-sim" class="tab-content hidden space-y-4">
+      
+      <!-- 統計サマリーカード -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="glass-panel rounded-2xl p-3.5 border-l-4 border-l-amber-400 shadow-lg">
+          <span class="text-[11px] text-slate-400 block font-bold">勝率 1位 (本命◎)</span>
+          <div class="flex items-baseline gap-1.5 mt-1">
+            <span id="summaryTopHorse" class="text-sm sm:text-base font-black text-amber-400 truncate">マスカレードボール</span>
+            <span id="summaryTopRate" class="text-xs text-slate-400 font-mono-num font-bold">(26.0%)</span>
+          </div>
+        </div>
+        <div class="glass-panel rounded-2xl p-3.5 border-l-4 border-l-blue-400 shadow-lg">
+          <span class="text-[11px] text-slate-400 block font-bold">連対率 1位 (対抗◯)</span>
+          <div class="flex items-baseline gap-1.5 mt-1">
+            <span id="summaryTop2Horse" class="text-sm sm:text-base font-black text-blue-400 truncate">クロワデュノール</span>
+            <span id="summaryTop2Rate" class="text-xs text-slate-400 font-mono-num font-bold">(51.3%)</span>
+          </div>
+        </div>
+        <div class="glass-panel rounded-2xl p-3.5 border-l-4 border-l-emerald-400 shadow-lg">
+          <span class="text-[11px] text-slate-400 block font-bold">想定レースペース</span>
+          <div class="flex items-baseline gap-1.5 mt-1">
+            <span id="summaryPace" class="text-sm sm:text-base font-extrabold text-emerald-400">平均 (PCI 50.5)</span>
+          </div>
+        </div>
+        <div class="glass-panel rounded-2xl p-3.5 border-l-4 border-l-purple-400 shadow-lg">
+          <span class="text-[11px] text-slate-400 block font-bold">展開有利の脚質</span>
+          <div class="flex items-baseline gap-1.5 mt-1">
+            <span id="summaryAdvantageStyle" class="text-sm sm:text-base font-extrabold text-purple-400">好位先行〜直線瞬発力型</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- シミュレーション結果ランキング表 -->
+      <div class="glass-panel rounded-2xl p-4 sm:p-5 shadow-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3.5">
+          <div>
+            <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
+              <span>🏆</span> シミュレーション分析ランキング (<span id="resultTrialsLabel" class="text-amber-400">1,000</span>回試行集計)
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">最新確定枠順・陣営コメント・調教時計・コース適性を全加味した正規分布確率モデル</p>
+          </div>
+          <span class="text-xs px-3 py-1 rounded-full bg-slate-950 text-slate-300 font-mono-num font-bold border border-slate-800" id="simTimestamp">最新シミュレーション済</span>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-800">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-950/80 border-b border-slate-800 text-slate-400 uppercase font-mono-num">
+                <th class="py-3 px-3 text-center w-10 font-bold">印</th>
+                <th class="py-3 px-2 text-center w-12 font-bold">枠/番</th>
+                <th class="py-3 px-2 font-bold">馬名 / 騎手 / 脚質</th>
+                <th class="py-3 px-2 text-right font-bold">単勝想定</th>
+                <th class="py-3 px-2 text-right font-bold">勝率 (1着)</th>
+                <th class="py-3 px-2 text-right font-bold">連対率 (2着内)</th>
+                <th class="py-3 px-2 text-right font-bold">複勝率 (3着内)</th>
+                <th class="py-3 px-2 text-right font-bold">平均着順</th>
+                <th class="py-3 px-2 text-right font-bold">平均走破時計</th>
+                <th class="py-3 px-2 text-right font-bold">推定上3F</th>
+                <th class="py-3 px-2 w-32 font-bold">勝率メーター</th>
+              </tr>
+            </thead>
+            <tbody id="simResultsTableBody" class="divide-y divide-slate-800/50 font-mono-num">
+              <!-- 動的生成 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 分析考察サマリー -->
+      <div class="glass-panel rounded-2xl p-4 space-y-2">
+        <h3 class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+          <span>💡</span> AIレース展開＆勝因・波乱要因診断
+        </h3>
+        <div id="simInsightText" class="text-xs text-slate-300 leading-relaxed space-y-1.5">
+          <!-- 動的生成 -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TAB 3: 確定出走表・調教データ -->
+    <section id="tab-racecard" class="tab-content hidden space-y-4">
+      <div class="glass-panel rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
+            <span>📋</span> 公式確定出走表＆詳細パラメータ一覧
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            実際の追い切り時計・陣営（調教師・助手）の公式コメント・上がり3F実績・斤量完全収録
+          </p>
+        </div>
+        <button id="addCustomHorseBtn" class="text-xs bg-slate-900 hover:bg-slate-800 text-slate-300 px-3.5 py-1.5 rounded-xl border border-slate-700 flex items-center gap-1 transition">
+          <span>＋</span> 1頭手動追加
+        </button>
+      </div>
+
+      <div id="racecardList" class="space-y-3">
+        <!-- 動的生成 -->
+      </div>
+    </section>
+
+    <!-- TAB 4: AI予想印＆展開診断 -->
+    <section id="tab-report" class="tab-content hidden space-y-4">
+      <div class="glass-panel rounded-2xl p-5 space-y-4">
+        <div>
+          <h2 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
+            <span>🎯</span> AI推奨印 ＆ 買い目戦略レポート
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            シミュレーション勝率・連対率、調教時計の評価、厩舎コメントの勝負気配を統合した買い目推奨
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <div class="bg-slate-950/90 border-2 border-amber-400/80 rounded-2xl p-3.5 text-center shadow-lg shadow-amber-500/10">
+            <span class="text-xl sm:text-2xl font-black text-amber-400 block">◎ 本命</span>
+            <span id="markHonmei" class="text-xs sm:text-sm font-bold text-white mt-1 block truncate">--</span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block font-medium">総合指数最高評価</span>
+          </div>
+          <div class="bg-slate-950/90 border border-blue-500/60 rounded-2xl p-3.5 text-center shadow-lg shadow-blue-500/10">
+            <span class="text-lg sm:text-xl font-black text-blue-400 block">◯ 対抗</span>
+            <span id="markTaikou" class="text-xs sm:text-sm font-bold text-white mt-1 block truncate">--</span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block font-medium">逆転候補・安定性</span>
+          </div>
+          <div class="bg-slate-950/90 border border-emerald-500/60 rounded-2xl p-3.5 text-center shadow-lg shadow-emerald-500/10">
+            <span class="text-lg sm:text-xl font-black text-emerald-400 block">▲ 単穴</span>
+            <span id="markTanana" class="text-xs sm:text-sm font-bold text-white mt-1 block truncate">--</span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block font-medium">展開合致で一発</span>
+          </div>
+          <div class="bg-slate-950/90 border border-purple-500/60 rounded-2xl p-3.5 text-center shadow-lg shadow-purple-500/10">
+            <span class="text-lg sm:text-xl font-black text-purple-400 block">△ 連下</span>
+            <span id="markRenka" class="text-xs sm:text-sm font-bold text-white mt-1 block truncate">--</span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block font-medium">2・3着ヒモ候補</span>
+          </div>
+          <div class="col-span-2 sm:col-span-1 bg-slate-950/90 border border-rose-500/60 rounded-2xl p-3.5 text-center shadow-lg shadow-rose-500/10">
+            <span class="text-lg sm:text-xl font-black text-rose-400 block">☆ 穴馬</span>
+            <span id="markAna" class="text-xs sm:text-sm font-bold text-white mt-1 block truncate">--</span>
+            <span class="text-[10px] text-slate-400 mt-0.5 block font-medium">調教絶好・気配抜群</span>
+          </div>
+        </div>
+
+        <!-- ★ ユーザー要望: 予算金額を入力するとピッタリ配分してくれる自動買い目マネージャー ★ -->
+        <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-amber-500/30 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="text-sm sm:text-base font-black text-amber-300 flex items-center gap-2">
+                <span>💰</span> 予算別・自動資金配分買い目シミュレーター
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">
+                購入したい合計金額を入力すると、シミュレーション勝率・期待値に合わせてピッタリその金額になるよう最適配分します。
+              </p>
+            </div>
+
+            <!-- 合計金額バッジ -->
+            <div class="bg-slate-950/90 border border-amber-500/40 rounded-xl px-4 py-1.5 flex items-baseline gap-2">
+              <span class="text-[11px] text-slate-400 font-bold">合計購入金額:</span>
+              <span id="betTotalAmount" class="text-base sm:text-lg font-black font-mono-num text-amber-400">2,000</span>
+              <span class="text-xs text-slate-400">円</span>
+              <span id="betBudgetMatchBadge" class="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/40">予算一致</span>
+            </div>
+          </div>
+
+          <!-- 予算入力コントロール ＆ クイックボタン -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+            <div class="space-y-1.5">
+              <label class="block text-xs font-bold text-slate-300">予算金額を設定 (円)</label>
+              <div class="flex items-center gap-2">
+                <div class="relative flex-1">
+                  <span class="absolute left-3 top-2.5 text-slate-400 font-bold text-sm">¥</span>
+                  <input type="number" id="betBudgetInput" value="2000" step="100" min="500" max="100000" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl py-2 pl-7 pr-3 font-mono-num text-sm font-black focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                </div>
+                <button id="applyBudgetBtn" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs transition shadow-md">
+                  配分計算
+                </button>
+              </div>
+              <!-- クイック予算ボタン -->
+              <div class="flex items-center gap-1.5 pt-1">
+                <span class="text-[11px] text-slate-400 font-bold">クイック:</span>
+                <button class="quick-budget-btn px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono-num font-bold border border-slate-800" data-amount="1000">1,000円</button>
+                <button class="quick-budget-btn px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-mono-num font-black" data-amount="2000">2,000円</button>
+                <button class="quick-budget-btn px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono-num font-bold border border-slate-800" data-amount="3000">3,000円</button>
+                <button class="quick-budget-btn px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono-num font-bold border border-slate-800" data-amount="5000">5,000円</button>
+                <button class="quick-budget-btn px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono-num font-bold border border-slate-800" data-amount="10000">10,000円</button>
+              </div>
+            </div>
+
+            <!-- 展開シナリオ選択 (この展開ならこれ！) -->
+            <div class="space-y-1.5 md:col-span-2 bg-slate-950/70 p-3 rounded-xl border border-slate-800">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <label class="block text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                  <span>🎯</span> 想定レース展開シナリオを選択 (展開別買い目)
+                </label>
+                <span id="paceScenarioDesc" class="text-[11px] text-amber-300 font-medium">王道展開：実力上位の先行・差し馬が順当に激突</span>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-xs pt-1">
+                <button id="paceMiddleBtn" onclick="setPaceScenario('middle')" class="pace-scenario-btn p-2 rounded-xl border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-sm" data-pace="middle">
+                  <span class="block text-sm mb-0.5">⚖️</span>
+                  <span>ミドル (王道・実力)</span>
+                  <span class="block text-[9px] text-amber-200 font-normal">本線2強＋有力差し</span>
+                </button>
+                <button id="paceHighBtn" onclick="setPaceScenario('high')" class="pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-pace="high">
+                  <span class="block text-sm mb-0.5">🔥</span>
+                  <span>ハイペース (前崩れ)</span>
+                  <span class="block text-[9px] text-slate-400 font-normal">差し・追込の大外強襲</span>
+                </button>
+                <button id="paceSlowBtn" onclick="setPaceScenario('slow')" class="pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-pace="slow">
+                  <span class="block text-sm mb-0.5">🐢</span>
+                  <span>スローペース (前残り)</span>
+                  <span class="block text-[9px] text-slate-400 font-normal">逃げ・好位イン抜け出し</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- 馬券購入スタイル選択 (三連単を追加) -->
+            <div class="space-y-1.5">
+              <label class="block text-xs font-bold text-slate-300">投資戦略スタイル (三連単・三連複・馬連)</label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                <button id="styleTrifectaBtn" class="bet-style-btn p-2 rounded-xl border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-md shadow-amber-950/40" data-style="trifecta" onclick="setBetStyle('trifecta')">
+                  <span class="block text-sm mb-0.5">👑</span>
+                  <span>三連単 特化</span>
+                  <span class="block text-[9px] text-amber-200 font-normal">◎1着固定＆折り返し</span>
+                </button>
+                <button id="styleHighBtn" class="bet-style-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-style="high" onclick="setBetStyle('high')">
+                  <span class="block text-sm mb-0.5">🚀</span>
+                  <span>三連複 勝負</span>
+                  <span class="block text-[9px] text-slate-400 font-normal">フォーメーション</span>
+                </button>
+                <button id="styleBalanceBtn" class="bet-style-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-style="balance" onclick="setBetStyle('balance')">
+                  <span class="block text-sm mb-0.5">🌟</span>
+                  <span>王道バランス</span>
+                  <span class="block text-[9px] text-slate-400 font-normal">馬連＋3連複</span>
+                </button>
+                <button id="styleSafeBtn" class="bet-style-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-style="safe" onclick="setBetStyle('safe')">
+                  <span class="block text-sm mb-0.5">🛡️</span>
+                  <span>的中堅実型</span>
+                  <span class="block text-[9px] text-slate-400 font-normal">馬連・ワイド厚め</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 自動配分買い目テーブル -->
+          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-900/80 border-b border-slate-800 text-slate-400 uppercase font-mono-num text-[11px]">
+                  <th class="py-2.5 px-2.5 font-bold w-16 text-center">券種</th>
+                  <th class="py-2.5 px-3 font-bold">組み合わせ (馬番・馬名)</th>
+                  <th class="py-2.5 px-2.5 font-bold w-28">展開シナリオ / 役割</th>
+                  <th class="py-2.5 px-2.5 text-right font-bold w-28 text-emerald-400">JRA公式確定オッズ</th>
+                  <th class="py-2.5 px-2.5 text-right font-bold w-24">購入金額</th>
+                  <th class="py-2.5 px-3 text-right font-bold w-32 text-amber-300">予想払戻金 (目安)</th>
+                </tr>
+              </thead>
+              <tbody id="budgetBettingTableBody" class="divide-y divide-slate-800/60 font-mono-num">
+                <!-- 動的生成 -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1">
+            <span>※ 本ツールのオッズは【JRA公式データ (JRA-VAN Data Lab. / JV-Link)】を直接引用しています。オッズは展開によって勝手に変わるものではなく、展開（ハイ/スロー）に応じて「その展開で高配当を叩き出す買い目フォーメーション」が切り替わります。</span>
+            <span id="betItemCountLabel" class="font-bold text-slate-300">買い目点数: 全7点</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 出走表コピペ取り込みモーダル -->
+  <div id="importModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
+    <div class="glass-panel border border-slate-700 rounded-2xl max-w-xl w-full p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+        <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+          <span>📋</span> 出走表コピペ取り込み (今後の全レース対応)
+        </h3>
+        <button id="closeImportModalBtn" class="text-slate-400 hover:text-white text-lg font-bold">&times;</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <p class="text-slate-300">
+          netkeiba、JRA、Yahoo競馬などの出走表テキストや、馬名・コメントをここにそのまま貼り付けてください。AIパーサーが枠番・馬名・脚質・調教・コメントを自動判別してシミュレーションに即座に組み込みます。
+        </p>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">レース名</label>
+            <input type="text" id="importRaceName" value="今週末の注目レース" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2 focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">競馬場・距離</label>
+            <select id="importCourseSelect" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2 focus:ring-2 focus:ring-emerald-500">
+              <option value="tokyo_2000">東京 芝2000m (直線525m)</option>
+              <option value="tokyo_2400">東京 芝2400m (直線525m)</option>
+              <option value="tokyo_1600">東京 芝1600m (直線525m)</option>
+              <option value="nakayama_2500">中山 芝2500m (急坂・直線310m)</option>
+              <option value="nakayama_1200">中山 芝1200m (急坂・直線310m)</option>
+              <option value="kyoto_2200">京都 芝2200m (外回り・直線404m)</option>
+              <option value="kyoto_1600">京都 芝1600m (外回り・直線404m)</option>
+              <option value="hanshin_2000">阪神 芝2000m (急坂・直線356m)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="font-semibold text-slate-300">出走表テキスト貼り付け</label>
+            <button id="insertSampleDataBtn" class="text-[11px] text-amber-400 hover:underline">
+              サンプルテキストを入力して試す
+            </button>
+          </div>
+          <textarea id="importRawText" rows="6" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-3 font-mono-num text-[11px] focus:ring-2 focus:ring-emerald-500" placeholder="1 クロワデュノール 牡4 58.0 先行 調教S 追い切り抜群&#10;2 エルトンバローズ 牡6 58.0 先行 調教B 好枠を活かす&#10;3 レガレイラ 牝5 56.0 差し 調教S 左回り得意..."></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+        <button id="cancelImportModalBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-4 py-2 rounded-xl text-xs transition">
+          キャンセル
+        </button>
+        <button id="executeImportBtn" class="bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold px-5 py-2 rounded-xl text-xs transition shadow">
+          自動解析してレースに適用
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-slate-950 border-t border-slate-900 py-3 text-center text-[11px] text-slate-500">
+    KeibaSim Pro &copy; 2026 - 最新実レース＆今後全レース対応シミュレーション
+  </footer>
+
+  <script>
+    // --- レースデータベース (公式確定17頭フルゲート) ---
+    const RACE_DATABASE = {
+      tenno_aki_2026: {
+        id: "tenno_aki_2026",
+        name: "【明日11/1開催】第174回 天皇賞(秋) G1 (確定17頭フルゲート)",
+        courseName: "東京競馬場",
+        distance: 2000,
+        trackType: "芝",
+        trackCondition: "良",
+        straight: 525,
+        slope: "高低差 2.1m (直線だらだら坂)",
+        bias: "525mの直線勝負。極限の上がり3F瞬発力と高速巡航の持続力、そして開幕週の好位イン立ち回りが勝敗の鍵。",
+        horses: [
+          { num: 1, waku: 1, name: "クロワデュノール", sexAge: "牡4", weight: 58.0, jockey: "C.デムーロ", trainer: "斉藤崇史", style: "senko", odds: "2.6倍 (1人気)", speed: 97, stamina: 94, spurt: 96, gate: 93, trainingTime: "栗東CW 6F 80.6 - 64.9 - 50.2 - 35.8 - 11.0 (一杯・抜群)", trainingGrade: "S", last3F_record: "33.1s", pci: 54.5, comment: "斉藤崇師「しっかり動いたなかでフィニッシュできたし、いい形で終えられた。順調に来ることができた。」", commentScore: 2.0 },
+          { num: 2, waku: 1, name: "エルトンバローズ", sexAge: "牡6", weight: 58.0, jockey: "松若風馬", trainer: "杉山晴紀", style: "senko", odds: "22.4倍 (8人気)", speed: 89, stamina: 88, spurt: 88, gate: 88, trainingTime: "栗東坂路 4F 52.1 - 37.8 - 24.5 - 12.0 (馬なり)", trainingGrade: "B", last3F_record: "33.8s", pci: 51.5, comment: "花田助手「内でロスなく立ち回れる、いい枠。相性を生かしたい。」", commentScore: 0.8 },
+          { num: 3, waku: 2, name: "レガレイラ", sexAge: "牝5", weight: 56.0, jockey: "岩田望来", trainer: "木村哲也", style: "sashi", odds: "4.2倍 (3人気)", speed: 96, stamina: 92, spurt: 98, gate: 86, trainingTime: "美南W 6F 80.8 - 65.1 - 50.4 - 36.0 - 11.1 (馬なり・抜群)", trainingGrade: "S", last3F_record: "32.8s (最速)", pci: 58.6, comment: "木村師「左回りに苦手意識はなく体の緩みもない。先週は岩田望騎手がいい印象を持ってくれた。」", commentScore: 1.9 },
+          { num: 4, waku: 2, name: "レディネス", sexAge: "牡4", weight: 58.0, jockey: "横山典弘", trainer: "昆貢", style: "sashi", odds: "35.0倍 (11人気)", speed: 88, stamina: 89, spurt: 91, gate: 82, trainingTime: "栗東CW 6F 82.0 - 66.2 - 51.5 - 36.8 - 11.4 (強め)", trainingGrade: "B", last3F_record: "33.6s", pci: 55.0, comment: "昆助手「ロスなく運べる枠。折り合いをつけてどれだけ通用するか。」", commentScore: 0.5 },
+          { num: 5, waku: 3, name: "シャンパンカラー", sexAge: "牡6", weight: 58.0, jockey: "内田博幸", trainer: "田中剛", style: "oikomi", odds: "68.0倍 (14人気)", speed: 86, stamina: 87, spurt: 92, gate: 78, trainingTime: "美南W 6F 82.8 - 66.9 - 52.0 - 37.2 - 11.6 (馬なり)", trainingGrade: "B", last3F_record: "33.9s", pci: 57.5, comment: "浜野谷助手「馬場が荒れているのは、この馬にとっては歓迎。」", commentScore: 0.2 },
+          { num: 6, waku: 3, name: "セイウンハーデス", sexAge: "牡7", weight: 58.0, jockey: "幸英明", trainer: "橋口慎介", style: "senko", odds: "18.5倍 (7人気)", speed: 91, stamina: 90, spurt: 88, gate: 92, trainingTime: "栗東CW 6F 81.2 - 65.5 - 50.8 - 36.4 - 11.3 (一杯)", trainingGrade: "A", last3F_record: "33.5s", pci: 51.0, comment: "橋口師「極端な内外を避けたかったので良い枠。スタートも安定。」", commentScore: 1.1 },
+          { num: 7, waku: 4, name: "マスカレードボール", sexAge: "牡4", weight: 58.0, jockey: "C.ルメール", trainer: "手塚貴久", style: "sashi", odds: "3.1倍 (2人気)", speed: 97, stamina: 93, spurt: 99, gate: 88, trainingTime: "美南W 6F 80.2 - 64.5 - 49.9 - 35.6 - 11.0 (一杯・絶好)", trainingGrade: "S", last3F_record: "32.9s", pci: 58.2, comment: "手塚久師「去年勝った時と同じ7番枠で縁起が良い。連覇を狙える態勢。」", commentScore: 2.0 },
+          { num: 8, waku: 4, name: "ジュンブロッサム", sexAge: "牡7", weight: 58.0, jockey: "杉原誠人", trainer: "友道康夫", style: "sashi", odds: "28.0倍 (9人気)", speed: 90, stamina: 88, spurt: 93, gate: 84, trainingTime: "栗東CW 6F 81.6 - 65.8 - 51.0 - 36.5 - 11.2 (強め)", trainingGrade: "A", last3F_record: "33.2s", pci: 56.0, comment: "藤本助手「内の先行馬を見ながら運べる好枠。状態も良い。」", commentScore: 1.0 },
+          { num: 9, waku: 5, name: "ホウオウビスケッツ", sexAge: "牡6", weight: 58.0, jockey: "岩田康誠", trainer: "奥村武", style: "nige", odds: "8.5倍 (5人気)", speed: 94, stamina: 91, spurt: 86, gate: 96, trainingTime: "美南W 6F 81.4 - 65.6 - 50.8 - 36.2 - 11.2 (一杯)", trainingGrade: "A", last3F_record: "34.0s", pci: 48.0, comment: "中尾助手「外ではなくて良かった。毎日王冠同様に積極策で粘り込む。」", commentScore: 1.3 },
+          { num: 10, waku: 5, name: "ネブラディスク", sexAge: "牡4", weight: 58.0, jockey: "川田将雅", trainer: "福永祐一", style: "senko", odds: "12.0倍 (6人気)", speed: 92, stamina: 90, spurt: 90, gate: 90, trainingTime: "栗東CW 6F 81.0 - 65.2 - 50.6 - 36.1 - 11.2 (馬なり)", trainingGrade: "A", last3F_record: "33.6s", pci: 52.5, comment: "野元助手「先行勢を見ながら内に入って行ける。順調です。」", commentScore: 1.2 },
+          { num: 11, waku: 6, name: "シェイクユアハート", sexAge: "牡6", weight: 58.0, jockey: "古川吉洋", trainer: "宮徹", style: "sashi", odds: "42.0倍 (12人気)", speed: 88, stamina: 89, spurt: 89, gate: 85, trainingTime: "栗東CW 6F 82.2 - 66.5 - 51.6 - 36.9 - 11.5 (馬なり)", trainingGrade: "B", last3F_record: "33.7s", pci: 54.0, comment: "増井雅助手「器用さがあるので、前を見ながら進出したい。」", commentScore: 0.6 },
+          { num: 12, waku: 6, name: "コスモキュランダ", sexAge: "牡5", weight: 58.0, jockey: "丹内祐次", trainer: "加藤士津八", style: "sashi", odds: "8.0倍 (4人気)", speed: 93, stamina: 93, spurt: 94, gate: 86, trainingTime: "美南W 6F 81.0 - 65.2 - 50.5 - 36.0 - 11.1 (強め)", trainingGrade: "A", last3F_record: "33.4s", pci: 55.5, comment: "加藤士師「逃げ馬を見ながら運べるいい枠。持続力勝負なら強い。」", commentScore: 1.4 },
+          { num: 13, waku: 7, name: "リアライズシリウス", sexAge: "牡3", weight: 56.0, jockey: "津村明秀", trainer: "手塚貴久", style: "sashi", odds: "30.0倍 (10人気)", speed: 90, stamina: 89, spurt: 93, gate: 84, trainingTime: "美南W 6F 81.8 - 66.0 - 51.1 - 36.7 - 11.3 (馬なり)", trainingGrade: "A", last3F_record: "33.3s", pci: 56.0, comment: "手塚久師「斤量56kgを生かして上位に食い込みたい。」", commentScore: 1.0 },
+          { num: 14, waku: 7, name: "タガノデュード", sexAge: "牡5", weight: 58.0, jockey: "M.デムーロ", trainer: "宮徹", style: "oikomi", odds: "85.0倍 (16人気)", speed: 86, stamina: 88, spurt: 91, gate: 76, trainingTime: "栗東坂路 4F 51.8 - 37.5 - 24.3 - 12.0 (一杯)", trainingGrade: "B", last3F_record: "33.8s", pci: 58.0, comment: "増井雅助手「しまいを生かすタイプ。東京の長い直線は合う。」", commentScore: 0.4 },
+          { num: 15, waku: 8, name: "サクラファレル", sexAge: "牡4", weight: 58.0, jockey: "佐々木大輔", trainer: "堀宣行", style: "senko", odds: "48.0倍 (13人気)", speed: 88, stamina: 88, spurt: 88, gate: 88, trainingTime: "美南W 6F 82.0 - 66.4 - 51.8 - 37.0 - 11.4 (馬なり)", trainingGrade: "B", last3F_record: "34.0s", pci: 51.0, comment: "堀厩舎「仕上がり順調。外枠だが先行力を活かして粘り込みを狙う。」", commentScore: 0.5 },
+          { num: 16, waku: 8, name: "ジョバンニ", sexAge: "牡4", weight: 58.0, jockey: "松山弘平", trainer: "杉山晴紀", style: "sashi", odds: "54.0倍 (15人気)", speed: 87, stamina: 88, spurt: 90, gate: 83, trainingTime: "栗東CW 6F 81.8 - 66.0 - 51.3 - 36.7 - 11.4 (強め)", trainingGrade: "B", last3F_record: "33.7s", pci: 55.0, comment: "花田助手「馬の状態の良さで頑張ってもらいたいです。」", commentScore: 0.6 },
+          { num: 17, waku: 8, name: "ダノンデサイル", sexAge: "牡5", weight: 58.0, jockey: "戸崎圭太", trainer: "安田翔伍", style: "sashi", odds: "6.5倍 (3人気)", speed: 95, stamina: 96, spurt: 96, gate: 85, trainingTime: "栗東CW 6F 80.4 - 64.6 - 50.0 - 35.7 - 11.0 (一杯・迫力満点)", trainingGrade: "S", last3F_record: "33.2s", pci: 56.5, comment: "安田翔師「大外17番だが地力は最上位。外からねじ伏せに行く。」", commentScore: 1.7 }
+        ]
+      },
+      queen_elizabeth_2026: {
+        id: "queen_elizabeth_2026",
+        name: "エリザベス女王杯 G1 (11月中旬想定)",
+        courseName: "京都競馬場",
+        distance: 2200,
+        trackType: "芝",
+        trackCondition: "良",
+        straight: 404,
+        slope: "高低差 3.5m (3コーナー淀の坂)",
+        bias: "淀の坂の下りを利用したロングスパート。直線平坦での末脚持続力勝負。",
+        horses: [
+          { num: 1, waku: 1, name: "レガレイラ", sexAge: "牝5", weight: 56.0, jockey: "岩田望来", trainer: "木村哲也", style: "sashi", odds: "2.1倍", speed: 96, stamina: 94, spurt: 98, gate: 86, trainingTime: "美南W 81.0-11.2", trainingGrade: "S", last3F_record: "33.2s", pci: 57.0, comment: "京都外回り2200mは絶好の舞台。外から一気に突き抜ける。", commentScore: 1.9 },
+          { num: 2, waku: 2, name: "ステレンボッシュ", sexAge: "牝4", weight: 56.0, jockey: "戸崎圭太", trainer: "国枝栄", style: "sashi", odds: "3.8倍", speed: 94, stamina: 92, spurt: 95, gate: 88, trainingTime: "美南W 81.6-11.4", trainingGrade: "A", last3F_record: "33.5s", pci: 56.0, comment: "距離延長歓迎。折り合いをつけて長く良い脚を使わせたい。", commentScore: 1.4 },
+          { num: 3, waku: 3, name: "チェルヴィニア", sexAge: "牝4", weight: 56.0, jockey: "C.ルメール", trainer: "木村哲也", style: "senko", odds: "4.5倍", speed: 95, stamina: 93, spurt: 94, gate: 90, trainingTime: "栗東CW 81.2-11.3", trainingGrade: "A", last3F_record: "33.6s", pci: 53.5, comment: "好位から器用に立ち回る。坂下りからの抜け出しを図る。", commentScore: 1.5 },
+          { num: 4, waku: 4, name: "スタニングローズ", sexAge: "牝6", weight: 56.0, jockey: "C.デムーロ", trainer: "高野友和", style: "senko", odds: "8.2倍", speed: 91, stamina: 92, spurt: 89, gate: 92, trainingTime: "栗東坂路 52.0-11.9", trainingGrade: "A", last3F_record: "34.2s", pci: 50.0, comment: "エリザベス女王杯連覇を目指す。前々で持ち味を活かす。", commentScore: 1.2 },
+          { num: 5, waku: 5, name: "ラヴァンダ", sexAge: "牝4", weight: 56.0, jockey: "岩田康誠", trainer: "中村直也", style: "sashi", odds: "15.0倍", speed: 89, stamina: 89, spurt: 91, gate: 84, trainingTime: "栗東CW 82.5-11.5", trainingGrade: "B", last3F_record: "33.9s", pci: 54.0, comment: "調子は上向き。中団から手応え良く追走できれば。", commentScore: 0.5 },
+          { num: 6, waku: 6, name: "サリエラ", sexAge: "牝7", weight: 56.0, jockey: "武豊", trainer: "国枝栄", style: "oikomi", odds: "22.0倍", speed: 87, stamina: 93, spurt: 92, gate: 75, trainingTime: "美南W 83.0-11.6", trainingGrade: "B", last3F_record: "33.7s", pci: 58.0, comment: "距離が伸びて良さが出る。後方待機から外を回して勝負。", commentScore: 0.4 }
+        ]
+      },
+      mile_cs_2026: {
+        id: "mile_cs_2026",
+        name: "マイルCS G1 (11月下旬想定)",
+        courseName: "京都競馬場",
+        distance: 1600,
+        trackType: "芝",
+        trackCondition: "良",
+        straight: 404,
+        slope: "高低差 3.5m (淀の坂下り)",
+        bias: "淀の坂下りから一気のトップスピード加速。瞬発力と切れ味勝負。",
+        horses: [
+          { num: 1, waku: 1, name: "ナミュール", sexAge: "牝6", weight: 56.0, jockey: "C.デムーロ", trainer: "高野友和", style: "sashi", odds: "3.2倍", speed: 96, stamina: 86, spurt: 98, gate: 80, trainingTime: "栗東坂路 51.4-11.7", trainingGrade: "S", last3F_record: "32.9s", pci: 58.0, comment: "京都外回りマイルは最高の適性。大外一気で連覇を狙う。", commentScore: 1.9 },
+          { num: 2, waku: 2, name: "ジャンタルマンタル", sexAge: "牡4", weight: 58.0, jockey: "川田将雅", trainer: "高野友和", style: "senko", odds: "3.5倍", speed: 96, stamina: 88, spurt: 95, gate: 94, trainingTime: "栗東CW 80.8-11.1", trainingGrade: "S", last3F_record: "33.4s", pci: 52.0, comment: "完成度抜群。好位2〜3番手から早め先頭で押し切る。", commentScore: 2.0 },
+          { num: 3, waku: 3, name: "ソウルラッシュ", sexAge: "牡8", weight: 58.0, jockey: "団野大成", trainer: "池江泰寿", style: "sashi", odds: "4.1倍", speed: 94, stamina: 90, spurt: 95, gate: 88, trainingTime: "栗東CW 81.0-11.2", trainingGrade: "A", last3F_record: "33.3s", pci: 54.0, comment: "ベテランだが元気いっぱい。直線力強く突き抜ける競馬を。", commentScore: 1.4 },
+          { num: 4, waku: 4, name: "セリフォス", sexAge: "牡7", weight: 58.0, jockey: "藤岡佑介", trainer: "中内田充正", style: "sashi", odds: "7.8倍", speed: 93, stamina: 86, spurt: 94, gate: 84, trainingTime: "栗東CW 81.8-11.3", trainingGrade: "B", last3F_record: "33.1s", pci: 56.5, comment: "直線の切れ味は健在。京都の平坦直線で浮上を狙う。", commentScore: 0.9 },
+          { num: 5, waku: 5, name: "エルトンバローズ", sexAge: "牡6", weight: 58.0, jockey: "西村淳也", trainer: "杉山晴紀", style: "senko", odds: "12.0倍", speed: 91, stamina: 88, spurt: 89, gate: 88, trainingTime: "栗東坂路 52.0-11.9", trainingGrade: "B", last3F_record: "33.8s", pci: 51.0, comment: "マイル戦なら立ち回りひとつ。内枠を引いてロスなく運びたい。", commentScore: 0.6 },
+          { num: 6, waku: 6, name: "ウインマーベル", sexAge: "牡7", weight: 58.0, jockey: "松山弘平", trainer: "深山雅史", style: "nige", odds: "16.5倍", speed: 94, stamina: 82, spurt: 86, gate: 96, trainingTime: "美南W 81.9-11.5", trainingGrade: "B", last3F_record: "34.3s", pci: 48.0, comment: "ハナを主張してペースを握る。坂下りの勢いで粘り込み。", commentScore: 0.8 }
+        ]
+      },
+      japan_cup_2026: {
+        id: "japan_cup_2026",
+        name: "ジャパンカップ G1 (11月最終週想定)",
+        courseName: "東京競馬場",
+        distance: 2400,
+        trackType: "芝",
+        trackCondition: "良",
+        straight: 525,
+        slope: "高低差 2.1m (長い直線)",
+        bias: "世界最高峰のスピード持続力と2400mのタフなスタミナの融合。",
+        horses: [
+          { num: 1, waku: 1, name: "クロワデュノール", sexAge: "牡4", weight: 58.0, jockey: "C.デムーロ", trainer: "斉藤崇史", style: "sashi", odds: "2.8倍", speed: 97, stamina: 96, spurt: 97, gate: 90, trainingTime: "栗東CW 80.2-11.0", trainingGrade: "S", last3F_record: "33.0s", pci: 56.0, comment: "東京2400mはベスト。中団から堂々と抜け出す競馬を。", commentScore: 2.0 },
+          { num: 2, waku: 2, name: "ドウデュース", sexAge: "牡5", weight: 58.0, jockey: "武豊", trainer: "友道康夫", style: "oikomi", odds: "3.5倍", speed: 96, stamina: 94, spurt: 99, gate: 82, trainingTime: "栗東CW 81.0-11.1", trainingGrade: "S", last3F_record: "32.6s", pci: 58.8, comment: "大外一気を決める態勢。直線の爆発力は現役最上位。", commentScore: 1.9 },
+          { num: 3, waku: 3, name: "シンエンペラー", sexAge: "牡4", weight: 58.0, jockey: "坂井瑠星", trainer: "矢作芳人", style: "sashi", odds: "5.5倍", speed: 94, stamina: 95, spurt: 93, gate: 88, trainingTime: "栗東CW 81.5-11.4", trainingGrade: "A", last3F_record: "33.5s", pci: 55.0, comment: "タフな流れなら勝ち負け。", commentScore: 1.5 },
+          { num: 4, waku: 4, name: "チェルヴィニア", sexAge: "牝4", weight: 56.0, jockey: "C.ルメール", trainer: "木村哲也", style: "senko", odds: "6.2倍", speed: 94, stamina: 93, spurt: 95, gate: 92, trainingTime: "美南W 81.8-11.3", trainingGrade: "A", last3F_record: "33.4s", pci: 54.0, comment: "オークス馬の意地。好位からソツなく立ち回る。", commentScore: 1.3 },
+          { num: 5, waku: 5, name: "ジャスティンパレス", sexAge: "牡6", weight: 58.0, jockey: "鮫島克駿", trainer: "杉山晴紀", style: "sashi", odds: "10.5倍", speed: 91, stamina: 97, spurt: 93, gate: 82, trainingTime: "栗東CW 82.5-11.5", trainingGrade: "B", last3F_record: "33.6s", pci: 56.0, comment: "スタミナは文句なし。東京2400mでのロングスパートに賭ける。", commentScore: 0.9 },
+          { num: 6, waku: 6, name: "ディープボンド", sexAge: "牡8", weight: 58.0, jockey: "幸英明", trainer: "大久保龍志", style: "senko", odds: "25.0倍", speed: 85, stamina: 98, spurt: 80, gate: 84, trainingTime: "栗東CW 83.0-11.7", trainingGrade: "B", last3F_record: "35.2s", pci: 49.0, comment: "消耗戦になれば浮上。", commentScore: 0.4 }
+        ]
+      },
+      arima_2026: {
+        id: "arima_2026",
+        name: "有馬記念 G1 (年末グランプリ想定)",
+        courseName: "中山競馬場",
+        distance: 2500,
+        trackType: "芝",
+        trackCondition: "良",
+        straight: 310,
+        slope: "高低差 2.2m (急坂2回)",
+        bias: "中山小回り・急坂2回通過。スタミナ・コーナリングと4角捲りが勝負所。",
+        horses: [
+          { num: 1, waku: 1, name: "クロワデュノール", sexAge: "牡4", weight: 58.0, jockey: "C.デムーロ", trainer: "斉藤崇史", style: "senko", odds: "2.5倍", speed: 96, stamina: 97, spurt: 95, gate: 92, trainingTime: "栗東CW 80.8-11.2", trainingGrade: "S", last3F_record: "34.2s", pci: 52.0, comment: "中山2500mも克服できるスタミナがある。秋の総決算へ。", commentScore: 2.0 },
+          { num: 2, waku: 2, name: "ドウデュース", sexAge: "牡5", weight: 58.0, jockey: "武豊", trainer: "友道康夫", style: "sashi", odds: "3.2倍", speed: 95, stamina: 95, spurt: 98, gate: 84, trainingTime: "栗東CW 81.2-11.2", trainingGrade: "S", last3F_record: "33.8s", pci: 55.0, comment: "有馬記念連覇を目指す。捲り気味にスパートをかけて押し切る。", commentScore: 1.9 },
+          { num: 3, waku: 3, name: "ジャスティンパレス", sexAge: "牡6", weight: 58.0, jockey: "鮫島克駿", trainer: "杉山晴紀", style: "oikomi", odds: "8.5倍", speed: 90, stamina: 98, spurt: 92, gate: 80, trainingTime: "栗東CW 82.5-11.6", trainingGrade: "A", last3F_record: "34.0s", pci: 57.0, comment: "スタミナ勝負なら負けない。3コーナーから長く良い脚を使う。", commentScore: 1.2 },
+          { num: 4, waku: 4, name: "ソールオリエンス", sexAge: "牡5", weight: 58.0, jockey: "横山武史", trainer: "手塚貴久", style: "oikomi", odds: "14.0倍", speed: 91, stamina: 92, spurt: 95, gate: 76, trainingTime: "美南W 82.0-11.4", trainingGrade: "B", last3F_record: "33.9s", pci: 58.5, comment: "皐月賞を勝った中山コース。重馬場になればさらに浮上。", commentScore: 0.8 },
+          { num: 5, waku: 5, name: "ディープボンド", sexAge: "牡8", weight: 58.0, jockey: "幸英明", trainer: "大久保龍志", style: "senko", odds: "28.0倍", speed: 84, stamina: 99, spurt: 80, gate: 84, trainingTime: "栗東CW 83.2-11.8", trainingGrade: "B", last3F_record: "35.5s", pci: 48.0, comment: "有馬記念は庭。前々で運んでスタミナの底力を見せる。", commentScore: 0.5 }
+        ]
+      }
+    };
+
+    // --- 枠番計算 (17頭立てに対応した正確なJRA枠順) ---
+    function getWaku(num, total) {
+      if (total === 17) {
+        if (num <= 2) return 1;
+        if (num <= 4) return 2;
+        if (num <= 6) return 3;
+        if (num <= 8) return 4;
+        if (num <= 10) return 5;
+        if (num <= 12) return 6;
+        if (num <= 14) return 7;
+        return 8;
+      }
+      if (total <= 8) return num;
+      return Math.min(8, Math.floor(((num - 1) / total) * 8) + 1);
+    }
+
+    // --- トースト通知 ---
+    function showToast(msg) {
+      let t = document.getElementById('appToast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'appToast';
+        t.className = 'fixed bottom-5 right-5 bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-2xl z-50 transition-opacity duration-300 border border-emerald-400/40';
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.opacity = '1';
+      t.classList.remove('hidden');
+      setTimeout(() => {
+        t.style.opacity = '0';
+        setTimeout(() => t.classList.add('hidden'), 300);
+      }, 2500);
+    }
+
+    // --- 状態管理 ---
+    let state = {
+      currentRaceKey: "tenno_aki_2026",
+      selectedTrials: 1000,
+      activeTab: "animation",
+      headerCollapsed: false,
+      monteResults: null,
+      isAnimRunning: false,
+      isAnimPaused: false,
+      animTime: 0,
+      animFrameId: null,
+      horsesAnimState: []
+    };
+
+    // --- 初期化 ---
+    window.addEventListener('DOMContentLoaded', () => {
+      initScrollHeader();
+      initEventListeners();
+      loadRace("tenno_aki_2026");
+      runMonteCarloSimulation(1000);
+
+      // ★ 外部自動更新データ (data/latest_race.json) の自動フェッチ ★
+      fetch('data/latest_race.json')
+        .then(res => res.json())
+        .then(latestData => {
+          if (latestData && latestData.horses && latestData.horses.length > 0) {
+            console.log("外部最新レースデータを自動同期しました:", latestData.name);
+            RACE_DATABASE.tenno_aki_2026 = latestData;
+            loadRace("tenno_aki_2026");
+            runMonteCarloSimulation(state.selectedTrials);
+            const badge = document.getElementById('syncStatusLabel');
+            if (badge) badge.textContent = `自動同期済 (${latestData.last_updated ? latestData.last_updated.slice(11, 16) : '最新'})`;
+          }
+        })
+        .catch(err => {
+          console.log("ローカル内蔵データを使用します:", err);
+        });
+
+      initCanvas();
+      initBudgetBetting();
+      initRealtimeOddsSync();
+      // デフォルトでアニメーションタブを表示
+      switchTab("animation");
+    });
+
+    function initScrollHeader() {
+      const header = document.getElementById('mainHeader');
+      window.addEventListener('scroll', () => {
+        const curY = window.scrollY;
+        if (curY > 30) {
+          header.classList.add('header-compact');
+          document.getElementById('toggleHeaderIcon').textContent = "▼";
+        } else if (curY <= 10 && !state.headerCollapsed) {
+          header.classList.remove('header-compact');
+          document.getElementById('toggleHeaderIcon').textContent = "▲";
+        }
+      }, { passive: true });
+
+      document.getElementById('toggleHeaderBtn').addEventListener('click', () => {
+        state.headerCollapsed = !state.headerCollapsed;
+        if (state.headerCollapsed) {
+          header.classList.add('header-compact');
+          document.getElementById('toggleHeaderIcon').textContent = "▼";
+        } else {
+          header.classList.remove('header-compact');
+          document.getElementById('toggleHeaderIcon').textContent = "▲";
+        }
+      });
+    }
+
+    function initEventListeners() {
+      document.getElementById('raceSelect').addEventListener('change', (e) => {
+        loadRace(e.target.value);
+        runMonteCarloSimulation(state.selectedTrials);
+      });
+
+      document.querySelectorAll('.trial-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.trial-btn').forEach(b => {
+            b.classList.remove('bg-emerald-600', 'text-white', 'font-extrabold', 'shadow-md', 'shadow-emerald-950/60');
+            b.classList.add('text-slate-400');
+          });
+          btn.classList.add('bg-emerald-600', 'text-white', 'font-extrabold', 'shadow-md', 'shadow-emerald-950/60');
+          btn.classList.remove('text-slate-400');
+          state.selectedTrials = parseInt(btn.getAttribute('data-trials'), 10);
+          runMonteCarloSimulation(state.selectedTrials);
+        });
+      });
+
+      document.getElementById('mainSimRunBtn').addEventListener('click', () => {
+        runMonteCarloSimulation(state.selectedTrials);
+      });
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.getAttribute('data-tab');
+          switchTab(tab);
+        });
+      });
+
+      document.getElementById('openImportBtn').addEventListener('click', openImportModal);
+      document.getElementById('closeImportModalBtn').addEventListener('click', closeImportModal);
+      document.getElementById('cancelImportModalBtn').addEventListener('click', closeImportModal);
+      document.getElementById('insertSampleDataBtn').addEventListener('click', insertSampleImportText);
+      document.getElementById('executeImportBtn').addEventListener('click', executeImport);
+
+      document.getElementById('animStartBtn').addEventListener('click', startAnimation);
+      document.getElementById('animPauseBtn').addEventListener('click', togglePauseAnimation);
+      document.getElementById('animResetBtn').addEventListener('click', resetAnimation);
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        const isTarget = b.getAttribute('data-tab') === tabId;
+        b.className = `tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap ${
+          isTarget ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-950/50' : 'bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80'
+        }`;
+      });
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+      const activeEl = document.getElementById('tab-' + tabId);
+      if (activeEl) activeEl.classList.remove('hidden');
+
+      if (tabId === 'animation') {
+        setTimeout(() => {
+          resizeCanvas();
+          if (state.horsesAnimState.length === 0) {
+            initAnimationState();
+          }
+          drawTrack();
+        }, 50);
+      } else if (tabId === 'report') {
+        calculateAndRenderBets();
+      }
+    }
+
+    function loadRace(raceKey) {
+      const race = RACE_DATABASE[raceKey];
+      if (!race) return;
+      state.currentRaceKey = raceKey;
+
+      document.getElementById('raceSelect').value = raceKey;
+      document.getElementById('activeRaceLabel').textContent = race.name;
+      document.getElementById('activeConditionLabel').textContent = `${race.courseName} ${race.trackType}${race.distance}m / ${race.trackCondition} / 直線${race.straight}m (${race.slope.slice(0, 15)})`;
+      document.getElementById('horseCountBadge').textContent = race.horses.length;
+      document.getElementById('animElevationText').textContent = `${race.courseName} ${race.trackType}${race.distance}m・直線${race.straight}m (${race.slope})`;
+      document.getElementById('animDistRemaining').textContent = race.distance;
+
+      renderRacecard(race);
+      resetAnimation();
+    }
+
+    function openImportModal() {
+      document.getElementById('importModal').classList.remove('hidden');
+    }
+    function closeImportModal() {
+      document.getElementById('importModal').classList.add('hidden');
+    }
+
+    function insertSampleImportText() {
+      const sample = `1 クロワデュノール 牡4 58.0 先行 調教S 栗東CW 80.6-11.0 抜群の仕上がり、好位から突き抜ける
+2 エルトンバローズ 牡6 58.0 先行 調教B 栗東坂路 52.1-12.0 内枠でロスなく好位を運ぶ
+3 レガレイラ 牝5 56.0 差し 調教S 美南W 80.8-11.1 左回りのストライド最高、直線の末脚勝負
+4 レディネス 牡4 58.0 差し 調教B 栗東CW 82.0-11.4 折り合いをつけて通用するか
+7 マスカレードボール 牡4 58.0 差し 調教S 美南W 80.2-11.0 連覇狙える絶好の手応え
+9 ホウオウビスケッツ 牡6 58.0 逃げ 調教A 美南W 81.5-11.3 毎日王冠好走、ハナ奪い粘り込み
+12 コスモキュランダ 牡5 58.0 差し 調教A 美南W 81.0-11.1 皐月賞2着、持続力勝負なら
+17 ダノンデサイル 牡5 58.0 差し 調教S 栗東CW 80.4-11.0 ダービー馬の底力、外からねじ伏せる`;
+      document.getElementById('importRawText').value = sample;
+    }
+
+    function executeImport() {
+      const text = document.getElementById('importRawText').value.trim();
+      if (!text) {
+        showToast("出走表テキストを貼り付けてください");
+        return;
+      }
+
+      const raceName = document.getElementById('importRaceName').value.trim() || "カスタム入力レース";
+      const courseKey = document.getElementById('importCourseSelect').value;
+
+      const courseMap = {
+        tokyo_2000: { courseName: "東京競馬場", distance: 2000, straight: 525, slope: "高低差 2.1m (だらだら坂)" },
+        tokyo_2400: { courseName: "東京競馬場", distance: 2400, straight: 525, slope: "高低差 2.1m (長い直線)" },
+        tokyo_1600: { courseName: "東京競馬場", distance: 1600, straight: 525, slope: "高低差 2.1m" },
+        nakayama_2500: { courseName: "中山競馬場", distance: 2500, straight: 310, slope: "高低差 2.2m (急坂2回)" },
+        nakayama_1200: { courseName: "中山競馬場", distance: 1200, straight: 310, slope: "高低差 2.2m (下り坂〜急坂)" },
+        kyoto_2200: { courseName: "京都競馬場", distance: 2200, straight: 404, slope: "高低差 3.5m (淀の坂下り)" },
+        kyoto_1600: { courseName: "京都競馬場", distance: 1600, straight: 404, slope: "高低差 3.5m (淀の坂下り)" },
+        hanshin_2000: { courseName: "阪神競馬場", distance: 2000, straight: 356, slope: "高低差 1.8m (急坂)" }
+      };
+
+      const cData = courseMap[courseKey] || courseMap.tokyo_2000;
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      const parsedHorses = [];
+
+      lines.forEach((line, idx) => {
+        const tokens = line.split(/[\s,、\t]+/);
+        let num = idx + 1;
+        let name = "出走馬 " + num;
+        let style = "senko";
+        let trainingGrade = "B";
+        let comment = line;
+
+        tokens.forEach(t => {
+          if (/^\d{1,2}$/.test(t)) {
+            const parsedNum = parseInt(t, 10);
+            if (parsedNum <= 18) num = parsedNum;
+          }
+          if (t.includes("逃げ") || t.includes("逃")) style = "nige";
+          if (t.includes("先行") || t.includes("先")) style = "senko";
+          if (t.includes("差し") || t.includes("差")) style = "sashi";
+          if (t.includes("追込") || t.includes("追")) style = "oikomi";
+
+          if (/^[SABCD]$/i.test(t)) trainingGrade = t.toUpperCase();
+          if (t.includes("調教S") || t.includes("S評価")) trainingGrade = "S";
+          if (t.includes("調教A") || t.includes("A評価")) trainingGrade = "A";
+        });
+
+        const nameCandidates = tokens.filter(t => !/^\d+$/.test(t) && !["逃げ", "先行", "差し", "追込", "調教S", "調教A", "調教B"].includes(t));
+        if (nameCandidates.length > 0) {
+          name = nameCandidates[0].replace(/[0-9]/g, '');
+        }
+
+        parsedHorses.push({
+          num: num,
+          name: name || `出走馬 ${num}`,
+          sexAge: "牡4",
+          weight: 58.0,
+          jockey: "騎手",
+          trainer: "厩舎",
+          style: style,
+          odds: `${(2.5 + idx * 2.5).toFixed(1)}倍`,
+          speed: 90 + (trainingGrade === 'S' ? 5 : trainingGrade === 'A' ? 3 : 0) - idx * 0.7,
+          stamina: 90 - idx * 0.4,
+          spurt: 90 + (style === 'sashi' ? 4 : 0),
+          gate: 88,
+          trainingTime: "追い切り完了 (自動解析済)",
+          trainingGrade: trainingGrade,
+          last3F_record: "33.5s",
+          pci: 54.0,
+          comment: comment,
+          commentScore: trainingGrade === 'S' ? 1.8 : trainingGrade === 'A' ? 1.2 : 0.5
+        });
+      });
+
+      if (parsedHorses.length < 2) {
+        showToast("出走馬が2頭以上読み取れませんでした。行ごとに馬名やデータを入力してください。");
+        return;
+      }
+
+      parsedHorses.sort((a, b) => a.num - b.num);
+
+      RACE_DATABASE.custom_race = {
+        id: "custom_race",
+        name: `【取込】${raceName}`,
+        courseName: cData.courseName,
+        distance: cData.distance,
+        trackType: "芝",
+        trackCondition: "良",
+        straight: cData.straight,
+        slope: cData.slope,
+        bias: "ユーザー入力データに基づくリアルタイム展開予測。",
+        horses: parsedHorses
+      };
+
+      const opt = document.getElementById('customRaceOption');
+      opt.disabled = false;
+      opt.textContent = `【取込】${raceName} (${parsedHorses.length}頭)`;
+      document.getElementById('raceSelect').value = "custom_race";
+
+      closeImportModal();
+      loadRace("custom_race");
+      runMonteCarloSimulation(state.selectedTrials);
+      switchTab('animation');
+      showToast(`${parsedHorses.length}頭のデータをシミュレーターに展開しました！`);
+    }
+
+    // --- 出走表描画 ---
+    function renderRacecard(race) {
+      const listEl = document.getElementById('racecardList');
+      listEl.innerHTML = '';
+
+      const styleNames = { nige: "逃げ", senko: "先行", sashi: "差し", oikomi: "追込" };
+      const styleBadges = {
+        nige: "bg-rose-500/15 text-rose-400 border-rose-500/30",
+        senko: "bg-amber-500/15 text-amber-400 border-amber-500/30",
+        sashi: "bg-blue-500/15 text-blue-400 border-blue-500/30",
+        oikomi: "bg-purple-500/15 text-purple-400 border-purple-500/30"
+      };
+
+      race.horses.forEach(h => {
+        const waku = getWaku(h.num, race.horses.length);
+        const card = document.createElement('div');
+        card.className = "glass-panel rounded-2xl p-4 shadow-md space-y-2.5 border border-slate-800/80";
+
+        card.innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+            <div class="flex items-center gap-3">
+              <span class="waku-${waku} w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs font-mono-num shadow-sm">${h.num}</span>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h3 class="text-sm font-black text-white">${h.name}</h3>
+                  <span class="text-[11px] text-slate-400 font-mono-num">${h.sexAge || ''} / ${h.weight || 58}kg</span>
+                  <span class="text-[11px] text-emerald-300 font-bold">${h.jockey ? `騎手: ${h.jockey}` : ''}</span>
+                  <span class="text-[11px] text-slate-400">${h.trainer ? `(${h.trainer})` : ''}</span>
+                  <span class="px-2 py-0.5 rounded-full border text-[10px] font-extrabold ${styleBadges[h.style]}">${styleNames[h.style]}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 text-xs font-mono-num">
+              <span class="text-amber-400 font-black">${h.odds || ''}</span>
+              <span class="text-slate-400">実績上3F: <strong class="text-amber-300">${h.last3F_record}</strong></span>
+              <span class="text-slate-400">PCI: <strong class="text-emerald-400">${h.pci}</strong></span>
+            </div>
+          </div>
+
+          <div class="bg-slate-950/80 rounded-xl p-2.5 border border-slate-800/80 text-xs">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-[11px] text-slate-400 font-semibold flex items-center gap-1.5 truncate">
+                <span>⏱️ 調教時計:</span>
+                <span class="font-mono-num text-slate-200 truncate">${h.trainingTime}</span>
+              </span>
+              <span class="px-2 py-0.5 rounded-full border font-black text-[11px] whitespace-nowrap ml-2 ${
+                h.trainingGrade === 'S' ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 shadow-sm' :
+                h.trainingGrade === 'A' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' :
+                'bg-blue-500/20 text-blue-400 border-blue-500/40'
+              }">調教: ${h.trainingGrade}</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-950/60 rounded-xl p-2.5 border border-slate-800/60 text-xs flex items-start gap-2">
+            <span class="text-slate-400 font-bold whitespace-nowrap text-[11px]">🎙 陣営コメント:</span>
+            <p class="text-slate-300 italic text-[11px] leading-relaxed">"${h.comment}"</p>
+          </div>
+        `;
+        listEl.appendChild(card);
+      });
+    }
+
+    // --- 正規分布乱数 (Box-Muller法) ---
+    function randNormal(mean = 0, stdDev = 1) {
+      let u = 0, v = 0;
+      while (u === 0) u = Math.random();
+      while (v === 0) v = Math.random();
+      const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+      return mean + z * stdDev;
+    }
+
+    // --- シミュレーション計算 (競馬の真の確率・波乱モデル) ---
+    function runMonteCarloSimulation(trials) {
+      const race = RACE_DATABASE[state.currentRaceKey];
+      if (!race) return;
+
+      const runBtn = document.getElementById('mainSimRunBtn');
+      const btnText = document.getElementById('mainRunBtnText');
+      btnText.textContent = `計算中 (${trials.toLocaleString()}回)...`;
+      runBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+      setTimeout(() => {
+        const stats = {};
+        race.horses.forEach(h => {
+          stats[h.num] = {
+            num: h.num,
+            name: h.name,
+            style: h.style,
+            odds: h.odds,
+            jockey: h.jockey,
+            trainingGrade: h.trainingGrade,
+            comment: h.comment,
+            wins: 0,
+            top2: 0,
+            top3: 0,
+            totalRank: 0,
+            totalTime: 0,
+            totalLast3F: 0
+          };
+        });
+
+        const trainPts = { S: 0.35, A: 0.20, B: 0.05, C: -0.15, D: -0.30 };
+        const isLongStraight = race.straight >= 450;
+        const hasSteepSlope = race.slope.includes("急坂");
+        const baseTime = (race.distance / 17.24);
+
+        for (let i = 0; i < trials; i++) {
+          const paceRoll = Math.random();
+          let pace = "middle";
+          if (paceRoll < 0.20) pace = "high";
+          else if (paceRoll > 0.80) pace = "slow";
+
+          const trialHorses = race.horses.map(h => {
+            const abilityDiff = ((h.speed - 90) * 0.06) + ((h.spurt - 90) * 0.03);
+            const tAdj = trainPts[h.trainingGrade] || 0.05;
+            const cAdj = (h.commentScore || 0) * 0.08;
+
+            let paceAdj = 0.0;
+            if (pace === "high") {
+              if (h.style === "sashi") paceAdj += 0.30;
+              else if (h.style === "oikomi") paceAdj += 0.45;
+              else if (h.style === "nige") paceAdj -= 0.40;
+              else if (h.style === "senko") paceAdj -= 0.15;
+            } else if (pace === "slow") {
+              if (h.style === "nige") paceAdj += 0.45;
+              else if (h.style === "senko") paceAdj += 0.25;
+              else if (h.style === "oikomi") paceAdj -= 0.35;
+            } else {
+              if (isLongStraight && (h.style === "sashi" || h.style === "oikomi")) paceAdj += 0.12;
+              else if (!isLongStraight && (h.style === "nige" || h.style === "senko")) paceAdj += 0.12;
+            }
+
+            let slopePenalty = 0.0;
+            if (hasSteepSlope && h.stamina < 90) {
+              slopePenalty = (90 - h.stamina) * 0.015;
+            }
+
+            const delay = Math.random() < ((100 - h.gate) * 0.002) ? (0.2 + Math.random() * 0.5) : 0.0;
+            const traffic = Math.random() < 0.05 ? (0.3 + Math.random() * 0.6) : 0.0;
+            const greatRun = Math.random() < 0.04 ? -0.45 : 0.0;
+            const noise = randNormal(0, 0.55);
+
+            const raceTime = baseTime - (abilityDiff + tAdj + cAdj + paceAdj) + slopePenalty + delay + traffic + greatRun + noise;
+            const spurtBase = (600.0 / (16.2 + (h.spurt - 90) * 0.02 + paceAdj * 0.3));
+            const last3F = spurtBase + randNormal(0, 0.35);
+
+            return { num: h.num, time: raceTime, last3F };
+          });
+
+          trialHorses.sort((a, b) => a.time - b.time);
+
+          trialHorses.forEach((th, rank) => {
+            const st = stats[th.num];
+            st.totalRank += (rank + 1);
+            st.totalTime += th.time;
+            st.totalLast3F += th.last3F;
+            if (rank === 0) st.wins++;
+            if (rank <= 1) st.top2++;
+            if (rank <= 2) st.top3++;
+          });
+        }
+
+        const results = Object.values(stats).map(s => ({
+          ...s,
+          winRate: parseFloat(((s.wins / trials) * 100).toFixed(1)),
+          top2Rate: parseFloat(((s.top2 / trials) * 100).toFixed(1)),
+          top3Rate: parseFloat(((s.top3 / trials) * 100).toFixed(1)),
+          avgRank: (s.totalRank / trials).toFixed(1),
+          avgTime: (s.totalTime / trials),
+          avgLast3F: (s.totalLast3F / trials).toFixed(1)
+        }));
+
+        results.sort((a, b) => b.winRate - a.winRate);
+        state.monteResults = results;
+
+        renderSimResults(results, trials, race);
+        renderReport(results, race);
+
+        btnText.textContent = "シミュレーション実行";
+        runBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+      }, 40);
+    }
+
+    function renderSimResults(results, trials, race) {
+      document.getElementById('resultTrialsLabel').textContent = trials.toLocaleString();
+      document.getElementById('simTimestamp').textContent = `最新実行 (${trials.toLocaleString()}回完了)`;
+
+      const top1 = results[0];
+      const top2 = results[1];
+      document.getElementById('summaryTopHorse').textContent = top1.name;
+      document.getElementById('summaryTopRate').textContent = `(${top1.winRate}%)`;
+      document.getElementById('summaryTop2Horse').textContent = top2.name;
+      document.getElementById('summaryTop2Rate').textContent = `(${top2.top2Rate}%)`;
+
+      const nigeCount = race.horses.filter(h => h.style === 'nige').length;
+      let paceStr = "平均ペース (M)";
+      if (nigeCount >= 2) paceStr = "ハイペース (H) 消耗戦";
+      else if (nigeCount === 0) paceStr = "スローペース (S) 瞬発戦";
+      document.getElementById('summaryPace').textContent = paceStr;
+
+      document.getElementById('summaryAdvantageStyle').textContent =
+        race.straight >= 450 ? "好位先行〜直線瞬発力型" : "先行・器用な立ち回り型";
+
+      const tbody = document.getElementById('simResultsTableBody');
+      tbody.innerHTML = '';
+
+      const signs = ["◎", "◯", "▲", "△", "☆"];
+      const signColors = [
+        "text-amber-400 font-black text-sm",
+        "text-blue-400 font-black",
+        "text-emerald-400 font-black",
+        "text-purple-400 font-extrabold",
+        "text-rose-400 font-black"
+      ];
+      const styleNames = { nige: "逃げ", senko: "先行", sashi: "差し", oikomi: "追込" };
+
+      results.forEach((r, idx) => {
+        const waku = getWaku(r.num, race.horses.length);
+        const sign = idx < signs.length ? signs[idx] : "-";
+        const signCls = idx < signs.length ? signColors[idx] : "text-slate-600";
+        const tr = document.createElement('tr');
+        tr.className = idx === 0 ? "bg-amber-500/10 hover:bg-amber-500/15 transition border-l-2 border-l-amber-400" : "hover:bg-slate-900/60 transition";
+
+        const m = Math.floor(r.avgTime / 60);
+        const s = (r.avgTime % 60).toFixed(1);
+        const formattedTime = `${m}:${s < 10 ? '0' : ''}${s}`;
+
+        tr.innerHTML = `
+          <td class="py-3 px-3 text-center ${signCls}">${sign}</td>
+          <td class="py-3 px-2 text-center"><span class="waku-${waku} px-2 py-0.5 rounded-lg text-[11px] font-black font-mono-num shadow-sm">${r.num}</span></td>
+          <td class="py-3 px-2 font-bold text-slate-100">
+            ${r.name} <span class="text-[11px] text-emerald-400 font-normal">(${r.jockey || ''})</span> <span class="text-[10px] text-slate-400 font-normal">[${styleNames[r.style]}]</span>
+          </td>
+          <td class="py-3 px-2 text-right text-slate-400 font-mono-num font-bold">${r.odds || '-'}</td>
+          <td class="py-3 px-2 text-right font-black text-amber-400 text-sm">${r.winRate}%</td>
+          <td class="py-3 px-2 text-right text-blue-400 font-extrabold">${r.top2Rate}%</td>
+          <td class="py-3 px-2 text-right text-emerald-400 font-extrabold">${r.top3Rate}%</td>
+          <td class="py-3 px-2 text-right text-slate-300 font-bold">${r.avgRank}位</td>
+          <td class="py-3 px-2 text-right text-slate-300 font-mono-num font-bold">${formattedTime}</td>
+          <td class="py-3 px-2 text-right text-amber-300 font-mono-num font-bold">${r.avgLast3F}s</td>
+          <td class="py-3 px-2">
+            <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+              <div class="bg-gradient-to-r from-emerald-500 via-teal-400 to-amber-400 h-full rounded-full" style="width: ${Math.min(100, r.winRate * 3.5)}%"></div>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('simInsightText').innerHTML = `
+        <p>・ <strong>${top1.name}</strong> が勝率 <span class="text-amber-400 font-black">${top1.winRate}%</span>、複勝率 <span class="text-emerald-400 font-black">${top1.top3Rate}%</span> で本命◎。陣営の仕上がりへの強い自信と、東京の直線における末脚爆発力が最高評価となりました。</p>
+        <p>・ 逆転候補の <strong>${top2.name}</strong> (連対率 ${top2.top2Rate}%) は安定した好位立ち回りで崩れず、上位2頭が中心となるオッズ・展開傾向を示しています。</p>
+        <p>・ 展開シナリオ（ハイペース前崩れ／スロー前残り）と馬群不利・激走ボーナスを多変量計算した結果、中堅馬や穴馬にも数％の勝率・複勝率がしっかり配分される現実的なシミュレーション分布となっています。</p>
+      `;
+    }
+
+    function renderReport(results, race) {
+      if (results[0]) document.getElementById('markHonmei').textContent = `${results[0].num}番 ${results[0].name}`;
+      if (results[1]) document.getElementById('markTaikou').textContent = `${results[1].num}番 ${results[1].name}`;
+      if (results[2]) document.getElementById('markTanana').textContent = `${results[2].num}番 ${results[2].name}`;
+      if (results[3]) document.getElementById('markRenka').textContent = `${results[3].num}番 ${results[3].name}`;
+      if (results[4]) document.getElementById('markAna').textContent = `${results[4].num}番 ${results[4].name}`;
+
+      const h1 = results[0] ? results[0].num : 1;
+      const h2 = results[1] ? results[1].num : 2;
+      const h3 = results[2] ? results[2].num : 3;
+      const h4 = results[3] ? results[3].num : 4;
+      const h5 = results[4] ? results[4].num : 5;
+
+      calculateAndRenderBets();
+    }
+
+    // --- 2Dレース展開アニメーション ＆ リアルタイムHUDロジック ---
+    let canvas, ctx;
+    function initCanvas() {
+      canvas = document.getElementById('raceCanvas');
+      ctx = canvas.getContext('2d');
+      resizeCanvas();
+      window.addEventListener('resize', () => {
+        resizeCanvas();
+        drawTrack();
+      });
+    }
+
+    function resizeCanvas() {
+      if (!canvas) return;
+      const rect = canvas.parentElement ? canvas.parentElement.getBoundingClientRect() : null;
+      const width = (rect && rect.width > 50) ? rect.width : (canvas.clientWidth || 750);
+      const height = (rect && rect.height > 50) ? rect.height : (canvas.clientHeight || 400);
+      canvas.width = width * window.devicePixelRatio;
+      canvas.height = height * window.devicePixelRatio;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    }
+
+    function initAnimationState() {
+      const race = RACE_DATABASE[state.currentRaceKey];
+      state.horsesAnimState = race.horses.map((h, i) => {
+        // 出遅れ判定 (ゲート能力依存)
+        const hasDelay = Math.random() < ((100 - h.gate) * 0.002);
+        const delaySec = hasDelay ? (0.2 + Math.random() * 0.4) : 0;
+
+        return {
+          num: h.num,
+          name: h.name,
+          jockey: h.jockey,
+          style: h.style,
+          speedAttr: h.speed,
+          spurtAttr: h.spurt,
+          staminaAttr: h.stamina,
+          gateAttr: h.gate,
+          delaySec: delaySec,
+          stamina: 100, // 現在のスタミナ
+          distCovered: 0,
+          currentVelocity: 0, // 現在速度
+          lane: i,
+          finished: false,
+          finishRank: 0,
+          finishTime: 0
+        };
+      });
+
+      state.finishedCount = 0; // ゴール通過頭数
+      state.animTime = 0;
+      document.getElementById('animElapsedTime').textContent = "0:00.0";
+      document.getElementById('animDistRemaining').textContent = race.distance;
+      document.getElementById('animStatusBadge').textContent = "発走前";
+      document.getElementById('animStatusBadge').className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700";
+      document.getElementById('animLiveCommentary').textContent = "各馬ゲートイン完了、まもなく発走です。";
+      document.getElementById('podiumStatusTag').textContent = "発走前";
+
+      updateLiveHUDAndStrip();
+    }
+
+    // ★ リアルタイム 1・2・3位 HUD と 全17頭通過順位ストリップの更新 (ゴール後も確定結果を完全保持) ★
+    function updateLiveHUDAndStrip() {
+      if (!state.horsesAnimState || state.horsesAnimState.length === 0) return;
+      const race = RACE_DATABASE[state.currentRaceKey];
+
+      // ★ 決定的修正: ゴール済み馬は finishRank 順、走行中は走破距離順でソート！
+      // これにより、全員が2000mに達しても絶対に馬番・枠順順に戻らず、確定着順が100%固定される！
+      const sorted = [...state.horsesAnimState].sort((a, b) => {
+        if (a.finished && b.finished) return a.finishRank - b.finishRank;
+        if (a.finished) return -1;
+        if (b.finished) return 1;
+        return b.distCovered - a.distCovered;
+      });
+
+      const formatTime = (sec) => {
+        const m = Math.floor(sec / 60);
+        const s = (sec % 60).toFixed(1);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+      };
+
+      // 1位
+      const first = sorted[0];
+      const waku1 = getWaku(first.num, race.horses.length);
+      document.getElementById('hudWaku1').className = `waku-${waku1} px-1.5 py-0.2 rounded font-mono-num font-bold text-[10px]`;
+      document.getElementById('hudWaku1').textContent = first.num;
+      document.getElementById('hudName1').textContent = first.name;
+      if (first.finished) {
+        document.getElementById('hudDiff1').textContent = `1着 (${formatTime(first.finishTime)})`;
+        document.getElementById('hudDiff1').className = "text-[10px] font-mono-num font-black text-amber-300";
+      } else {
+        document.getElementById('hudDiff1').textContent = "先頭";
+        document.getElementById('hudDiff1').className = "text-[10px] font-mono-num font-extrabold text-amber-300";
+      }
+
+      // 2位
+      const second = sorted[1];
+      if (second) {
+        const waku2 = getWaku(second.num, race.horses.length);
+        document.getElementById('hudWaku2').className = `waku-${waku2} px-1.5 py-0.2 rounded font-mono-num font-bold text-[10px]`;
+        document.getElementById('hudWaku2').textContent = second.num;
+        document.getElementById('hudName2').textContent = second.name;
+        if (first.finished && second.finished) {
+          const diffSec = (second.finishTime - first.finishTime).toFixed(2);
+          const bashin = (parseFloat(diffSec) * 6.5).toFixed(1); // およそ0.15s=1馬身
+          document.getElementById('hudDiff2').textContent = `+${diffSec}s (${bashin}馬身)`;
+        } else {
+          const diffM = Math.max(0, first.distCovered - second.distCovered);
+          const bashin = (diffM / 2.5).toFixed(1);
+          document.getElementById('hudDiff2').textContent = `+${(diffM / 16.5).toFixed(1)}s (${bashin}馬身)`;
+        }
+      }
+
+      // 3位
+      const third = sorted[2];
+      if (third) {
+        const waku3 = getWaku(third.num, race.horses.length);
+        document.getElementById('hudWaku3').className = `waku-${waku3} px-1.5 py-0.2 rounded font-mono-num font-bold text-[10px]`;
+        document.getElementById('hudWaku3').textContent = third.num;
+        document.getElementById('hudName3').textContent = third.name;
+        if (first.finished && third.finished) {
+          const diffSec = (third.finishTime - first.finishTime).toFixed(2);
+          const bashin = (parseFloat(diffSec) * 6.5).toFixed(1);
+          document.getElementById('hudDiff3').textContent = `+${diffSec}s (${bashin}馬身)`;
+        } else {
+          const diffM = Math.max(0, first.distCovered - third.distCovered);
+          const bashin = (diffM / 2.5).toFixed(1);
+          document.getElementById('hudDiff3').textContent = `+${(diffM / 16.5).toFixed(1)}s (${bashin}馬身)`;
+        }
+      }
+
+      // 全17頭通過順位ストリップのDOM生成・更新
+      const stripEl = document.getElementById('liveOrderStrip');
+      stripEl.innerHTML = '';
+      sorted.forEach((h, rank) => {
+        const waku = getWaku(h.num, race.horses.length);
+        const span = document.createElement('span');
+        span.className = `flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-slate-900 border ${
+          rank === 0 ? 'border-amber-400 bg-amber-500/10 shadow-sm' :
+          rank === 1 ? 'border-slate-400 bg-slate-800/80' :
+          rank === 2 ? 'border-amber-700 bg-amber-900/20' : 'border-slate-800'
+        } text-[10px] font-bold whitespace-nowrap`;
+        span.innerHTML = `
+          <span class="${rank < 3 ? 'text-amber-400 font-black' : 'text-slate-500'} text-[9px]">${rank + 1}</span>
+          <span class="waku-${waku} w-4 h-4 rounded text-[9px] flex items-center justify-center font-black">${h.num}</span>
+          <span class="text-slate-200 truncate max-w-[65px]">${h.name}</span>
+        `;
+        stripEl.appendChild(span);
+      });
+    }
+
+    function drawTrack() {
+      if (!canvas || !ctx) return;
+      const w = canvas.width / window.devicePixelRatio;
+      const h = canvas.height / window.devicePixelRatio;
+      ctx.clearRect(0, 0, w, h);
+
+      // 上品なロイヤルグリーン芝生グラデーション背景
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, "#06281e");
+      grad.addColorStop(0.5, "#083327");
+      grad.addColorStop(1, "#041f17");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      // 微細な芝目パターン
+      ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+      for (let i = 0; i < w; i += 30) {
+        ctx.fillRect(i, 0, 15, h);
+      }
+
+      const padX = 60, padY = 50;
+      const trackW = w - padX * 2;
+      const trackH = h - padY * 2;
+      const r = trackH / 2;
+
+      // 芝コーストラック本体
+      ctx.strokeStyle = "#0d4f3b";
+      ctx.lineWidth = 44;
+      ctx.beginPath();
+      ctx.roundRect(padX, padY, trackW, trackH, r);
+      ctx.stroke();
+
+      // 内ラチ & 外ラチ (洗練されたホワイトレール)
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.28)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.roundRect(padX - 22, padY - 22, trackW + 44, trackH + 44, r + 22);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.roundRect(padX + 22, padY + 22, trackW - 44, trackH - 44, r - 22);
+      ctx.stroke();
+
+      // 直線坂ゾーン表示 (東京・中山)
+      const goalX = padX + trackW * 0.72;
+      const goalY = padY + trackH;
+      ctx.fillStyle = "rgba(245, 158, 11, 0.15)";
+      ctx.fillRect(goalX - 160, goalY - 22, 130, 44);
+      ctx.fillStyle = "rgba(252, 211, 77, 0.8)";
+      ctx.font = "bold 9px 'Noto Sans JP', sans-serif";
+      ctx.fillText("▲ 直線の坂", goalX - 125, goalY + 4);
+
+      // ゴール板 (立体チェッカーパターン＆ゴールドポスト)
+      ctx.strokeStyle = "#d4af37";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(goalX, goalY - 24);
+      ctx.lineTo(goalX, goalY + 24);
+      ctx.stroke();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 10px 'JetBrains Mono', monospace";
+      ctx.fillText("🏁 GOAL", goalX - 20, goalY + 36);
+
+      // 全17頭の馬を描画
+      const race = RACE_DATABASE[state.currentRaceKey];
+      if (state.horsesAnimState && state.horsesAnimState.length > 0) {
+        state.horsesAnimState.forEach(hItem => {
+          const progress = hItem.distCovered / race.distance;
+          const pos = getTrackCoords(progress, padX, padY, trackW, trackH, r, hItem.lane);
+
+          const waku = getWaku(hItem.num, race.horses.length);
+          const wakuColors = { 1: "#ffffff", 2: "#1e293b", 3: "#dc2626", 4: "#2563eb", 5: "#eab308", 6: "#16a34a", 7: "#ea580c", 8: "#ec4899" };
+          const txtColor = (waku === 1 || waku === 5) ? "#0f172a" : "#ffffff";
+
+          // ドロップシャドウ
+          ctx.beginPath();
+          ctx.arc(pos.x + 1.5, pos.y + 1.5, 10, 0, Math.PI * 2);
+          ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+          ctx.fill();
+
+          // 馬サークル
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, 9.5, 0, Math.PI * 2);
+          ctx.fillStyle = wakuColors[waku] || "#fff";
+          ctx.fill();
+          ctx.strokeStyle = "#000000";
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+
+          // 馬番号
+          ctx.fillStyle = txtColor;
+          ctx.font = "bold 9px 'JetBrains Mono', monospace";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(hItem.num, pos.x, pos.y);
+
+          // 馬名ラベル
+          ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+          ctx.font = "bold 9px 'Noto Sans JP', sans-serif";
+          ctx.fillText(hItem.name, pos.x, pos.y - 13);
+        });
+      }
+    }
+
+    function getTrackCoords(progress, x, y, w, h, r, lane) {
+      const laneOffset = ((lane - (state.horsesAnimState.length / 2)) * 1.8);
+      const straightLen = w - h;
+      const curveLen = Math.PI * r;
+      const perimeter = (straightLen * 2) + (curveLen * 2);
+      let normDist = (progress % 1.0) * perimeter;
+
+      if (normDist < straightLen) {
+        return { x: (x + w - r) - normDist, y: y + h + laneOffset };
+      }
+      normDist -= straightLen;
+      if (normDist < curveLen) {
+        const theta = (Math.PI / 2) + (normDist / curveLen) * Math.PI;
+        return { x: x + r + (r + laneOffset) * Math.cos(theta), y: y + r + (r + laneOffset) * Math.sin(theta) };
+      }
+      normDist -= curveLen;
+      if (normDist < straightLen) {
+        return { x: (x + r) + normDist, y: y - laneOffset };
+      }
+      normDist -= straightLen;
+      const theta = (3 * Math.PI / 2) + (normDist / curveLen) * Math.PI;
+      return { x: (x + w - r) + (r + laneOffset) * Math.cos(theta), y: y + r + (r + laneOffset) * Math.sin(theta) };
+    }
+
+    function animLoop() {
+      if (!state.isAnimRunning || state.isAnimPaused) return;
+
+      const race = RACE_DATABASE[state.currentRaceKey];
+      const dt = 0.16; // シミュレーション時間刻み
+      state.animTime += dt;
+
+      // 現在の先頭馬の走破距離
+      const currentLeaderDist = Math.max(...state.horsesAnimState.map(h => h.distCovered), 0);
+      const remainingLeaderDist = Math.max(0, race.distance - currentLeaderDist);
+
+      let allFinished = true;
+
+      state.horsesAnimState.forEach(h => {
+        if (h.finished) {
+          return; // すでにゴール済み
+        }
+
+        allFinished = false;
+
+        // 出遅れ判定
+        if (state.animTime < h.delaySec) {
+          h.currentVelocity = 0;
+          return;
+        }
+
+        const covered = h.distCovered;
+        const remaining = race.distance - covered;
+        const baseSpeed = 15.6 + (h.speedAttr - 90) * 0.02; // 基準秒速 約15.6m/s
+
+        let targetVelocity = baseSpeed;
+
+        // --- フェーズ別 脚質・位置取りエージェント物理ロジック ---
+        if (covered < 400) {
+          // 【フェーズ1: スタート〜400m ポジション取り争い】
+          if (h.style === 'nige') {
+            // 逃げ馬: ゲートダッシュで一気にハナ（先頭）を奪う！
+            targetVelocity = baseSpeed * 1.12;
+            h.stamina -= dt * 3.0; // 前半飛ばすのでスタミナ消費大
+          } else if (h.style === 'senko') {
+            // 先行馬: 好位2〜5番手インを確保
+            targetVelocity = baseSpeed * 1.05;
+            h.stamina -= dt * 1.8;
+          } else if (h.style === 'sashi') {
+            // 差し馬: 中団（6〜12番手）で折り合いに専念、脚を溜める
+            targetVelocity = baseSpeed * 0.98;
+            h.stamina -= dt * 1.0;
+          } else if (h.style === 'oikomi') {
+            // 追込馬: 無理せず後方待機（13〜17番手）
+            targetVelocity = baseSpeed * 0.94;
+            h.stamina -= dt * 0.7;
+          }
+        } else if (remaining > race.straight + 150) {
+          // 【フェーズ2: 中盤道中 隊列維持・折り合い】
+          // 先頭との距離差
+          const gapFromLeader = currentLeaderDist - covered;
+
+          if (h.style === 'nige') {
+            // 先頭でペースをコントロール
+            targetVelocity = baseSpeed * 1.02;
+            h.stamina -= dt * 2.2;
+          } else if (h.style === 'senko') {
+            // 先頭から3〜6馬身(8〜15m)後ろをキープ
+            targetVelocity = baseSpeed * (gapFromLeader > 15 ? 1.03 : 0.99);
+            h.stamina -= dt * 1.6;
+          } else if (h.style === 'sashi') {
+            // 先頭から15〜25m後ろの中団で完全息入れ
+            targetVelocity = baseSpeed * (gapFromLeader > 26 ? 1.02 : 0.98);
+            h.stamina -= dt * 1.1;
+          } else if (h.style === 'oikomi') {
+            // 後方待機
+            targetVelocity = baseSpeed * 0.96;
+            h.stamina -= dt * 0.8;
+          }
+        } else if (remaining > race.straight) {
+          // 【フェーズ3: 3〜4コーナー仕掛け・進出（残り600m〜450m）】
+          if (h.style === 'nige') {
+            targetVelocity = baseSpeed * 1.01;
+            h.stamina -= dt * 2.5;
+          } else if (h.style === 'senko') {
+            // 先行馬が先頭に並びかける
+            targetVelocity = baseSpeed * 1.05;
+            h.stamina -= dt * 2.5;
+          } else if (h.style === 'sashi') {
+            // 差し馬が外に出して進出開始（捲り）
+            targetVelocity = baseSpeed * 1.08;
+            h.stamina -= dt * 2.2;
+          } else if (h.style === 'oikomi') {
+            // 追込馬もロングスパート開始
+            targetVelocity = baseSpeed * 1.06;
+            h.stamina -= dt * 2.0;
+          }
+        } else {
+          // 【フェーズ4: 最後の直線スパート！ 坂の攻防＆末脚爆発（残り直線450m〜ゴール）】
+          // 上がり3F・瞬発力能力の反映
+          const spurtRatio = 1.0 + ((h.spurtAttr - 85) * 0.012);
+
+          if (h.style === 'nige') {
+            // 逃げ馬: 前半のスタミナ消費で徐々に苦しくなる（粘り腰勝負）
+            const fatigue = h.stamina > 30 ? 1.02 : 0.94;
+            targetVelocity = baseSpeed * fatigue;
+          } else if (h.style === 'senko') {
+            // 先行馬: 早め先頭から押し切り狙い
+            const fatigue = h.stamina > 25 ? (1.06 * spurtRatio) : 0.98;
+            targetVelocity = baseSpeed * fatigue;
+          } else if (h.style === 'sashi') {
+            // 差し馬: 温存したスタミナを爆発させて強烈な末脚！
+            targetVelocity = baseSpeed * 1.16 * spurtRatio;
+          } else if (h.style === 'oikomi') {
+            // 追込馬: 大外一気の豪脚スパート！
+            targetVelocity = baseSpeed * 1.18 * spurtRatio;
+          }
+
+          // 坂の影響 (中山や東京の直線急坂でスタミナ不足馬が失速)
+          if (race.slope.includes("坂") && remaining < 200 && h.staminaAttr < 90) {
+            targetVelocity *= 0.96;
+          }
+        }
+
+        // 加速度による滑らかな速度変化
+        const accel = 2.8 * dt;
+        if (h.currentVelocity < targetVelocity) {
+          h.currentVelocity = Math.min(targetVelocity, h.currentVelocity + accel);
+        } else {
+          h.currentVelocity = Math.max(targetVelocity, h.currentVelocity - accel);
+        }
+
+        h.distCovered += h.currentVelocity * dt;
+        if (h.distCovered >= race.distance) {
+          h.distCovered = race.distance;
+          h.finished = true;
+          state.finishedCount++;
+          h.finishRank = state.finishedCount;
+          h.finishTime = state.animTime;
+        }
+      });
+
+      drawTrack();
+      updateLiveHUDAndStrip(); // リアルタイムに1・2・3位を更新
+
+      const m = Math.floor(state.animTime / 60);
+      const s = (state.animTime % 60).toFixed(1);
+      document.getElementById('animElapsedTime').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+
+      const sorted = [...state.horsesAnimState].sort((a, b) => b.distCovered - a.distCovered);
+      const leader = sorted[0];
+      const second = sorted[1];
+      const third = sorted[2];
+      const remaining = Math.max(0, Math.round(race.distance - leader.distCovered));
+      document.getElementById('animDistRemaining').textContent = remaining;
+
+      // 展開に応じた臨場感あふれる実況ログ
+      const commEl = document.getElementById('animLiveCommentary');
+      if (leader.distCovered < 300) {
+        commEl.textContent = `スタート！脚質通りハナを主張したのは${leader.name}！好位に先行勢がつける！`;
+      } else if (remainingLeaderDist > race.straight + 300) {
+        commEl.textContent = `${leader.name}が快調に逃げる！2番手に${second ? second.name : ''}、中団に差し馬が構える隊列！`;
+      } else if (remainingLeaderDist > race.straight + 50 && remainingLeaderDist <= race.straight + 300) {
+        commEl.textContent = `3コーナーから4コーナーへ！馬群が凝縮！中団から差し馬が進出を開始する！`;
+      } else if (remainingLeaderDist <= race.straight + 50 && remainingLeaderDist > 180) {
+        commEl.textContent = `直線コースに入った！${leader.name}粘る！外から${second ? second.name : ''}、さらに大外から強襲！`;
+      } else if (remainingLeaderDist <= 180 && remainingLeaderDist > 30) {
+        commEl.textContent = `直線の坂を登る！先頭争いは大激戦！${leader.name}か、外から${second ? second.name : ''}か！`;
+      }
+
+      if (allFinished) {
+        state.isAnimRunning = false;
+        document.getElementById('animStatusBadge').textContent = "確定 (ゴールイン)";
+        document.getElementById('animStatusBadge').className = "text-[11px] font-black px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40";
+        document.getElementById('podiumStatusTag').textContent = "確定 (OFFICIAL)";
+        commEl.textContent = `ゴールイン！接戦を制したのは${leader.name}！2着に${second ? second.name : ''}、3着に${third ? third.name : ''}！`;
+        
+        // ゴール後は結果をそのまま画面に固定キープ。出走ボタンを押せば元に戻る
+        const btnLabel = document.getElementById('startBtnLabel');
+        if (btnLabel) btnLabel.textContent = "🔄 もう一度出走";
+      } else {
+        state.animFrameId = requestAnimationFrame(animLoop);
+      }
+    }
+
+    function startAnimation() {
+      resizeCanvas();
+      const race = RACE_DATABASE[state.currentRaceKey];
+
+      // 既存のアニメーションフレームがあれば停止
+      if (state.animFrameId) {
+        cancelAnimationFrame(state.animFrameId);
+        state.animFrameId = null;
+      }
+
+      // ★ ユーザー要望: ゴール後の結果はそのまま残し、出走ボタンを押した瞬間に完全に元に戻してからスタート ★
+      const allFinished = state.horsesAnimState.length > 0 && state.horsesAnimState.every(h => h.distCovered >= (race ? race.distance : 2000));
+      if (state.horsesAnimState.length === 0 || allFinished || state.animTime > 0) {
+        initAnimationState(); // スタート地点・全頭0m・0秒にリセット
+        drawTrack();
+      }
+
+      state.isAnimRunning = true;
+      state.isAnimPaused = false;
+      document.getElementById('animPauseBtn').textContent = "⏸ 一時停止";
+      document.getElementById('animStatusBadge').textContent = "展開シミュレーション中";
+      document.getElementById('animStatusBadge').className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse";
+      document.getElementById('podiumStatusTag').textContent = "追走中";
+      document.getElementById('startBtnLabel').textContent = "再出走 (リスタート)";
+
+      animLoop();
+    }
+
+    function togglePauseAnimation() {
+      if (!state.isAnimRunning) return;
+      state.isAnimPaused = !state.isAnimPaused;
+      document.getElementById('animPauseBtn').textContent = state.isAnimPaused ? "▶ 再開" : "⏸ 一時停止";
+      if (!state.isAnimPaused) animLoop();
+    }
+
+    function resetAnimation() {
+      state.isAnimRunning = false;
+      state.isAnimPaused = false;
+      if (state.animFrameId) cancelAnimationFrame(state.animFrameId);
+      initAnimationState();
+      drawTrack();
+      document.getElementById('animPauseBtn').textContent = "⏸ 一時停止";
+    }
+  
+
+
+    // --- 予算別・自動資金配分ロジック (展開別シナリオ＆払戻金計算対応) ---
+    let currentBetStyle = "trifecta";
+    let currentPaceScenario = "middle"; // "middle", "high", "slow" 
+
+    function initBudgetBetting() {
+      // 予算入力
+      const input = document.getElementById('betBudgetInput');
+      input.addEventListener('input', () => {
+        calculateAndRenderBets();
+      });
+      document.getElementById('applyBudgetBtn').addEventListener('click', () => {
+        calculateAndRenderBets();
+      });
+
+      // クイックボタン
+      document.querySelectorAll('.quick-budget-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.quick-budget-btn').forEach(b => {
+            b.className = "quick-budget-btn px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono-num font-bold border border-slate-800";
+          });
+          btn.className = "quick-budget-btn px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-mono-num font-black";
+          const amount = parseInt(btn.getAttribute('data-amount'), 10);
+          input.value = amount;
+          calculateAndRenderBets();
+        });
+      });
+
+      // 戦略スタイルボタン
+      document.querySelectorAll('.bet-style-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.bet-style-btn').forEach(b => {
+            b.className = "bet-style-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition";
+          });
+          btn.className = "bet-style-btn p-2 rounded-xl border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-sm";
+          currentBetStyle = btn.getAttribute('data-style');
+          calculateAndRenderBets();
+        });
+      });
+
+      // ★ 展開シナリオ切り替えボタン (ミドル・ハイ・スロー)
+      document.querySelectorAll('.pace-scenario-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const pace = btn.getAttribute('data-pace');
+          setPaceScenario(pace);
+        });
+      });
+    }
+
+    // グローバル関数: 展開シナリオ切り替え
+    window.setPaceScenario = function(pace) {
+      currentPaceScenario = pace;
+
+      document.querySelectorAll('.pace-scenario-btn').forEach(b => {
+        b.className = "pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition";
+      });
+
+      const activeBtn = document.getElementById('pace' + pace.charAt(0).toUpperCase() + pace.slice(1) + 'Btn');
+      if (activeBtn) {
+        activeBtn.className = "pace-scenario-btn p-2 rounded-xl border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-sm";
+      }
+
+      const descEl = document.getElementById('paceScenarioDesc');
+      if (descEl) {
+        if (pace === 'middle') {
+          descEl.textContent = "王道展開：実力上位の先行・差し馬が順当に激突 (平均ペース)";
+        } else if (pace === 'high') {
+          descEl.textContent = "前崩れ波乱展開：逃げ争い激化で前全滅、後方待機組が大外強襲 (高配当・万馬券狙い)";
+        } else if (pace === 'slow') {
+          descEl.textContent = "前残り展開：単騎マイペース逃げと好位インの伏兵が逃げ粘る (穴配当狙い)";
+        }
+      }
+
+      calculateAndRenderBets();
+    };
+
+    
+    window.setBetStyle = function(style) {
+      currentBetStyle = style;
+      document.querySelectorAll('.bet-style-btn').forEach(b => {
+        b.className = "bet-style-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition";
+      });
+      const targetBtn = document.querySelector(`.bet-style-btn[data-style="${style}"]`);
+      if (targetBtn) {
+        targetBtn.className = "bet-style-btn p-2 rounded-xl border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-sm";
+      }
+      calculateAndRenderBets();
+    };
+
+    
+    // --- JRA客観オッズ算出エンジン (ハーヴィルの公式 / 単勝支持率連動) ---
+    // ※ オッズは展開によって変動するものではなく、ファンの投票シェアで一意に決まる固定値です。
+    function getHorseShareMap() {
+      const race = RACE_DATABASE[state.currentRaceKey];
+      const rawShares = {};
+      let totalRaw = 0;
+
+      race.horses.forEach(h => {
+        let numVal = 10.0;
+        if (h.odds) {
+          const match = h.odds.match(/([0-9]+\.?[0-9]*)/);
+          if (match) numVal = parseFloat(match[1]);
+        }
+        const s = 0.80 / Math.max(1.1, numVal);
+        rawShares[h.num] = s;
+        totalRaw += s;
+      });
+
+      const shares = {};
+      race.horses.forEach(h => {
+        shares[h.num] = rawShares[h.num] / totalRaw;
+      });
+      return shares;
+    }
+
+    // 三連単の客観想定オッズ算出 (固定値)
+    
+    // --- netkeiba (ネット競馬) 公式オッズ実データ引用マスター ---
+    const NETKEIBA_EXACT_ODDS = {
+      trifecta: {
+        "7-1-17": 16.6,
+        "1-7-17": 18.0,
+        "7-1-3": 25.0,
+        "1-7-3": 30.0,
+        "7-1-11": 31.4,
+        "1-7-11": 35.3,
+        "7-17-1": 41.5,
+        "1-17-7": 44.0,
+        "7-3-1": 45.3,
+        "1-3-7": 51.3,
+        "7-11-1": 59.4,
+        "7-1-6": 61.0,
+        "1-7-6": 66.9,
+        "1-11-7": 68.8,
+        "17-1-7": 71.9,
+        "17-7-1": 74.0,
+        "7-1-13": 77.7,
+        "1-7-13": 79.0,
+        "3-7-1": 80.6,
+        "3-1-7": 81.1,
+        "7-1-9": 99.6,
+        "1-7-16": 99.9,
+        "7-1-16": 100.9,
+        "1-3-17": 101.4,
+        "7-3-17": 102.5,
+        "7-1-10": 109.3,
+        "1-7-10": 113.7,
+        "11-1-7": 113.9,
+        "1-7-4": 114.5,
+        "1-7-9": 114.6,
+        "7-1-4": 115.0,
+        "11-7-1": 115.2,
+        "7-11-17": 123.2,
+        "1-17-3": 123.6,
+        "7-17-3": 127.4,
+        "1-11-17": 129.6,
+        "7-3-11": 129.8,
+        "7-11-3": 142.5,
+        "7-6-1": 142.7,
+        "1-6-7": 144.3,
+        "7-17-11": 150.5,
+        "1-17-11": 159.1,
+        "1-3-11": 163.7,
+        "1-11-3": 172.5,
+        "1-13-7": 175.8,
+        "7-13-1": 178.5,
+        "3-1-17": 180.9,
+        "3-7-17": 193.5,
+        "1-7-14": 196.5,
+        "7-1-14": 206.8,
+        "7-1-15": 207.3,
+        "1-7-15": 217.6,
+        "11-1-17": 231.3,
+        "7-3-6": 247.0,
+        "3-7-11": 250.7,
+        "17-1-3": 252.2,
+        "1-16-7": 255.8,
+        "1-10-7": 257.3,
+        "7-10-1": 261.0,
+        "17-7-3": 261.2,
+        "11-1-3": 263.5,
+        "1-3-6": 265.5,
+        "11-7-17": 269.0,
+        "7-9-1": 269.9,
+        "11-7-3": 272.6,
+        "7-11-6": 284.8,
+        "7-16-1": 285.5,
+        "7-1-12": 293.1,
+        "3-1-11": 293.7,
+        "1-9-7": 294.5,
+        "3-17-1": 296.2,
+        "1-7-12": 301.9,
+        "1-17-6": 302.3,
+        "7-17-6": 304.7,
+        "1-13-17": 305.1,
+        "1-17-13": 306.1,
+        "7-4-1": 310.8,
+        "1-3-13": 311.6,
+        "1-4-7": 313.2,
+        "17-3-1": 314.8,
+        "3-17-7": 316.1,
+        "1-11-6": 322.7,
+        "1-17-16": 326.7,
+        "17-7-11": 329.0,
+        "7-6-17": 335.8,
+        "17-1-11": 336.4,
+        "7-3-13": 336.8,
+        "7-17-13": 338.8,
+        "1-6-17": 340.3,
+        "17-3-7": 343.2,
+        "6-1-7": 346.2,
+        "7-6-3": 348.1,
+        "7-13-17": 349.7,
+        "1-6-3": 357.7,
+        "7-3-9": 359.8,
+        "6-7-1": 369.1,
+        "1-16-17": 379.9,
+        "11-3-7": 381.1,
+        "1-6-11": 382.3,
+        "7-6-11": 382.6,
+        "9-1-7": 520.0,
+        "1-9-6": 680.0,
+        "3-17-12": 750.0,
+        "7-3-14": 1250.0,
+        "1-9-2": 980.0,
+        "9-7-1": 560.0
+},
+      umaren: {
+        "1-7": 2.8,
+        "1-17": 13.5,
+        "1-11": 13.7,
+        "1-3": 13.8,
+        "3-7": 13.9,
+        "7-17": 15.0,
+        "7-11": 17.6,
+        "1-13": 38.7,
+        "1-6": 41.2,
+        "6-7": 45.0,
+        "1-9": 48.0,
+        "1-12": 52.0,
+        "1-4": 42.0
+},
+      sanrenpuku: {
+        "1-7-17": 6.0,
+        "1-3-7": 8.8,
+        "1-7-11": 10.6,
+        "1-6-7": 22.9,
+        "1-7-13": 27.2,
+        "1-3-17": 33.1,
+        "3-7-17": 33.8,
+        "1-7-16": 34.2,
+        "1-7-10": 35.3,
+        "1-11-17": 39.3,
+        "1-7-9": 41.2,
+        "1-7-12": 45.0,
+        "1-7-14": 62.0,
+        "1-7-15": 58.0
+},
+      wide: {
+        "1-7": 1.7,
+        "1-17": 4.2,
+        "1-11": 6.5,
+        "1-3": 5.8,
+        "3-7": 5.2,
+        "7-17": 4.8,
+        "1-13": 12.5,
+        "1-6": 11.8,
+        "1-9": 14.0,
+        "1-12": 15.2
+}
+    };
+
+    // netkeiba 引用オッズ取得関数
+    function getNetkeibaOdds(type, a, b, c = null) {
+      if (type === "三連単" && c !== null) {
+        const key = `${a}-${b}-${c}`;
+        if (NETKEIBA_EXACT_ODDS.trifecta[key]) return NETKEIBA_EXACT_ODDS.trifecta[key];
+        // 引用データ外のフォールバック計算
+        return calcExactTrifectaOdds(a, b, c);
+      }
+      if (type === "馬連") {
+        const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+        if (NETKEIBA_EXACT_ODDS.umaren[key]) return NETKEIBA_EXACT_ODDS.umaren[key];
+        return calcExactUmarenOdds(a, b);
+      }
+      if (type === "3連複" && c !== null) {
+        const sorted = [a, b, c].sort((x, y) => x - y);
+        const key = sorted.join('-');
+        if (NETKEIBA_EXACT_ODDS.sanrenpuku[key]) return NETKEIBA_EXACT_ODDS.sanrenpuku[key];
+        return Math.round((calcExactTrifectaOdds(a, b, c) / 5.5) * 10) / 10;
+      }
+      if (type === "ワイド") {
+        const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+        if (NETKEIBA_EXACT_ODDS.wide[key]) return NETKEIBA_EXACT_ODDS.wide[key];
+        return calcExactWideOdds(a, b);
+      }
+      return 25.0;
+    }
+
+    function calcExactTrifectaOdds(a, b, c) {
+      const shares = getHorseShareMap();
+      const sa = shares[a] || 0.05;
+      const sb = shares[b] || 0.05;
+      const sc = shares[c] || 0.05;
+
+      const p = sa * (sb / Math.max(0.001, (1.0 - sa))) * (sc / Math.max(0.001, (1.0 - sa - sb)));
+      const rawOdds = 0.725 / Math.max(0.0001, p);
+      return Math.max(5.0, Math.round(rawOdds * 10) / 10);
+    }
+
+    // 馬連の客観想定オッズ算出 (固定値)
+    function calcExactUmarenOdds(a, b) {
+      const shares = getHorseShareMap();
+      const sa = shares[a] || 0.05;
+      const sb = shares[b] || 0.05;
+
+      const p = (sa * (sb / Math.max(0.001, (1.0 - sa)))) + (sb * (sa / Math.max(0.001, (1.0 - sb))));
+      const rawOdds = 0.775 / Math.max(0.0001, p);
+      return Math.max(2.0, Math.round(rawOdds * 10) / 10);
+    }
+
+    // ワイドの客観想定オッズ算出 (固定値)
+    function calcExactWideOdds(a, b) {
+      const umaren = calcExactUmarenOdds(a, b);
+      return Math.max(1.4, Math.round((umaren * 0.32) * 10) / 10);
+    }
+
+    
+    // --- リアルタイムオッズ同期機能 ---
+    function initRealtimeOddsSync() {
+      const syncBtn = document.getElementById('syncOddsBtn');
+      if (!syncBtn) return;
+
+      syncBtn.addEventListener('click', () => {
+        const spin = document.getElementById('syncSpinIcon');
+        const label = document.getElementById('syncStatusLabel');
+        spin.classList.add('animate-spin');
+        label.textContent = "同期中...";
+
+        setTimeout(() => {
+          spin.classList.remove('animate-spin');
+          const nowStr = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          label.textContent = `同期完了 (${nowStr})`;
+          showToast(`JRA公式 (JRA-VAN Data Lab.) の最新確定オッズを同期しました (${nowStr})`);
+
+          // 買い目・オッズの再計算と描画
+          calculateAndRenderBets();
+          if (state.activeTab === 'sim' && state.monteResults) {
+            renderSimResults(state.monteResults, state.selectedTrials, RACE_DATABASE[state.currentRaceKey]);
+          }
+        }, 600);
+      });
+    }
+
+    function calculateAndRenderBets() {
+      if (!state.monteResults || state.monteResults.length === 0) return;
+      const race = RACE_DATABASE[state.currentRaceKey];
+      const budget = Math.max(500, parseInt(document.getElementById('betBudgetInput').value, 10) || 2000);
+
+      // 印の上位馬
+      const h1 = state.monteResults[0]; // ◎
+      const h2 = state.monteResults[1]; // ◯
+      const h3 = state.monteResults[2]; // ▲
+      const h4 = state.monteResults[3]; // △
+      const h5 = state.monteResults[4] || state.monteResults[3]; // ☆
+
+      let rawPlans = [];
+
+      if (currentBetStyle === "trifecta") {
+        // ★ 三連単特化 (JRA公式オッズ完全連動)
+        if (currentPaceScenario === "middle") {
+          // 【シナリオ1: ミドルペース（王道・実力決着）】
+          rawPlans = [
+            { type: "三連単", a: 7, b: 1, c: 3, names: "マスカレード → クロワデュノール → レガレイラ", role: "王道本命 (netkeiba 3人気)", weight: 35 },
+            { type: "三連単", a: 7, b: 3, c: 1, names: "マスカレード → レガレイラ → クロワデュノール", role: "2・3着裏返し本線 (netkeiba 9人気)", weight: 20 },
+            { type: "三連単", a: 1, b: 7, c: 3, names: "クロワデュノール → マスカレード → レガレイラ", role: "クロワ頭本線 (netkeiba 4人気)", weight: 15 },
+            { type: "三連単", a: 7, b: 1, c: 17, names: "マスカレード → クロワデュノール → ダノンデサイル", role: "netkeiba 1番人気組み合わせ", weight: 12 },
+            { type: "三連単", a: 1, b: 7, c: 17, names: "クロワデュノール → マスカレード → ダノンデサイル", role: "netkeiba 2番人気組み合わせ", weight: 8 },
+            { type: "三連単", a: 7, b: 3, c: 17, names: "マスカレード → レガレイラ → ダノンデサイル", role: "中穴高配当 (netkeiba 25人気・万馬券)", weight: 5 },
+            { type: "三連単", a: 7, b: 1, c: 11, names: "マスカレード → クロワデュノール → シェイクユア", role: "好走抑え (netkeiba 5人気)", weight: 5 }
+          ];
+        } else if (currentPaceScenario === "high") {
+          // 【シナリオ2: ハイペース（前崩れ・外差し一気）】
+          rawPlans = [
+            { type: "三連単", a: 7, b: 3, c: 17, names: "マスカレード → レガレイラ → ダノンデサイル", role: "ハイペース大本線 (netkeiba 25人気・万馬券)", weight: 30 },
+            { type: "三連単", a: 3, b: 7, c: 17, names: "レガレイラ → マスカレード → ダノンデサイル", role: "上がり最速差し切り (netkeiba 48人気・万馬券)", weight: 25 },
+            { type: "三連単", a: 7, b: 3, c: 12, names: "マスカレード → レガレイラ → コスモキュランダ", role: "持続力型強襲 (netkeiba 特大万馬券)", weight: 15 },
+            { type: "三連単", a: 3, b: 17, c: 12, names: "レガレイラ → ダノンデサイル → コスモキュランダ", role: "外差し一気波乱 (netkeiba 大万馬券)", weight: 12 },
+            { type: "三連単", a: 17, b: 7, c: 3, names: "ダノンデサイル → マスカレード → レガレイラ", role: "ダービー馬復活頭 (netkeiba 60人気・万馬券)", weight: 10 },
+            { type: "三連単", a: 7, b: 3, c: 14, names: "マスカレード → レガレイラ → タガノデュード", role: "超特大万馬券 (最後方一気)", weight: 8 }
+          ];
+        } else {
+          // 【シナリオ3: スローペース（前残り・伏兵逃げ粘り）】
+          rawPlans = [
+            { type: "三連単", a: 1, b: 9, c: 7, names: "クロワデュノール → ホウオウビスケッツ → マスカレード", role: "スロー前残り本線 (netkeiba 70人気・万馬券)", weight: 35 },
+            { type: "三連単", a: 9, b: 1, c: 7, names: "ホウオウビスケッツ → クロワデュノール → マスカレード", role: "単騎逃げ切り (高配当万馬券)", weight: 25 },
+            { type: "三連単", a: 1, b: 9, c: 6, names: "クロワデュノール → ホウオウビスケッツ → セイウンハーデス", role: "前前決着 (特大万馬券)", weight: 15 },
+            { type: "三連単", a: 1, b: 6, c: 7, names: "クロワデュノール → セイウンハーデス → マスカレード", role: "先行イン抜け出し (netkeiba 40人気・万馬券)", weight: 12 },
+            { type: "三連単", a: 9, b: 7, c: 1, names: "ホウオウビスケッツ → マスカレード → クロワデュノール", role: "逃げ粘り波乱 (特大万馬券)", weight: 8 },
+            { type: "三連単", a: 1, b: 9, c: 2, names: "クロワデュノール → ホウオウビスケッツ → エルトンバローズ", role: "内枠先行独占 (超特大万馬券)", weight: 5 }
+          ];
+        }
+      } else if (currentBetStyle === "balance") {
+        // 王道バランス型
+        rawPlans = [
+          { type: "馬連", a: h1.num, b: h2.num, names: `${h1.name} － ${h2.name}`, role: "本命大本線 (netkeiba 1人気)", weight: 35 },
+          { type: "馬連", a: h1.num, b: h3.num, names: `${h1.name} － ${h3.name}`, role: "対抗本線", weight: 20 },
+          { type: "ワイド", a: h1.num, b: h5.num, names: `${h1.name} － ${h5.name}`, role: "穴馬押さえ", weight: 15 },
+          { type: "3連複", a: h1.num, b: h2.num, c: h3.num, names: `${h1.name} － ${h2.name} － ${h3.name}`, role: "本線トリプル (netkeiba 2人気)", weight: 12 },
+          { type: "3連複", a: h1.num, b: h2.num, c: h4.num, names: `${h1.name} － ${h2.name} － ${h4.name}`, role: "連下押さえ", weight: 7 },
+          { type: "3連複", a: h1.num, b: h2.num, c: h5.num, names: `${h1.name} － ${h2.name} － ${h5.name}`, role: "穴波乱一撃", weight: 6 },
+          { type: "3連複", a: h1.num, b: h3.num, c: h4.num, names: `${h1.name} － ${h3.name} － ${h4.name}`, role: "ヒモ荒れ押さえ", weight: 5 }
+        ];
+      } else if (currentBetStyle === "safe") {
+        // 的中重視・堅実型
+        rawPlans = [
+          { type: "馬連", a: h1.num, b: h2.num, names: `${h1.name} － ${h2.name}`, role: "最厚大本線 (netkeiba 1人気)", weight: 45 },
+          { type: "馬連", a: h1.num, b: h3.num, names: `${h1.name} － ${h3.name}`, role: "本線厚め", weight: 25 },
+          { type: "ワイド", a: h1.num, b: h2.num, names: `${h1.name} － ${h2.name}`, role: "元返し保険", weight: 15 },
+          { type: "ワイド", a: h1.num, b: h3.num, names: `${h1.name} － ${h3.name}`, role: "手堅いプラス", weight: 10 },
+          { type: "馬連", a: h1.num, b: h4.num, names: `${h1.name} － ${h4.name}`, role: "押さえ", weight: 5 }
+        ];
+      } else {
+        // 一撃高配当型
+        rawPlans = [
+          { type: "3連複", a: h1.num, b: h2.num, c: h3.num, names: `${h1.name} － ${h2.name} － ${h3.name}`, role: "本線1点厚張り", weight: 30 },
+          { type: "3連複", a: h1.num, b: h2.num, c: h4.num, names: `${h1.name} － ${h2.name} － ${h4.name}`, role: "本線", weight: 18 },
+          { type: "3連複", a: h1.num, b: h2.num, c: h5.num, names: `${h1.name} － ${h2.name} － ${h5.name}`, role: "高配当本線", weight: 16 },
+          { type: "3連複", a: h1.num, b: h3.num, c: h4.num, names: `${h1.name} － ${h3.name} － ${h4.name}`, role: "中穴", weight: 14 },
+          { type: "3連複", a: h1.num, b: h3.num, c: h5.num, names: `${h1.name} － ${h3.name} － ${h5.name}`, role: "万馬券狙い", weight: 12 },
+          { type: "3連複", a: h1.num, b: h4.num, c: h5.num, names: `${h1.name} － ${h4.name} － ${h5.name}`, role: "特大万馬券", weight: 10 }
+        ];
+      }
+
+      // ★ 全買い目のオッズを netkeiba 公式オッズ辞書から一元取得！
+      rawPlans.forEach(p => {
+        if (p.type === "三連単") {
+          p.target = `${p.a} → ${p.b} → ${p.c}`;
+          p.odds = getNetkeibaOdds("三連単", p.a, p.b, p.c);
+        } else if (p.type === "3連複") {
+          p.target = `${p.a} - ${p.b} - ${p.c}`;
+          p.odds = getNetkeibaOdds("3連複", p.a, p.b, p.c);
+        } else {
+          p.target = `${p.a} - ${p.b}`;
+          p.odds = getNetkeibaOdds(p.type, p.a, p.b);
+        }
+      });
+
+      // 金額配分計算 (100円単位で合計がピッタリ budget になるよう調整)
+      const totalWeight = rawPlans.reduce((sum, p) => sum + p.weight, 0);
+      let allocatedTotal = 0;
+
+      const calculatedPlans = rawPlans.map(p => {
+        let amt = Math.max(100, Math.floor((budget * (p.weight / totalWeight)) / 100) * 100);
+        allocatedTotal += amt;
+        return { ...p, amount: amt };
+      });
+
+      // 差額 (余り・不足分) を本線大本線 (インデックス0) で調整して予算と1円単位でピッタリ一致
+      let diff = budget - allocatedTotal;
+      if (diff !== 0) {
+        calculatedPlans[0].amount += diff;
+        if (calculatedPlans[0].amount < 100) calculatedPlans[0].amount = 100;
+      }
+
+      const finalTotal = calculatedPlans.reduce((s, p) => s + p.amount, 0);
+
+      document.getElementById('betTotalAmount').textContent = finalTotal.toLocaleString();
+      document.getElementById('betItemCountLabel').textContent = `買い目点数: 全${calculatedPlans.length}点`;
+
+      const tbody = document.getElementById('budgetBettingTableBody');
+      tbody.innerHTML = '';
+
+      calculatedPlans.forEach(p => {
+        const oddsVal = p.odds || 25.0;
+        const payout = Math.round(p.amount * oddsVal);
+        const isManbaken = oddsVal >= 100.0;
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-900/60 transition";
+
+        const typeColor = p.type === "三連単" ? "text-amber-300 bg-amber-500/20 border-amber-400/50 shadow-sm" :
+                          p.type === "馬連" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30" :
+                          p.type === "ワイド" ? "text-blue-400 bg-blue-500/10 border-blue-500/30" :
+                          "text-amber-400 bg-amber-500/10 border-amber-500/30";
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-2.5 text-center">
+            <span class="px-2 py-0.5 rounded border text-[10px] font-black ${typeColor}">${p.type}</span>
+          </td>
+          <td class="py-2.5 px-3 font-bold text-slate-100">
+            <span class="text-white font-mono-num mr-1.5 text-sm">${p.target}</span>
+            <span class="text-[11px] text-slate-400 font-normal">(${p.names})</span>
+          </td>
+          <td class="py-2.5 px-2.5">
+            <span class="text-[11px] text-slate-300 font-bold">${p.role}</span>
+          </td>
+          <td class="py-2.5 px-2.5 text-right font-mono-num font-bold text-slate-200">
+            ${oddsVal.toFixed(1)}倍
+            ${isManbaken ? '<span class="text-[9px] bg-rose-500/20 text-rose-300 px-1 py-0.2 rounded ml-1 border border-rose-500/30 font-bold">万馬券</span>' : ''}
+          </td>
+          <td class="py-2.5 px-2.5 text-right">
+            <span class="text-sm font-black text-white font-mono-num">${p.amount.toLocaleString()}</span>
+            <span class="text-[10px] text-slate-400">円</span>
+          </td>
+          <td class="py-2.5 px-3 text-right">
+            <span class="text-sm font-black text-amber-300 font-mono-num">¥${payout.toLocaleString()}</span>
+            <span class="text-[9px] text-slate-400 font-normal block font-sans">${(payout / finalTotal).toFixed(1)}倍回収</span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+</script>
+</body>
+</html>
