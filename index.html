@@ -802,24 +802,6 @@
       initEventListeners();
       loadRace("tenno_aki_2026");
       runMonteCarloSimulation(1000);
-
-      // ★ 外部自動更新データ (data/latest_race.json) の自動フェッチ ★
-      fetch('data/latest_race.json')
-        .then(res => res.json())
-        .then(latestData => {
-          if (latestData && latestData.horses && latestData.horses.length > 0) {
-            console.log("外部最新レースデータを自動同期しました:", latestData.name);
-            RACE_DATABASE.tenno_aki_2026 = latestData;
-            loadRace("tenno_aki_2026");
-            runMonteCarloSimulation(state.selectedTrials);
-            const badge = document.getElementById('syncStatusLabel');
-            if (badge) badge.textContent = `自動同期済 (${latestData.last_updated ? latestData.last_updated.slice(11, 16) : '最新'})`;
-          }
-        })
-        .catch(err => {
-          console.log("ローカル内蔵データを使用します:", err);
-        });
-
       initCanvas();
       initBudgetBetting();
       initRealtimeOddsSync();
@@ -1081,21 +1063,44 @@
         card.innerHTML = `
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
             <div class="flex items-center gap-3">
-              <span class="waku-${waku} w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs font-mono-num shadow-sm">${h.num}</span>
+              <span class="waku-${waku} w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm font-mono-num shadow-md">${h.num}</span>
               <div>
                 <div class="flex items-center gap-2 flex-wrap">
                   <h3 class="text-sm font-black text-white">${h.name}</h3>
                   <span class="text-[11px] text-slate-400 font-mono-num">${h.sexAge || ''} / ${h.weight || 58}kg</span>
-                  <span class="text-[11px] text-emerald-300 font-bold">${h.jockey ? `騎手: ${h.jockey}` : ''}</span>
-                  <span class="text-[11px] text-slate-400">${h.trainer ? `(${h.trainer})` : ''}</span>
                   <span class="px-2 py-0.5 rounded-full border text-[10px] font-extrabold ${styleBadges[h.style]}">${styleNames[h.style]}</span>
+                  <span class="text-[11px] bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 px-2.5 py-0.5 rounded-full font-bold">騎手: ${h.jockey || '未定'} [ランク ${h.jockeyRank || 'A'}]</span>
                 </div>
               </div>
             </div>
             <div class="flex items-center gap-3 text-xs font-mono-num">
-              <span class="text-amber-400 font-black">${h.odds || ''}</span>
+              <span class="text-amber-400 font-black text-sm">${h.odds || ''}</span>
               <span class="text-slate-400">実績上3F: <strong class="text-amber-300">${h.last3F_record}</strong></span>
               <span class="text-slate-400">PCI: <strong class="text-emerald-400">${h.pci}</strong></span>
+            </div>
+          </div>
+
+          <!-- ★ 血統 ＆ 近走3走実績 ＆ 騎手戦術立ち回り ★ -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs font-sans">
+            <!-- 血統情報 -->
+            <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800/80">
+              <span class="text-[10px] text-amber-400 font-bold block mb-0.5 flex items-center gap-1">🧬 血統 (父・母父)</span>
+              <p class="text-white font-bold text-[11px] truncate">父: ${h.sire || '不明'} / 母父: ${h.bms || '不明'}</p>
+              <span class="text-[10px] text-slate-400 block mt-0.5">コース適性: <strong class="text-emerald-300 font-mono-num">${h.pedigreeFit || 'A (標準)'}</strong></span>
+            </div>
+
+            <!-- 近走実績 -->
+            <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800/80">
+              <span class="text-[10px] text-blue-400 font-bold block mb-0.5 flex items-center gap-1">🏆 近走3走実績</span>
+              <p class="text-slate-200 text-[11px] truncate font-mono-num font-semibold">${(h.recentRuns || ['近走好走']).join(' ｜ ')}</p>
+              <span class="text-[10px] text-slate-400 block mt-0.5">充実度: <strong class="text-amber-300 font-bold">${h.formEval || '安定'}</strong></span>
+            </div>
+
+            <!-- 騎手立ち回り戦術 -->
+            <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800/80">
+              <span class="text-[10px] text-purple-400 font-bold block mb-0.5 flex items-center gap-1">🏇 騎手戦術・立ち回り</span>
+              <p class="text-slate-200 text-[11px] leading-tight truncate" title="${h.jockeyTactic || ''}">${h.jockeyTactic || '標準騎乗'}</p>
+              <span class="text-[10px] text-purple-300 block mt-0.5 font-bold">騎手技量: ${h.jockeyRank || 'A'} 評価</span>
             </div>
           </div>
 
