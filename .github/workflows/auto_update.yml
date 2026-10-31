@@ -2,13 +2,9 @@ name: Auto Update Keiba Data
 
 on:
   schedule:
-    # 毎週金曜日 18:00 JST (枠順確定後)
-    - cron: '0 9 * * 5'
-    # 毎週日曜日 09:00 JST (レース当日朝のオッズ更新)
-    - cron: '0 0 * * 0'
-    # 毎週日曜日 14:00 JST (発走直前の最新オッズ更新)
-    - cron: '0 5 * * 0'
-  workflow_dispatch: # 手動でいつでも「今すぐ更新」可能
+    # 1時間ごとに自動実行 (毎時0分)
+    - cron: '0 * * * *'
+  workflow_dispatch: # 手動でいつでも「今すぐ更新」も可能
 
 jobs:
   update-race:
@@ -31,8 +27,7 @@ jobs:
         run: |
           python - << 'PY'
           import json, os, time
-          print("JRA公式・最新レースデータの自動更新を実行中...")
-          # 更新処理
+          print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 1時間ごとの最新レースデータ自動更新を実行中...")
           PY
 
       - name: Commit and Push
@@ -43,6 +38,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "変更はありませんでした。"
           else
-            git commit -m "Auto Update: JRA最新レース＆公式オッズ更新 [skip ci]"
+            git commit -m "Auto Update: 1時間ごとの最新データ定期更新 [skip ci]"
             git push
           fi
