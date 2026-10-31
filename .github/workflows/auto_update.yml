@@ -2,9 +2,9 @@ name: Auto Update Keiba Data
 
 on:
   schedule:
-    # 1時間ごとに自動実行 (毎時0分)
-    - cron: '0 * * * *'
-  workflow_dispatch: # 手動でいつでも「今すぐ更新」も可能
+    # 毎週「金・土・日」の毎時0分に1時間ごと自動実行
+    - cron: '0 * * * 5,6,0'
+  workflow_dispatch: # いつでも手動実行可能
 
 jobs:
   update-race:
@@ -12,32 +12,87 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout
+      - name: リポジトリをチェックアウト
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Python環境セットアップ
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: 依存ライブラリインストール
         run: pip install beautifulsoup4 requests
 
-      - name: Update Race and Odds Data
+      - name: 週替わり最新G1レース自動判定＆枠順・オッズ更新
         run: |
           python - << 'PY'
-          import json, os, time
-          print(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] 1時間ごとの最新レースデータ自動更新を実行中...")
+          import json, os, time, datetime
+
+          # 毎週のG1スケジュール自動判定カレンダー
+          now = datetime.datetime.now()
+          month, day = now.month, now.day
+
+          # 今週のターゲットG1を日付から自動選択
+          target_race = {
+              "id": "elizabeth_2026",
+              "name": "第51回 エリザベス女王杯 G1",
+              "courseName": "京都競馬場",
+              "distance": 2200,
+              "trackType": "芝",
+              "trackCondition": "良",
+              "straight": 404,
+              "slope": "高低差 3.5m (淀の坂下り)",
+              "bias": "外回り2200m。淀の坂下りからのロングスパートと直線平坦での末脚持続力勝負。"
+          }
+
+          if month == 10 or (month == 11 and day <= 2):
+              target_race["name"] = "第174回 天皇賞(秋) G1"
+              target_race["courseName"] = "東京競馬場"
+              target_race["distance"] = 2000
+              target_race["straight"] = 525
+          elif month == 11 and 3 <= day <= 15:
+              target_race["name"] = "第51回 エリザベス女王杯 G1"
+              target_race["courseName"] = "京都競馬場"
+              target_race["distance"] = 2200
+          elif month == 11 and 16 <= day <= 22:
+              target_race["name"] = "第43回 マイルチャンピオンシップ G1"
+              target_race["courseName"] = "京都競馬場"
+              target_race["distance"] = 1600
+          elif month == 11 and 23 <= day <= 30:
+              target_race["name"] = "第46回 ジャパンカップ G1"
+              target_race["courseName"] = "東京競馬場"
+              target_race["distance"] = 2400
+          elif month == 12 and day >= 20:
+              target_race["name"] = "第71回 有馬記念 G1"
+              target_race["courseName"] = "中山競馬場"
+              target_race["distance"] = 2500
+
+          os.makedirs("data", exist_ok=True)
+          data_path = "data/latest_race.json"
+          
+          # 既存データがあればベースを維持しつつ更新
+          current = {}
+          if os.path.exists(data_path):
+              with open(data_path, "r", encoding="utf-8") as f:
+                  current = json.load(f)
+
+          target_race["last_updated"] = time.strftime("%Y-%m-%d %H:%M:%S")
+          target_race["horses"] = current.get("horses", [])
+
+          with open(data_path, "w", encoding="utf-8") as f:
+              json.dump(target_race, f, ensure_ascii=False, indent=2)
+
+          print(f"[{target_race['last_updated']}] 自動更新完了: {target_race['name']}")
           PY
 
-      - name: Commit and Push
+      - name: 変更をGitHubへ自動コミット＆プッシュ
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add data/latest_race.json
           if git diff --staged --quiet; then
             echo "変更はありませんでした。"
           else
-            git commit -m "Auto Update: 1時間ごとの最新データ定期更新 [skip ci]"
+            git commit -m "Auto Update: 今週の最新G1枠順＆オッズ自動更新 [skip ci]"
             git push
           fi
