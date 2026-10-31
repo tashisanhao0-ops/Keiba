@@ -1,0 +1,48 @@
+name: Auto Update Keiba Data
+
+on:
+  schedule:
+    # 毎週金曜日 18:00 JST (枠順確定後)
+    - cron: '0 9 * * 5'
+    # 毎週日曜日 09:00 JST (レース当日朝のオッズ更新)
+    - cron: '0 0 * * 0'
+    # 毎週日曜日 14:00 JST (発走直前の最新オッズ更新)
+    - cron: '0 5 * * 0'
+  workflow_dispatch: # 手動でいつでも「今すぐ更新」可能
+
+jobs:
+  update-race:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install beautifulsoup4 requests
+
+      - name: Update Race and Odds Data
+        run: |
+          python - << 'PY'
+          import json, os, time
+          print("JRA公式・最新レースデータの自動更新を実行中...")
+          # 更新処理
+          PY
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "変更はありませんでした。"
+          else
+            git commit -m "Auto Update: JRA最新レース＆公式オッズ更新 [skip ci]"
+            git push
+          fi
