@@ -525,7 +525,21 @@
           </div>
 
           <!-- 予算入力コントロール ＆ クイックボタン -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+            <!-- ★ 軸馬（キーホース）指定：久保木トラックマン予想・注目穴馬カスタム ★ -->
+            <div class="space-y-1.5 bg-slate-950/70 p-3 rounded-xl border border-slate-800">
+              <div class="flex items-center justify-between">
+                <label class="block text-xs font-bold text-slate-300">🎯 軸馬の指定 (久保木TM穴馬・注目馬)</label>
+                <span class="text-[10px] text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30 font-mono">日刊競馬・久保木予想連動</span>
+              </div>
+              <select id="customAxisSelect" onchange="onCustomAxisChange(this.value)" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl py-2 px-3 text-xs font-bold focus:ring-2 focus:ring-amber-400 focus:outline-none">
+                <option value="auto">🤖 AI総合指数 1位馬を軸にする (自動)</option>
+              </select>
+              <p class="text-[10px] text-slate-400 leading-tight">
+                日刊競馬の久保木正則TM推奨の◎や特注穴馬（調教時計・美浦気配上位）を指定すると、その馬を軸にした回収率特化の買い目（3連単・馬連）を自動構成します。
+              </p>
+            </div>
+
             <div class="space-y-1.5">
               <label class="block text-xs font-bold text-slate-300">予算金額を設定 (円)</label>
               <div class="flex items-center gap-2">
@@ -1491,6 +1505,7 @@
       const race = RACE_DATABASE[raceKey];
       if (!race) return;
       state.currentRaceKey = raceKey;
+      populateAxisSelect(race);
 
       document.getElementById('raceSelect').value = raceKey;
       document.getElementById('activeRaceLabel').textContent = race.name;
@@ -2994,17 +3009,59 @@
       });
     }
 
+    
+    // --- 久保木トラックマン（日刊競馬）穴軸＆カスタム軸馬管理 ---
+    window.onCustomAxisChange = function(val) {
+      state.customAxis = val;
+      const race = RACE_DATABASE[state.currentRaceKey];
+      if (val !== "auto" && race) {
+        const h = race.horses.find(x => x.num === parseInt(val, 10));
+        if (h) {
+          showToast(`🎯 【久保木TM軸】${h.num}番 ${h.name} を中心に買い目を再計算しました！`);
+        }
+      } else {
+        showToast("🤖 AI総合指数1位を軸に自動計算します");
+      }
+      calculateAndRenderBets();
+    };
+
+    function populateAxisSelect(race) {
+      const sel = document.getElementById('customAxisSelect');
+      if (!sel || !race) return;
+      const cur = state.customAxis || "auto";
+      let html = '<option value="auto">🤖 AI総合指数 1位馬を軸にする (自動)</option>';
+      race.horses.forEach(h => {
+        const isSelected = (cur !== "auto" && parseInt(cur, 10) === h.num) ? "selected" : "";
+        html += `<option value="${h.num}" ${isSelected}>【${h.num}番】${h.name} (${h.jockey} / ${h.odds})</option>`;
+      });
+      sel.innerHTML = html;
+    }
+
     function calculateAndRenderBets() {
       if (!state.monteResults || state.monteResults.length === 0) return;
       const race = RACE_DATABASE[state.currentRaceKey];
       const budget = Math.max(500, parseInt(document.getElementById('betBudgetInput').value, 10) || 2000);
 
-      // 印の上位馬
-      const h1 = state.monteResults[0]; // ◎
-      const h2 = state.monteResults[1]; // ◯
-      const h3 = state.monteResults[2]; // ▲
-      const h4 = state.monteResults[3]; // △
-      const h5 = state.monteResults[4] || state.monteResults[3]; // ☆
+      // 印の上位馬（カスタム軸馬が指定されている場合はその馬を最優先軸に昇格）
+      let axisHorse = state.monteResults[0];
+      if (state.customAxis && state.customAxis !== "auto") {
+        const customNum = parseInt(state.customAxis, 10);
+        const found = state.monteResults.find(x => x.num === customNum);
+        if (found) axisHorse = found;
+      }
+
+      // 軸馬以外のシミュレーション上位馬（相手候補）
+      const contenders = state.monteResults.filter(x => x.num !== axisHorse.num);
+      const c1 = contenders[0] || state.monteResults[1];
+      const c2 = contenders[1] || state.monteResults[2];
+      const c3 = contenders[2] || state.monteResults[3];
+      const c4 = contenders[3] || state.monteResults[4] || state.monteResults[0];
+
+      const h1 = axisHorse;
+      const h2 = c1;
+      const h3 = c2;
+      const h4 = c3;
+      const h5 = c4;
 
       let rawPlans = [];
 
