@@ -3031,7 +3031,7 @@
             { type: "三連単", a: 17, b: 7, c: 3, names: "ダノンデサイル → マスカレード → レガレイラ", role: "ダービー馬復活頭 (netkeiba 60人気・万馬券)", weight: 10 },
             { type: "三連単", a: 7, b: 3, c: 14, names: "マスカレード → レガレイラ → タガノデュード", role: "超特大万馬券 (最後方一気)", weight: 8 }
           ];
-        } else {
+        } else if (currentPaceScenario === "slow") {
           // 【シナリオ3: スローペース（前残り・伏兵逃げ粘り）】
           rawPlans = [
             { type: "三連単", a: 1, b: 9, c: 7, names: "クロワデュノール → ホウオウビスケッツ → マスカレード", role: "スロー前残り本線 (netkeiba 70人気・万馬券)", weight: 35 },
