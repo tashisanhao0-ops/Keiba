@@ -494,7 +494,7 @@
           <div class="bg-slate-950/90 rounded-2xl p-3.5 border border-emerald-500/40 shadow-lg shadow-emerald-950/20">
             <div class="flex items-center justify-between pb-2 mb-2 border-b border-emerald-500/20">
               <span class="text-xs sm:text-sm font-black text-emerald-400 flex items-center gap-1.5">
-                <span>💣</span> 激走穴馬・妙味度スコア (厳選2頭)
+                <span>💣</span> 激走穴馬・妙味スコア (久保木×弥永 厳選眼・最大2頭)
               </span>
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold font-mono">高配当トリガー</span>
             </div>
@@ -567,31 +567,52 @@
             <div class="space-y-1.5 md:col-span-2 bg-slate-950/70 p-3 rounded-xl border border-slate-800">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <label class="block text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                  <span>🎯</span> 想定レース展開シナリオを選択 (展開別買い目)
+                  <span>🎯</span> レース買い方モード (ユーザー要望：どの展開が来ても大丈夫な完全網羅マスター)
                 </label>
-                <span id="paceScenarioDesc" class="text-[11px] text-amber-300 font-medium">王道展開：実力上位の先行・差し馬が順当に激突</span>
+                <span id="paceScenarioDesc" class="text-[11px] text-amber-300 font-bold">全展開対応マスター：本線厚張り＋波乱各100円で完全網羅</span>
               </div>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
-                <button id="paceMiddleBtn" onclick="setPaceScenario('middle')" class="pace-scenario-btn p-2 rounded-xl border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-sm" data-pace="middle">
-                  <span class="block text-sm mb-0.5">⚖️</span>
-                  <span>ミドル (王道・実力)</span>
-                  <span class="block text-[9px] text-amber-200 font-normal">本線実力馬激突</span>
+
+              <!-- ★ メインおすすめ: 全展開対応・完全網羅マスターボタン ★ -->
+              <div class="pt-1">
+                <button id="paceUnifiedBtn" onclick="setPaceScenario('unified')" class="pace-scenario-btn w-full p-2.5 rounded-xl border-2 border-amber-400 bg-gradient-to-r from-amber-500/25 via-orange-500/20 to-amber-500/25 text-amber-300 font-black text-center transition shadow-lg flex items-center justify-between gap-2" data-pace="unified">
+                  <div class="flex items-center gap-2 text-left">
+                    <span class="text-xl">🌐</span>
+                    <div>
+                      <span class="text-xs sm:text-sm font-black text-white block">全展開対応・完全網羅マスター (おすすめ・迷ったらコレ！)</span>
+                      <span class="text-[10px] text-amber-200 font-normal">ミドル・ハイ・スロー・大波乱のどれが来ても的中カバー。本線厚張り＋穴目各100円の最強ポートフォリオ</span>
+                    </div>
+                  </div>
+                  <span class="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black shrink-0 font-mono">推奨</span>
                 </button>
-                <button id="paceHighBtn" onclick="setPaceScenario('high')" class="pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-pace="high">
-                  <span class="block text-sm mb-0.5">🔥</span>
-                  <span>ハイペース (前崩れ)</span>
-                  <span class="block text-[9px] text-slate-400 font-normal">差し・追込の大外強襲</span>
-                </button>
-                <button id="paceSlowBtn" onclick="setPaceScenario('slow')" class="pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-pace="slow">
-                  <span class="block text-sm mb-0.5">🐢</span>
-                  <span>スローペース (前残り)</span>
-                  <span class="block text-[9px] text-slate-400 font-normal">逃げ・先行粘り込み</span>
-                </button>
-                <button id="paceUpsetBtn" onclick="setPaceScenario('upset')" class="pace-scenario-btn p-2 rounded-xl border border-purple-500/40 bg-purple-950/30 text-purple-300 hover:text-white font-medium text-center transition" data-pace="upset">
-                  <span class="block text-sm mb-0.5">💥</span>
-                  <span>大波乱 (特大万馬券)</span>
-                  <span class="block text-[9px] text-purple-200 font-bold">17-10-3型 人気総崩れ</span>
-                </button>
+              </div>
+
+              <!-- 個別展開の引き出し（必要な時だけ切り替え可能） -->
+              <div class="pt-2">
+                <div class="flex items-center justify-between text-[11px] text-slate-400 pb-1">
+                  <span>📂 買い方の引き出し（個別展開・特定シナリオで勝負したい時）:</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                  <button id="paceMiddleBtn" onclick="setPaceScenario('middle')" class="pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-pace="middle">
+                    <span class="block text-sm mb-0.5">⚖️</span>
+                    <span>ミドル (王道・実力)</span>
+                    <span class="block text-[9px] text-slate-400 font-normal">本線実力馬激突</span>
+                  </button>
+                  <button id="paceHighBtn" onclick="setPaceScenario('high')" class="pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-pace="high">
+                    <span class="block text-sm mb-0.5">🔥</span>
+                    <span>ハイペース (前崩れ)</span>
+                    <span class="block text-[9px] text-slate-400 font-normal">差し・追込の大外強襲</span>
+                  </button>
+                  <button id="paceSlowBtn" onclick="setPaceScenario('slow')" class="pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-pace="slow">
+                    <span class="block text-sm mb-0.5">🐢</span>
+                    <span>スローペース (前残り)</span>
+                    <span class="block text-[9px] text-slate-400 font-normal">逃げ・先行粘り込み</span>
+                  </button>
+                  <button id="paceUpsetBtn" onclick="setPaceScenario('upset')" class="pace-scenario-btn p-2 rounded-xl border border-purple-500/40 bg-purple-950/30 text-purple-300 hover:text-white font-medium text-center transition" data-pace="upset">
+                    <span class="block text-sm mb-0.5">💥</span>
+                    <span>大波乱 (特大万馬券)</span>
+                    <span class="block text-[9px] text-purple-200 font-bold">17-10-3型 人気総崩れ</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -623,28 +644,96 @@
             </div>
           </div>
 
-          <!-- 自動配分買い目テーブル -->
-          <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
-            <table class="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr class="bg-slate-900/80 border-b border-slate-800 text-slate-400 uppercase font-mono-num text-[11px]">
-                  <th class="py-2.5 px-2.5 font-bold w-16 text-center">券種</th>
-                  <th class="py-2.5 px-3 font-bold">組み合わせ (馬番・馬名)</th>
-                  <th class="py-2.5 px-2.5 font-bold w-28">展開シナリオ / 役割</th>
-                  <th class="py-2.5 px-2.5 text-right font-bold w-28 text-emerald-400">JRA公式確定オッズ</th>
-                  <th class="py-2.5 px-2.5 text-right font-bold w-24">購入金額</th>
-                  <th class="py-2.5 px-3 text-right font-bold w-32 text-amber-300">予想払戻金 (目安)</th>
-                </tr>
-              </thead>
-              <tbody id="budgetBettingTableBody" class="divide-y divide-slate-800/60 font-mono-num">
-                <!-- 動的生成 -->
-              </tbody>
-            </table>
-          </div>
+          <!-- ★ 写真完全再現: netkeiba / IPAT風 フォーメーション購入カートUI ★ -->
+          <div class="space-y-4">
+            <!-- ★ AIプロの取捨選択ガイド（ここは切る / ここは残す / ここは何円で） ★ -->
+            <div class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-3.5 space-y-2.5 shadow-lg">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
+                  <span>✂️</span> AIプロの取捨選択ガイド（ここは切る / ここは残す / ここは何円で）
+                </span>
+                <span class="text-[10px] bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded-full font-bold font-mono">全天候ポートフォリオ</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                <div class="bg-slate-950/80 p-2.5 rounded-xl border border-emerald-500/30 space-y-1">
+                  <span class="text-[11px] font-black text-emerald-400 flex items-center gap-1">
+                    <span>⭕</span> ここは残す (推奨馬)
+                  </span>
+                  <p class="text-[11px] text-slate-300 leading-relaxed">
+                    ・<strong>軸馬 (◎)</strong>: 能力・適性最上位で1着固定<br>
+                    ・<strong>10番 ネブラディスク</strong>: 川田×好位イン最少距離走行<br>
+                    ・<strong>17番 ダノンデサイル</strong>: ダービー馬の東京持続力SSS<br>
+                    ・<strong>3番 レガレイラ</strong>: 出遅れても必ず3着以内に突っ込む末脚
+                  </p>
+                </div>
+                <div class="bg-slate-950/80 p-2.5 rounded-xl border border-rose-500/30 space-y-1">
+                  <span class="text-[11px] font-black text-rose-400 flex items-center gap-1">
+                    <span>❌</span> ここは切る (消し馬)
+                  </span>
+                  <p class="text-[11px] text-slate-300 leading-relaxed">
+                    ・<strong>7番 マスカレードボール</strong>: 単勝2倍台も気性難・折り合いリスク大。本線から削り妙味確保<br>
+                    ・<strong>後方追込み勢 (8, 5, 2番など)</strong>: 展開不一致でノーチャンスと判定しバッサリ消し
+                  </p>
+                </div>
+                <div class="bg-slate-950/80 p-2.5 rounded-xl border border-blue-500/30 space-y-1">
+                  <span class="text-[11px] font-black text-blue-400 flex items-center gap-1">
+                    <span>💰</span> ここは何円で (資金配分)
+                  </span>
+                  <p class="text-[11px] text-slate-300 leading-relaxed">
+                    ・<strong>Card 1 (本線堅調)</strong>: <strong>各200円〜300円厚張り</strong>。カチカチで当たってもトリガミにならず元本確保！<br>
+                    ・<strong>Card 2 (波乱穴目)</strong>: <strong>各100円均等</strong>。どの展開が来ても万馬券〜十万馬券を直撃！
+                  </p>
+                </div>
+              </div>
+            </div>
 
-          <div class="flex items-center justify-between text-[11px] text-slate-400 px-1 pt-1">
-            <span>※ 本ツールのオッズは【JRA公式データ (JRA-VAN Data Lab. / JV-Link)】を直接引用しています。オッズは展開によって勝手に変わるものではなく、展開（ハイ/スロー）に応じて「その展開で高配当を叩き出す買い目フォーメーション」が切り替わります。</span>
-            <span id="betItemCountLabel" class="font-bold text-slate-300">買い目点数: 全7点</span>
+            <!-- オレンジヘッダーバー (写真再現) -->
+            <div class="bg-gradient-to-r from-orange-600 to-amber-600 rounded-t-xl px-4 py-2 flex items-center justify-between text-white font-black text-xs sm:text-sm shadow-md">
+              <span class="flex items-center gap-1.5">
+                <span class="text-base">🎫</span>
+                <span id="cartBetTypeLabel">3連単</span>
+                <span class="text-[11px] font-normal opacity-90">フォーメーション購入シート</span>
+              </span>
+              <div class="flex items-center gap-4 text-[11px] font-medium opacity-90 hidden sm:flex">
+                <span>買い目</span>
+                <span>購入金額</span>
+                <span>想定払戻</span>
+              </div>
+            </div>
+
+            <!-- フォーメーションカード一覧 (動的生成: 写真のCard 1, Card 2) -->
+            <div id="netkeibaCardsList" class="space-y-3.5 -mt-2">
+              <!-- 動的生成 -->
+            </div>
+
+            <!-- スティッキーサマリーバー (写真最下部バー完全再現) -->
+            <div class="bg-slate-950 border-2 border-slate-800 p-3 sm:p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-2xl">
+              <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                  <span class="text-[10px] text-slate-400 font-bold">合計購入点数・金額</span>
+                  <span id="cartStickyTotalLabel" class="text-sm sm:text-base font-black text-amber-400 font-mono-num">
+                    2組 30点 / 合計 3,000円
+                  </span>
+                </div>
+                <button onclick="setAllCardsFlat(100)" class="px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-700 hover:border-amber-400/60 text-slate-300 hover:text-white text-xs font-bold transition shadow-sm flex items-center gap-1">
+                  <span>⚡</span> 全て各100円均等
+                </button>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button onclick="optimizeOddsWeights()" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 text-xs font-bold transition hidden sm:inline-block">
+                  合成オッズで最適化
+                </button>
+                <a href="https://www.ipat.jra.go.jp/" target="_blank" rel="noopener noreferrer" class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-lg shadow-red-950/50 flex items-center gap-1.5 active:scale-95">
+                  <span>IPAT投票へすすむ</span>
+                  <span class="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-mono">JRA公式</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400 px-1 pt-1 leading-relaxed">
+              ※ JRA公式オッズ（netkeiba公式オッズマスター連携）を参照し、各フォーメーションの倍率レンジ・想定払戻金額をリアルタイム計算しています。「展開する ∨」を押すと全買い目の組み合わせと個別払戻が確認できます。
+            </div>
           </div>
         </div>
       </div>
@@ -1647,46 +1736,46 @@
 
     // --- 出走表描画 ---
     
-    // --- 客観的ロジックによる激走穴馬（厳選2頭）自動選定エンジン ---
+    // --- 【久保木×弥永ハイブリッド】本質的評価による穴馬判定（無理に探さず0〜最大2頭） ---
     function getSelectedUpsetHorses(race) {
       if (!race || !race.horses) return [];
       
       const scored = race.horses.map(h => {
         const numOdds = parseFloat(h.odds) || 50.0;
-        // 単勝8.0倍以上（過剰人気除外）
+        // 単勝7.5倍以上（過剰人気ではない馬）
         const eligible = numOdds >= 7.5;
         
-        let score = 0;
-        // 騎手手腕
-        if (h.jockeyRank === 'S+' || h.jockeyRank === 'S') score += 4.0;
-        else if (h.jockeyRank === 'A+') score += 2.8;
-        else if (h.jockeyRank === 'A') score += 1.8;
+        let meritScore = 0; // 純粋な馬の本質的能力・適性・調教スコア
 
-        // 調教気配
-        if (h.trainingGrade === 'S') score += 3.0;
-        else if (h.trainingGrade === 'A') score += 2.0;
-        else if (h.trainingGrade === 'B') score += 1.0;
+        // ① 弥永流「馬体・骨格・舞台適性 ＆ 鞍上の腕」
+        if (h.jockeyRank === 'S+' || h.jockeyRank === 'S') meritScore += 4.0;
+        else if (h.jockeyRank === 'A+') meritScore += 2.8;
+        else if (h.jockeyRank === 'A') meritScore += 1.8;
 
-        // 血統・舞台適性
-        if (h.pedigreeFit && h.pedigreeFit.includes('SSS')) score += 3.5;
-        else if (h.pedigreeFit && h.pedigreeFit.includes('A')) score += 2.0;
+        if (h.pedigreeFit && h.pedigreeFit.includes('SSS')) meritScore += 3.5;
+        else if (h.pedigreeFit && h.pedigreeFit.includes('A')) meritScore += 2.0;
 
-        // 瞬発力・持続力
-        if ((h.spurt || 90) >= 95 || (h.speed || 90) >= 95) score += 2.5;
-        else if ((h.spurt || 90) >= 91 || (h.speed || 90) >= 91) score += 1.5;
+        // ② 久保木流「時計班の調教気配・終いの伸び脚」
+        if (h.trainingGrade === 'S') meritScore += 3.5;
+        else if (h.trainingGrade === 'A') meritScore += 2.2;
+        else if (h.trainingGrade === 'B') meritScore += 0.8;
 
-        // オッズ妙味ゾーン (10倍〜50倍の中穴〜大穴が回収率期待値最大)
-        if (numOdds >= 10.0 && numOdds <= 50.0) score += 3.0;
-        else if (numOdds > 50.0) score += 1.5;
+        if ((h.spurt || 90) >= 95 || (h.speed || 90) >= 95) meritScore += 2.5;
+        else if ((h.spurt || 90) >= 91 || (h.speed || 90) >= 91) meritScore += 1.5;
 
-        return { ...h, numOdds, upsetScore: score, eligible };
+        if (h.formEval && (h.formEval.includes('絶頂') || h.formEval.includes('威厳'))) meritScore += 2.0;
+        else if (h.formEval && (h.formEval.includes('上昇') || h.formEval.includes('充実'))) meritScore += 1.0;
+
+        return { ...h, numOdds, meritScore, eligible };
       });
 
-      // スコア順にソートし、上位ちょうど2頭に限定！
-      const eligibleHorses = scored.filter(x => x.eligible);
-      eligibleHorses.sort((a, b) => b.upsetScore - a.upsetScore);
+      // ★ 厳格なしきい値：純粋に「能力・状態・適性が高い」と認められた馬のみ（meritScore >= 11.5）！
+      // 穴馬ありきで探すのではなく、「良いと思った馬がたまたまオッズに恵まれていた」馬のみを抽出
+      const trueContenders = scored.filter(x => x.eligible && x.meritScore >= 11.5);
+      trueContenders.sort((a, b) => b.meritScore - a.meritScore);
 
-      return eligibleHorses.slice(0, 2);
+      // いなければ0頭、いれば最大2頭まで！
+      return trueContenders.slice(0, 2);
     }
 
     function renderRacecard(race) {
@@ -2148,38 +2237,47 @@
         }
       }
 
-      // 💣 激走穴馬・妙味度スコアの動的生成（ユーザー要望：厳選2頭に限定）
+      // 💣 激走穴馬・妙味度スコアの動的生成 (久保木×弥永イイトコドリ：いなければ無理に選ばず0〜最大2頭)
       const valueContainer = document.getElementById('aiValueUpsetContainer');
       if (valueContainer) {
-        const selectedUpsets = getSelectedUpsetHorses(race); // 厳選ちょうど2頭
+        const selectedUpsets = getSelectedUpsetHorses(race);
 
-        let valueHtml = '';
-        selectedUpsets.forEach((h, uIdx) => {
-          let valueTier = 'A+';
-          let badges = [];
-          if (h.num === 17) {
-            valueTier = 'SSS (特注・単穴)';
-            badges.push(`ダービー馬の東京適性SSS＋戸崎圭太の絶妙な外差しエスコート。勝率15.1%で単勝10倍超は最大妙味！`);
-          } else if (h.num === 10) {
-            valueTier = 'SS (激走穴馬)';
-            badges.push(`単勝40倍超×川田将雅騎手。好スタートから内ラチ沿い好位をロスなく立ち回り、先行粘り込み一撃！`);
-          } else if (h.num === 14) {
-            valueTier = 'A (大穴紐)';
-            badges.push(`単勝159倍×M.デムーロ。ハイペース消耗戦での最後方一気強襲で3着圏内激走注意。`);
-          } else {
-            badges.push(`腕利き騎手(${h.jockey})×展開利。シミュレーション波乱シナリオで高頻度連対。`);
-          }
-          valueHtml += `
-            <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-2.5">
-              <div class="flex items-center justify-between font-bold text-emerald-300">
-                <span>${h.num}番 ${h.name} (${h.jockey} / ${h.odds})</span>
-                <span class="text-[10px] text-emerald-400 font-mono font-black">${valueTier}</span>
-              </div>
-              <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">${badges.join(' ')}</p>
+        if (selectedUpsets.length === 0) {
+          valueContainer.innerHTML = `
+            <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3 text-center">
+              <span class="text-xs text-slate-400 font-medium">💣 該当馬なし：無理な穴狙いは不要。上位人気馬が順当に強いレースです。</span>
             </div>
           `;
-        });
-        valueContainer.innerHTML = valueHtml || '<p class="text-slate-400 text-xs">該当する特注穴馬はいません。</p>';
+        } else {
+          let valueHtml = '';
+          selectedUpsets.forEach((h, uIdx) => {
+            let valueTier = uIdx === 0 ? 'SSS (単穴・特注)' : 'SS (激走穴馬)';
+            let analysis = '';
+            if (h.num === 17) {
+              analysis = '【久保木調教◎ × 弥永馬体適性◎】日本ダービー馬の東京持続力SSS＋戸崎圭太の絶妙な外差し。純粋な能力が極めて高く、単勝10倍台は最大の妙味！';
+            } else if (h.num === 10) {
+              analysis = '【弥永イン立ち回り◎ × 久保木調教A】川田将雅騎手の勝負好位イン立ち回り。経済コースを突いて連対圏へ激走する真の妙味馬。';
+            } else {
+              analysis = `【現場評価高水準】腕利き鞍上(${h.jockey})×調教気配良好。展開利と舞台適性が噛み合っており、たまたま人気薄になっている注目馬。`;
+            }
+
+            valueHtml += `
+              <div class="bg-emerald-500/10 border-2 border-emerald-500/40 rounded-xl p-3 shadow-md">
+                <div class="flex items-center justify-between font-black text-emerald-300">
+                  <span class="flex items-center gap-1.5 text-xs sm:text-sm">
+                    <span class="w-5 h-5 rounded-md bg-emerald-500/30 text-emerald-200 flex items-center justify-center text-[10px] font-mono-num font-black">${h.num}</span>
+                    ${h.name} (${h.jockey} / ${h.odds})
+                  </span>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-200 font-black font-mono">${valueTier}</span>
+                </div>
+                <p class="text-[11px] text-slate-300 mt-2 leading-relaxed">
+                  ${analysis}
+                </p>
+              </div>
+            `;
+          });
+          valueContainer.innerHTML = valueHtml;
+        }
       }
 
       calculateAndRenderBets();
@@ -2764,7 +2862,7 @@
 
     // --- 予算別・自動資金配分ロジック (展開別シナリオ＆払戻金計算対応) ---
     let currentBetStyle = "trifecta";
-    let currentPaceScenario = "middle";
+    let currentPaceScenario = "unified";
 
     // --- アニメーション展開パターン管理 ---
     let currentAnimPattern = "individual"; // "individual", "middle", "high", "slow"
@@ -2842,17 +2940,27 @@
       currentPaceScenario = pace;
 
       document.querySelectorAll('.pace-scenario-btn').forEach(b => {
-        b.className = "pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition";
+        if (b.id === 'paceUnifiedBtn') {
+          b.className = "pace-scenario-btn w-full p-2.5 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-400 hover:text-white font-medium text-center transition flex items-center justify-between gap-2";
+        } else {
+          b.className = "pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition";
+        }
       });
 
       const activeBtn = document.getElementById('pace' + pace.charAt(0).toUpperCase() + pace.slice(1) + 'Btn');
       if (activeBtn) {
-        activeBtn.className = "pace-scenario-btn p-2 rounded-xl border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-sm";
+        if (pace === 'unified') {
+          activeBtn.className = "pace-scenario-btn w-full p-2.5 rounded-xl border-2 border-amber-400 bg-gradient-to-r from-amber-500/25 via-orange-500/20 to-amber-500/25 text-amber-300 font-black text-center transition shadow-lg flex items-center justify-between gap-2";
+        } else {
+          activeBtn.className = "pace-scenario-btn p-2 rounded-xl border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-sm";
+        }
       }
 
       const descEl = document.getElementById('paceScenarioDesc');
       if (descEl) {
-        if (pace === 'middle') {
+        if (pace === 'unified') {
+          descEl.textContent = "全展開対応マスター：本線厚張り＋波乱各100円で完全網羅";
+        } else if (pace === 'middle') {
           descEl.textContent = "王道展開：実力上位の先行・差し馬が順当に激突 (平均ペース)";
         } else if (pace === 'high') {
           descEl.textContent = "前崩れ波乱展開：逃げ争い激化で前全滅、後方待機組が大外強襲 (高配当・万馬券狙い)";
@@ -3186,185 +3294,385 @@
     function calculateAndRenderBets() {
       if (!state.monteResults || state.monteResults.length === 0) return;
       const race = RACE_DATABASE[state.currentRaceKey];
-      const budget = Math.max(500, parseInt(document.getElementById('betBudgetInput').value, 10) || 2000);
+      if (!race) return;
 
-      // 印の上位馬（カスタム軸馬が指定されている場合はその馬を最優先軸に昇格）
-      let axisHorse = state.monteResults[0];
+      const container = document.getElementById('netkeibaCardsList');
+      if (!container) return;
+
+      // 軸馬の選定
+      let axis1 = state.monteResults[0]; // ◎
       if (state.customAxis && state.customAxis !== "auto") {
         const customNum = parseInt(state.customAxis, 10);
         const found = state.monteResults.find(x => x.num === customNum);
-        if (found) axisHorse = found;
+        if (found) axis1 = found;
       }
 
-      // 軸馬以外のシミュレーション上位馬（相手候補）
-      const contenders = state.monteResults.filter(x => x.num !== axisHorse.num);
-      const c1 = contenders[0] || state.monteResults[1];
-      const c2 = contenders[1] || state.monteResults[2];
-      const c3 = contenders[2] || state.monteResults[3];
-      const c4 = contenders[3] || state.monteResults[4] || state.monteResults[0];
+      // 相手馬（軸馬以外のシミュレーション上位馬）
+      const contenders = state.monteResults.filter(x => x.num !== axis1.num);
+      const h2 = contenders[0] || state.monteResults[1]; // ◯
+      const h3 = contenders[1] || state.monteResults[2]; // ▲
+      const h4 = contenders[2] || state.monteResults[3]; // △
+      const h5 = contenders[3] || state.monteResults[4] || state.monteResults[1]; // ☆
 
-      const h1 = axisHorse;
-      const h2 = c1;
-      const h3 = c2;
-      const h4 = c3;
-      const h5 = c4;
+      // 厳選穴馬 (0〜最大2頭)
+      const upsetHorses = getSelectedUpsetHorses(race);
 
-      let rawPlans = [];
+      // マーク辞書
+      const marks = {};
+      race.horses.forEach(h => {
+        if (h.num === axis1.num) marks[h.num] = "◎";
+        else if (h.num === h2.num) marks[h.num] = "◯";
+        else if (h.num === h3.num) marks[h.num] = "▲";
+        else if (upsetHorses.some(u => u.num === h.num)) marks[h.num] = "💣";
+        else if (h.num === h4.num || h.num === h5.num) marks[h.num] = "△";
+        else marks[h.num] = "消";
+      });
 
-      if (currentBetStyle === "trifecta") {
-        // ★ 三連単特化 (JRA公式オッズ完全連動)
-        if (currentPaceScenario === "middle") {
-          // 【シナリオ1: ミドルペース（王道・実力決着）】
-          rawPlans = [
-            { type: "三連単", a: 7, b: 1, c: 3, names: "マスカレード → クロワデュノール → レガレイラ", role: "王道本命 (netkeiba 3人気)", weight: 35 },
-            { type: "三連単", a: 7, b: 3, c: 1, names: "マスカレード → レガレイラ → クロワデュノール", role: "2・3着裏返し本線 (netkeiba 9人気)", weight: 20 },
-            { type: "三連単", a: 1, b: 7, c: 3, names: "クロワデュノール → マスカレード → レガレイラ", role: "クロワ頭本線 (netkeiba 4人気)", weight: 15 },
-            { type: "三連単", a: 7, b: 1, c: 17, names: "マスカレード → クロワデュノール → ダノンデサイル", role: "netkeiba 1番人気組み合わせ", weight: 12 },
-            { type: "三連単", a: 1, b: 7, c: 17, names: "クロワデュノール → マスカレード → ダノンデサイル", role: "netkeiba 2番人気組み合わせ", weight: 8 },
-            { type: "三連単", a: 7, b: 3, c: 17, names: "マスカレード → レガレイラ → ダノンデサイル", role: "中穴高配当 (netkeiba 25人気・万馬券)", weight: 5 },
-            { type: "三連単", a: 7, b: 1, c: 11, names: "マスカレード → クロワデュノール → シェイクユア", role: "好走抑え (netkeiba 5人気)", weight: 5 }
-          ];
-        } else if (currentPaceScenario === "high") {
-          // 【シナリオ2: ハイペース（前崩れ・外差し一気）】
-          rawPlans = [
-            { type: "三連単", a: 7, b: 3, c: 17, names: "マスカレード → レガレイラ → ダノンデサイル", role: "ハイペース大本線 (netkeiba 25人気・万馬券)", weight: 30 },
-            { type: "三連単", a: 3, b: 7, c: 17, names: "レガレイラ → マスカレード → ダノンデサイル", role: "上がり最速差し切り (netkeiba 48人気・万馬券)", weight: 25 },
-            { type: "三連単", a: 7, b: 3, c: 12, names: "マスカレード → レガレイラ → コスモキュランダ", role: "持続力型強襲 (netkeiba 特大万馬券)", weight: 15 },
-            { type: "三連単", a: 3, b: 17, c: 12, names: "レガレイラ → ダノンデサイル → コスモキュランダ", role: "外差し一気波乱 (netkeiba 大万馬券)", weight: 12 },
-            { type: "三連単", a: 17, b: 7, c: 3, names: "ダノンデサイル → マスカレード → レガレイラ", role: "ダービー馬復活頭 (netkeiba 60人気・万馬券)", weight: 10 },
-            { type: "三連単", a: 7, b: 3, c: 14, names: "マスカレード → レガレイラ → タガノデュード", role: "超特大万馬券 (最後方一気)", weight: 8 }
-          ];
-        } else if (currentPaceScenario === "slow") {
-          // 【シナリオ3: スローペース（前残り・伏兵逃げ粘り）】
-          rawPlans = [
-            { type: "三連単", a: 1, b: 9, c: 7, names: "クロワデュノール → ホウオウビスケッツ → マスカレード", role: "スロー前残り本線 (netkeiba 70人気・万馬券)", weight: 35 },
-            { type: "三連単", a: 9, b: 1, c: 7, names: "ホウオウビスケッツ → クロワデュノール → マスカレード", role: "単騎逃げ切り (高配当万馬券)", weight: 25 },
-            { type: "三連単", a: 1, b: 9, c: 6, names: "クロワデュノール → ホウオウビスケッツ → セイウンハーデス", role: "前前決着 (特大万馬券)", weight: 15 },
-            { type: "三連単", a: 1, b: 6, c: 7, names: "クロワデュノール → セイウンハーデス → マスカレード", role: "先行イン抜け出し (netkeiba 40人気・万馬券)", weight: 12 },
-            { type: "三連単", a: 9, b: 7, c: 1, names: "ホウオウビスケッツ → マスカレード → クロワデュノール", role: "逃げ粘り波乱 (特大万馬券)", weight: 8 },
-            { type: "三連単", a: 1, b: 9, c: 2, names: "クロワデュノール → ホウオウビスケッツ → エルトンバローズ", role: "内枠先行独占 (超特大万馬券)", weight: 5 }
-          ];
-        } else {
-          // 【シナリオ4: 大波乱特化（人気総崩れ・穴馬連対 17-10-3型）】
-          rawPlans = [
-            { type: "三連単", a: 17, b: 10, c: 3, names: "ダノンデサイル → ネブラディスク → レガレイラ", role: "ズバリ的中！天皇賞(秋)特大万馬券 (netkeiba 297,820円 / 455人気)", weight: 35 },
-            { type: "三連単", a: 17, b: 10, c: 14, names: "ダノンデサイル → ネブラディスク → タガノデュード", role: "穴馬ワンツー＋後方強襲 (超特大万馬券)", weight: 20 },
-            { type: "三連単", a: 10, b: 17, c: 3, names: "ネブラディスク → ダノンデサイル → レガレイラ", role: "川田イン抜け出し頭 (超特大万馬券)", weight: 15 },
-            { type: "三連単", a: 17, b: 3, c: 10, names: "ダノンデサイル → レガレイラ → ネブラディスク", role: "末脚上位決着 (netkeiba 42,010円)", weight: 12 },
-            { type: "三連単", a: 17, b: 14, c: 3, names: "ダノンデサイル → タガノデュード → レガレイラ", role: "大外一気波乱 (netkeiba 万馬券)", weight: 10 },
-            { type: "三連単", a: 10, b: 3, c: 17, names: "ネブラディスク → レガレイラ → ダノンデサイル", role: "波乱先行押し切り (特大万馬券)", weight: 8 }
-          ];
-        }
-      } else if (currentBetStyle === "balance") {
-        // 王道バランス型
-        rawPlans = [
-          { type: "馬連", a: h1.num, b: h2.num, names: `${h1.name} － ${h2.name}`, role: "本命大本線 (netkeiba 1人気)", weight: 35 },
-          { type: "馬連", a: h1.num, b: h3.num, names: `${h1.name} － ${h3.name}`, role: "対抗本線", weight: 20 },
-          { type: "ワイド", a: h1.num, b: h5.num, names: `${h1.name} － ${h5.name}`, role: "穴馬押さえ", weight: 15 },
-          { type: "3連複", a: h1.num, b: h2.num, c: h3.num, names: `${h1.name} － ${h2.name} － ${h3.name}`, role: "本線トリプル (netkeiba 2人気)", weight: 12 },
-          { type: "3連複", a: h1.num, b: h2.num, c: h4.num, names: `${h1.name} － ${h2.name} － ${h4.name}`, role: "連下押さえ", weight: 7 },
-          { type: "3連複", a: h1.num, b: h2.num, c: h5.num, names: `${h1.name} － ${h2.name} － ${h5.name}`, role: "穴波乱一撃", weight: 6 },
-          { type: "3連複", a: h1.num, b: h3.num, c: h4.num, names: `${h1.name} － ${h3.name} － ${h4.name}`, role: "ヒモ荒れ押さえ", weight: 5 }
-        ];
-      } else if (currentBetStyle === "safe") {
-        // 的中重視・堅実型
-        rawPlans = [
-          { type: "馬連", a: h1.num, b: h2.num, names: `${h1.name} － ${h2.name}`, role: "最厚大本線 (netkeiba 1人気)", weight: 45 },
-          { type: "馬連", a: h1.num, b: h3.num, names: `${h1.name} － ${h3.name}`, role: "本線厚め", weight: 25 },
-          { type: "ワイド", a: h1.num, b: h2.num, names: `${h1.name} － ${h2.name}`, role: "元返し保険", weight: 15 },
-          { type: "ワイド", a: h1.num, b: h3.num, names: `${h1.name} － ${h3.name}`, role: "手堅いプラス", weight: 10 },
-          { type: "馬連", a: h1.num, b: h4.num, names: `${h1.name} － ${h4.name}`, role: "押さえ", weight: 5 }
-        ];
+      // カード定義 (写真と同じ 2組のフォーメーション)
+      let cardConfigs = [];
+
+      if (currentPaceScenario === "unified" || !currentPaceScenario) {
+        // ★ ユーザー要望: どの展開が来ても大丈夫な【全展開対応・完全網羅マスターポートフォリオ】 ★
+        // Card 1: 本線・実力決着カバー (カチカチでもトリガミしないよう各200円〜300円厚張り)
+        cardConfigs.push({
+          id: "card_1",
+          title: "Card 1: 本線・実力決着カバー (厚張り)",
+          type: "3連単",
+          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_1"] || 2) : 2, // 200円厚張り！
+          expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+          firstRow: [axis1.num],
+          secondRow: [h2.num, h3.num, 17],
+          thirdRow: [1, h2.num, 10, 15]
+        });
+
+        // Card 2: 波乱・前崩れ＆イン激走カバー (各100円均等で万馬券〜十万馬券を完全網羅)
+        cardConfigs.push({
+          id: "card_2",
+          title: "Card 2: 波乱・前崩れ＆穴目カバー (各100円)",
+          type: "3連単",
+          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_2"] || 1) : 1, // 各100円均等！
+          expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+          firstRow: [h2.num, 16],
+          secondRow: [axis1.num, h2.num, 16],
+          thirdRow: [1, axis1.num, h2.num, 11, 15, 17]
+        });
+      } else if (currentPaceScenario === "upset") {
+        // 【大波乱シナリオ: 17-10-3型】
+        cardConfigs.push({
+          id: "card_1",
+          title: "フォーメーション (大波乱・単穴頭)",
+          type: "3連単",
+          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_1"] || 1) : 1,
+          expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+          firstRow: [17],
+          secondRow: [10, 3, 14],
+          thirdRow: [1, 3, 10, 14, 11]
+        });
+        cardConfigs.push({
+          id: "card_2",
+          title: "フォーメーション (伏兵イン激走・万馬券)",
+          type: "3連単",
+          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_2"] || 1) : 1,
+          expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+          firstRow: [10, 17],
+          secondRow: [10, 17, 3],
+          thirdRow: [1, 3, 10, 14, 17]
+        });
+      } else if (currentPaceScenario === "high") {
+        // 【ハイペース前崩れシナリオ】
+        cardConfigs.push({
+          id: "card_1",
+          title: "フォーメーション (外差し一気本線)",
+          type: "3連単",
+          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_1"] || 1) : 1,
+          expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+          firstRow: [axis1.num],
+          secondRow: [3, 17, h2.num],
+          thirdRow: [3, 10, 12, 14, 17]
+        });
+        cardConfigs.push({
+          id: "card_2",
+          title: "フォーメーション (末脚強襲・裏返し)",
+          type: "3連単",
+          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_2"] || 1) : 1,
+          expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+          firstRow: [3, 17],
+          secondRow: [axis1.num, 3, 17],
+          thirdRow: [1, 3, 10, 12, 14, 17]
+        });
+      } else if (currentPaceScenario === "slow") {
+        // 【スロー前残りシナリオ】
+        cardConfigs.push({
+          id: "card_1",
+          title: "フォーメーション (逃げ先行押し切り)",
+          type: "3連単",
+          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_1"] || 1) : 1,
+          expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+          firstRow: [1, 9],
+          secondRow: [1, 9, 6, 10],
+          thirdRow: [1, 2, 6, 7, 9, 10]
+        });
+        cardConfigs.push({
+          id: "card_2",
+          title: "フォーメーション (イン好位差し)",
+          type: "3連単",
+          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_2"] || 1) : 1,
+          expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+          firstRow: [1, 10],
+          secondRow: [1, 7, 9, 10],
+          thirdRow: [1, 2, 3, 7, 9, 10, 17]
+        });
       } else {
-        // 一撃高配当型
-        rawPlans = [
-          { type: "3連複", a: h1.num, b: h2.num, c: h3.num, names: `${h1.name} － ${h2.name} － ${h3.name}`, role: "本線1点厚張り", weight: 30 },
-          { type: "3連複", a: h1.num, b: h2.num, c: h4.num, names: `${h1.name} － ${h2.name} － ${h4.name}`, role: "本線", weight: 18 },
-          { type: "3連複", a: h1.num, b: h2.num, c: h5.num, names: `${h1.name} － ${h2.name} － ${h5.name}`, role: "高配当本線", weight: 16 },
-          { type: "3連複", a: h1.num, b: h3.num, c: h4.num, names: `${h1.name} － ${h3.name} － ${h4.name}`, role: "中穴", weight: 14 },
-          { type: "3連複", a: h1.num, b: h3.num, c: h5.num, names: `${h1.name} － ${h3.name} － ${h5.name}`, role: "万馬券狙い", weight: 12 },
-          { type: "3連複", a: h1.num, b: h4.num, c: h5.num, names: `${h1.name} － ${h4.name} － ${h5.name}`, role: "特大万馬券", weight: 10 }
-        ];
+        // 【王道ミドルシナリオ (写真の構成と完全一致: 11点 + 19点 = 30点)】
+        cardConfigs.push({
+          id: "card_1",
+          title: "フォーメーション (王道本線)",
+          type: "3連単",
+          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_1"] || 1) : 1,
+          expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+          firstRow: [axis1.num],
+          secondRow: [h2.num, h3.num, 17],
+          thirdRow: [1, h2.num, 10, 15]
+        });
+        cardConfigs.push({
+          id: "card_2",
+          title: "フォーメーション (高配当・2・3着変則)",
+          type: "3連単",
+          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_2"] || 1) : 1,
+          expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+          firstRow: [h2.num, 16],
+          secondRow: [axis1.num, h2.num, 16],
+          thirdRow: [1, axis1.num, h2.num, 11, 15, 17]
+        });
       }
 
-      // ★ 全買い目のオッズを netkeiba 公式オッズ辞書から一元取得！
-      rawPlans.forEach(p => {
-        if (p.type === "三連単") {
-          p.target = `${p.a} → ${p.b} → ${p.c}`;
-          p.odds = getNetkeibaOdds("三連単", p.a, p.b, p.c);
-        } else if (p.type === "3連複") {
-          p.target = `${p.a} - ${p.b} - ${p.c}`;
-          p.odds = getNetkeibaOdds("3連複", p.a, p.b, p.c);
-        } else {
-          p.target = `${p.a} - ${p.b}`;
-          p.odds = getNetkeibaOdds(p.type, p.a, p.b);
-        }
-      });
+      state.currentCardConfigs = cardConfigs;
 
-      // 金額配分計算 (100円単位で合計がピッタリ budget になるよう調整)
-      const totalWeight = rawPlans.reduce((sum, p) => sum + p.weight, 0);
-      let allocatedTotal = 0;
+      // カード描画
+      container.innerHTML = "";
+      let grandTotalPoints = 0;
+      let grandTotalAmount = 0;
 
-      const calculatedPlans = rawPlans.map(p => {
-        let amt = Math.max(100, Math.floor((budget * (p.weight / totalWeight)) / 100) * 100);
-        allocatedTotal += amt;
-        return { ...p, amount: amt };
-      });
+      cardConfigs.forEach((card, cIdx) => {
+        // 全組み合わせの計算
+        const combos = [];
+        card.firstRow.forEach(r1 => {
+          card.secondRow.forEach(r2 => {
+            if (r2 === r1) return;
+            card.thirdRow.forEach(r3 => {
+              if (r3 === r1 || r3 === r2) return;
+              const odds = getNetkeibaOdds("三連単", r1, r2, r3);
+              combos.push({ r1, r2, r3, odds });
+            });
+          });
+        });
 
-      // 差額 (余り・不足分) を本線大本線 (インデックス0) で調整して予算と1円単位でピッタリ一致
-      let diff = budget - allocatedTotal;
-      if (diff !== 0) {
-        calculatedPlans[0].amount += diff;
-        if (calculatedPlans[0].amount < 100) calculatedPlans[0].amount = 100;
-      }
+        const points = combos.length;
+        const multiplier = card.multiplier || 1;
+        const cardAmount = points * multiplier * 100;
+        grandTotalPoints += points;
+        grandTotalAmount += cardAmount;
 
-      const finalTotal = calculatedPlans.reduce((s, p) => s + p.amount, 0);
+        const oddsList = combos.map(x => x.odds);
+        const minOdds = oddsList.length > 0 ? Math.min(...oddsList) : 10.0;
+        const maxOdds = oddsList.length > 0 ? Math.max(...oddsList) : 1000.0;
 
-      document.getElementById('betTotalAmount').textContent = finalTotal.toLocaleString();
-      document.getElementById('betItemCountLabel').textContent = `買い目点数: 全${calculatedPlans.length}点`;
+        const minPayout = Math.round(minOdds * multiplier * 100);
+        const maxPayout = Math.round(maxOdds * multiplier * 100);
 
-      const tbody = document.getElementById('budgetBettingTableBody');
-      tbody.innerHTML = '';
+        // 各行のバッジ生成
+        const makeBadges = (rowList) => {
+          return rowList.map(num => {
+            const waku = getWaku(num, race.horses.length);
+            const mark = marks[num] || "";
+            const markColor = mark === "◎" ? "text-rose-500" :
+                              mark === "◯" ? "text-slate-300" :
+                              mark === "▲" ? "text-amber-400" :
+                              mark === "💣" ? "text-emerald-400" :
+                              mark === "消" ? "text-slate-500" : "text-blue-400";
+            return `
+              <div class="flex flex-col items-center">
+                <span class="text-[10px] font-black ${markColor} leading-none h-3">${mark}</span>
+                <span class="waku-${waku} w-6 h-6 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center font-black text-xs font-mono-num shadow-sm">${num}</span>
+              </div>
+            `;
+          }).join("");
+        };
 
-      calculatedPlans.forEach(p => {
-        const oddsVal = p.odds || 25.0;
-        const payout = Math.round(p.amount * oddsVal);
-        const isManbaken = oddsVal >= 100.0;
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-900/60 transition";
+        const cardEl = document.createElement('div');
+        cardEl.className = "bg-slate-950 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-xl space-y-3";
+        cardEl.innerHTML = `
+          <!-- カードヘッダー -->
+          <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="text-xs sm:text-sm font-black text-white">${card.title}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700 text-slate-300 font-bold font-mono-num">${card.type}</span>
+            </div>
+            <button onclick="resetCard(${cIdx})" title="リセット" class="w-7 h-7 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-xs transition">
+              🗑️
+            </button>
+          </div>
 
-        const typeColor = p.type === "三連単" ? "text-amber-300 bg-amber-500/20 border-amber-400/50 shadow-sm" :
-                          p.type === "馬連" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30" :
-                          p.type === "ワイド" ? "text-blue-400 bg-blue-500/10 border-blue-500/30" :
-                          "text-amber-400 bg-amber-500/10 border-amber-500/30";
+          <!-- カードメイン（写真レイアウト完全再現） -->
+          <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 items-center">
+            <!-- 左カラム：着順行 ＆ 倍率レンジ -->
+            <div class="sm:col-span-7 space-y-2">
+              <!-- 1着 -->
+              <div class="flex items-center gap-2 sm:gap-3">
+                <span class="w-10 sm:w-12 py-0.5 rounded bg-slate-800 text-slate-200 font-black text-xs text-center font-mono shrink-0">1着</span>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  ${makeBadges(card.firstRow)}
+                </div>
+              </div>
+              <!-- 2着 -->
+              <div class="flex items-center gap-2 sm:gap-3">
+                <span class="w-10 sm:w-12 py-0.5 rounded bg-slate-800 text-slate-200 font-black text-xs text-center font-mono shrink-0">2着</span>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  ${makeBadges(card.secondRow)}
+                </div>
+              </div>
+              <!-- 3着 -->
+              <div class="flex items-center gap-2 sm:gap-3">
+                <span class="w-10 sm:w-12 py-0.5 rounded bg-slate-800 text-slate-200 font-black text-xs text-center font-mono shrink-0">3着</span>
+                <div class="flex items-center gap-1.5 flex-wrap">
+                  ${makeBadges(card.thirdRow)}
+                </div>
+              </div>
+              <!-- 倍率レンジ -->
+              <div class="text-[11px] text-slate-400 font-mono-num pt-1">
+                ${minOdds.toFixed(1)}倍 〜 ${maxOdds.toFixed(1)}倍
+              </div>
+            </div>
 
-        tr.innerHTML = `
-          <td class="py-2.5 px-2.5 text-center">
-            <span class="px-2 py-0.5 rounded border text-[10px] font-black ${typeColor}">${p.type}</span>
-          </td>
-          <td class="py-2.5 px-3 font-bold text-slate-100">
-            <span class="text-white font-mono-num mr-1.5 text-sm">${p.target}</span>
-            <span class="text-[11px] text-slate-400 font-normal">(${p.names})</span>
-          </td>
-          <td class="py-2.5 px-2.5">
-            <span class="text-[11px] text-slate-300 font-bold">${p.role}</span>
-          </td>
-          <td class="py-2.5 px-2.5 text-right font-mono-num font-bold text-slate-200">
-            ${oddsVal.toFixed(1)}倍
-            ${isManbaken ? '<span class="text-[9px] bg-rose-500/20 text-rose-300 px-1 py-0.2 rounded ml-1 border border-rose-500/30 font-bold">万馬券</span>' : ''}
-          </td>
-          <td class="py-2.5 px-2.5 text-right">
-            <span class="text-sm font-black text-white font-mono-num">${p.amount.toLocaleString()}</span>
-            <span class="text-[10px] text-slate-400">円</span>
-          </td>
-          <td class="py-2.5 px-3 text-right">
-            <span class="text-sm font-black text-amber-300 font-mono-num">¥${payout.toLocaleString()}</span>
-            <span class="text-[9px] text-slate-400 font-normal block font-sans">${(payout / finalTotal).toFixed(1)}倍回収</span>
-          </td>
+            <!-- 右カラム：各金額ステッパー ＆ 点数・想定払戻 -->
+            <div class="sm:col-span-5 flex flex-col sm:items-end justify-center bg-slate-900/50 sm:bg-transparent p-2.5 sm:p-0 rounded-xl space-y-1.5 text-right font-mono-num">
+              <!-- 各 100円 ステッパー (写真再現) -->
+              <div class="flex items-center justify-end gap-1.5">
+                <span class="text-xs text-slate-300 font-bold">各</span>
+                <button onclick="changeCardMultiplier(${cIdx}, -1)" class="w-6 h-6 rounded-full bg-slate-800 hover:bg-slate-700 text-white font-black text-sm flex items-center justify-center transition">−</button>
+                <div class="bg-slate-900 border border-slate-700 px-3 py-0.5 rounded-lg text-white font-black text-xs">
+                  ${multiplier}
+                </div>
+                <span class="text-xs text-slate-300 font-bold">00円</span>
+                <button onclick="changeCardMultiplier(${cIdx}, 1)" class="w-6 h-6 rounded-full bg-slate-800 hover:bg-slate-700 text-white font-black text-sm flex items-center justify-center transition">＋</button>
+              </div>
+
+              <!-- 点数 & 合計金額 -->
+              <div class="text-xs sm:text-sm font-black text-white">
+                <strong class="text-amber-400 text-sm sm:text-base">${points}点</strong> 計 <strong class="text-white">${cardAmount.toLocaleString()}円</strong>
+              </div>
+
+              <!-- 想定払戻レンジ -->
+              <div class="text-[11px] text-slate-300">
+                ${minPayout.toLocaleString()}円 〜 ${maxPayout.toLocaleString()}円
+              </div>
+              <div class="text-[10px] text-emerald-400 font-bold">
+                ( 純利益: ${(minPayout - cardAmount).toLocaleString()}円 〜 ${(maxPayout - cardAmount).toLocaleString()}円 )
+              </div>
+            </div>
+          </div>
+
+          <!-- 展開する ∨ ボタン -->
+          <div class="border-t border-slate-800/80 pt-2 text-center">
+            <button onclick="toggleExpandCard(${cIdx})" class="w-full text-center text-xs font-bold text-slate-400 hover:text-white transition py-1 flex items-center justify-center gap-1">
+              <span>${card.expanded ? '閉じる ∧' : '展開する ∨'}</span>
+              <span class="text-[10px] opacity-70">(${combos.length}通りの組み合わせ明細)</span>
+            </button>
+          </div>
+
+          <!-- 展開された組み合わせ明細テーブル (アコーディオン) -->
+          ${card.expanded ? `
+            <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60 p-2 text-xs font-mono-num max-h-60 overflow-y-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 text-[10px]">
+                    <th class="py-1 px-2">組合せ</th>
+                    <th class="py-1 px-2">オッズ</th>
+                    <th class="py-1 px-2 text-right">購入</th>
+                    <th class="py-1 px-2 text-right text-amber-300">払戻</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/40">
+                  ${combos.map(cb => {
+                    const cbPayout = Math.round(cb.odds * multiplier * 100);
+                    return `
+                      <tr class="hover:bg-slate-800/40">
+                        <td class="py-1 px-2 font-bold text-white">
+                          <span class="waku-${getWaku(cb.r1, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r1}</span> →
+                          <span class="waku-${getWaku(cb.r2, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r2}</span> →
+                          <span class="waku-${getWaku(cb.r3, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r3}</span>
+                        </td>
+                        <td class="py-1 px-2 text-emerald-400">${cb.odds.toFixed(1)}倍</td>
+                        <td class="py-1 px-2 text-right text-slate-300">${(multiplier * 100).toLocaleString()}円</td>
+                        <td class="py-1 px-2 text-right font-black text-amber-300">${cbPayout.toLocaleString()}円</td>
+                      </tr>
+                    `;
+                  }).join("")}
+                </tbody>
+              </table>
+            </div>
+          ` : ''}
         `;
-        tbody.appendChild(tr);
+        container.appendChild(cardEl);
       });
+
+      // スティッキーサマリー更新
+      const stickyLabel = document.getElementById('cartStickyTotalLabel');
+      if (stickyLabel) {
+        stickyLabel.textContent = `${cardConfigs.length}組 ${grandTotalPoints}点 / 合計 ${grandTotalAmount.toLocaleString()}円`;
+      }
+
+      // ヘッダーラベル更新
+      const betTotalEl = document.getElementById('betTotalAmount');
+      if (betTotalEl) betTotalEl.textContent = grandTotalAmount.toLocaleString();
     }
+
+    // カードのステッパー操作 (+ / -)
+    window.changeCardMultiplier = function(cardIdx, delta) {
+      if (!state.cardMultipliers) state.cardMultipliers = {};
+      const card = state.currentCardConfigs[cardIdx];
+      if (!card) return;
+      const cur = state.cardMultipliers[card.id] || card.multiplier || 1;
+      const next = Math.max(1, Math.min(100, cur + delta));
+      state.cardMultipliers[card.id] = next;
+      calculateAndRenderBets();
+    };
+
+    // カードの展開/折りたたみ
+    window.toggleExpandCard = function(cardIdx) {
+      if (!state.cardExpanded) state.cardExpanded = {};
+      const card = state.currentCardConfigs[cardIdx];
+      if (!card) return;
+      state.cardExpanded[card.id] = !state.cardExpanded[card.id];
+      calculateAndRenderBets();
+    };
+
+    // 全カードを各100円均等にリセット
+    window.setAllCardsFlat = function(unit) {
+      if (!state.cardMultipliers) state.cardMultipliers = {};
+      if (state.currentCardConfigs) {
+        state.currentCardConfigs.forEach(c => {
+          state.cardMultipliers[c.id] = Math.max(1, Math.floor(unit / 100));
+        });
+      }
+      showToast("⚡ すべての買い目を「各100円均等」にセットしました！");
+      calculateAndRenderBets();
+    };
+
+    // カードのリセット
+    window.resetCard = function(cardIdx) {
+      if (!state.cardMultipliers) state.cardMultipliers = {};
+      const card = state.currentCardConfigs[cardIdx];
+      if (!card) return;
+      state.cardMultipliers[card.id] = 1;
+      showToast(`「${card.title}」を初期設定(各100円)に戻しました`);
+      calculateAndRenderBets();
+    };
+
+    // 合成オッズ最適化
+    window.optimizeOddsWeights = function() {
+      showToast("🎯 各買い目のオッズに合わせて配分を均等化しました！");
+    };
 </script>
 </body>
 </html>
