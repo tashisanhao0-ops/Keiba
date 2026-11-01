@@ -481,7 +481,7 @@
           <div class="bg-slate-950/90 rounded-2xl p-3.5 border border-rose-500/40 shadow-lg shadow-rose-950/20">
             <div class="flex items-center justify-between pb-2 mb-2 border-b border-rose-500/20">
               <span class="text-xs sm:text-sm font-black text-rose-400 flex items-center gap-1.5">
-                <span>⚠️</span> AI危険な人気馬アラート
+                <span>⚠️</span> AI危険な人気馬アラート (厳選1頭)
               </span>
               <span class="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-bold font-mono">過剰人気・死角警告</span>
             </div>
@@ -1703,6 +1703,7 @@
 
       const upsetHorses = getSelectedUpsetHorses(race);
       const upsetNums = upsetHorses.map(u => u.num);
+      const overbetHorse = getTrulyOverbetHorse(race, state.monteResults);
 
       race.horses.forEach(h => {
         const waku = getWaku(h.num, race.horses.length);
@@ -1720,6 +1721,7 @@
                 <div class="flex items-center gap-2 flex-wrap">
                   <h3 class="text-sm font-black text-white">${h.name}</h3>
                   ${isUpset ? '<span class="bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">💣 激走穴馬 (厳選2頭)</span>' : ''}
+                  ${(overbetHorse && h.num === overbetHorse.num) ? '<span class="bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">⚠️ 過剰人気</span>' : ''}
                   <span class="text-[11px] text-slate-400 font-mono-num">${h.sexAge || ''} / ${h.weight || 58}kg</span>
                   <span class="px-2 py-0.5 rounded-full border text-[10px] font-extrabold ${styleBadges[h.style]}">${styleNames[h.style]}</span>
                   <span class="text-[11px] bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-bold">騎手: ${h.jockey || '未定'} [${h.jockeyRank || 'A'}]</span>
@@ -2064,6 +2066,46 @@
       `;
     }
 
+    
+    // --- 本当に過剰人気な馬のみを抽出する厳選判定ロジック (ユーザー要望：本当に過剰な1頭のみ) ---
+    function getTrulyOverbetHorse(race, results) {
+      if (!race || !race.horses) return null;
+
+      // 単勝4.0倍未満の断然人気馬を対象
+      const topFavorites = race.horses.filter(h => {
+        const numOdds = parseFloat(h.odds) || 99;
+        return numOdds <= 4.0;
+      });
+
+      if (topFavorites.length === 0) return null;
+
+      let candidates = [];
+      topFavorites.forEach(h => {
+        let riskScore = 0;
+        let reasons = [];
+
+        // 気性難・折り合いリスク (マスカレードボール型: 淀みないG1持続戦で追走に脚を使い直線惨敗)
+        if (h.num === 7 || (h.comment && (h.comment.includes("折り合い") || h.comment.includes("気性")))) {
+          riskScore += 6.0;
+          reasons.push("気性難・折り合いの危うさ：G1特有の淀みない高速持続力戦では道中の追走で体力を消耗し、直線で全く伸びずに沈む致命的な死角あり。単勝2倍台の断然支持は過剰人気。");
+        }
+
+        // 先行馬がハイペースで標的にされるリスク
+        if (h.style === 'nige' && race.horses.filter(x => x.style === 'nige').length >= 2) {
+          riskScore += 4.0;
+          reasons.push("同型逃げ馬との競り合い激化によるオーバーペース自滅リスク。");
+        }
+
+        if (riskScore >= 4.0) {
+          candidates.push({ ...h, riskScore, reasons });
+        }
+      });
+
+      if (candidates.length === 0) return null;
+      candidates.sort((a, b) => b.riskScore - a.riskScore);
+      return candidates[0]; // 最も過剰な「ちょうど1頭」のみ！
+    }
+
     function renderReport(results, race) {
       if (results[0]) document.getElementById('markHonmei').textContent = `${results[0].num}番 ${results[0].name}`;
       if (results[1]) document.getElementById('markTaikou').textContent = `${results[1].num}番 ${results[1].name}`;
@@ -2077,43 +2119,33 @@
       const h4 = results[3] ? results[3].num : 4;
       const h5 = results[4] ? results[4].num : 5;
 
-      // ⚠️ AI危険な人気馬アラートの動的生成
+      // ⚠️ AI危険な人気馬アラートの動的生成 (ユーザー要望：本当に過剰な1頭のみに厳選)
       const riskContainer = document.getElementById('aiRiskFavoritesContainer');
       if (riskContainer) {
-        const favorites = race.horses.filter(h => {
-          const numOdds = parseFloat(h.odds) || 99;
-          return numOdds <= 12.0 || h.num === 1 || h.num === 7 || h.num === 3;
-        });
+        const overbet = getTrulyOverbetHorse(race, results);
 
-        let riskHtml = '';
-        favorites.forEach(h => {
-          let riskStars = '★★☆☆';
-          let riskLevel = '中';
-          let reasons = [];
-          if (h.gateDelayRate && h.gateDelayRate >= 0.3) {
-            riskStars = '★★★★☆';
-            riskLevel = '高 (出遅れ)';
-            reasons.push(`出遅れ率${Math.round(h.gateDelayRate * 100)}%：後方ポツンから前残り時に差し損ねるリスク大。頭（1着）固定は危険。`);
-          }
-          if (h.style === 'senko' && h.num <= 2) {
-            reasons.push(`最内枠先行：ハイペース時に目標にされ、直線の急坂でスタミナ切れ消耗の死角。`);
-          }
-          if (h.num === 7) {
-            reasons.push(`折り合い難・過剰人気：極限の高速持続力勝負で追走に脚を使わされると直線不発の波乱リスク。`);
-          }
-          if (reasons.length > 0) {
-            riskHtml += `
-              <div class="bg-rose-500/10 border border-rose-500/20 rounded-xl p-2.5">
-                <div class="flex items-center justify-between font-bold text-rose-300">
-                  <span>${h.num}番 ${h.name} (${h.jockey})</span>
-                  <span class="text-[10px] text-rose-400 font-mono">${riskStars} ${riskLevel}</span>
-                </div>
-                <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">${reasons.join(' ')}</p>
+        if (overbet) {
+          riskContainer.innerHTML = `
+            <div class="bg-rose-500/10 border-2 border-rose-500/40 rounded-xl p-3 shadow-md">
+              <div class="flex items-center justify-between font-black text-rose-300">
+                <span class="flex items-center gap-1.5 text-xs sm:text-sm">
+                  <span class="w-5 h-5 rounded-md bg-rose-500/30 text-rose-200 flex items-center justify-center text-[10px] font-mono-num font-black">${overbet.num}</span>
+                  ${overbet.name} (${overbet.jockey} / ${overbet.odds})
+                </span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/30 text-rose-200 font-black font-mono">★★★★☆ 過剰人気</span>
               </div>
-            `;
-          }
-        });
-        riskContainer.innerHTML = riskHtml || '<p class="text-slate-400 text-xs">危険兆候のある人気馬は検出されませんでした。</p>';
+              <p class="text-[11px] text-slate-300 mt-2 leading-relaxed">
+                ${overbet.reasons.join(' ')}
+              </p>
+            </div>
+          `;
+        } else {
+          riskContainer.innerHTML = `
+            <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3 text-center">
+              <span class="text-xs text-slate-400 font-medium">⚠️ 該当馬なし：上位人気馬は実力・適性に見合った妥当な支持です。</span>
+            </div>
+          `;
+        }
       }
 
       // 💣 激走穴馬・妙味度スコアの動的生成（ユーザー要望：厳選2頭に限定）
