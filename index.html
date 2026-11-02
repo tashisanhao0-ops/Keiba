@@ -116,19 +116,12 @@
 
       <!-- レース切り替えセレクタ & 取込ボタン -->
       <div class="flex items-center gap-2 flex-1 max-w-lg justify-end">
-        <select id="raceSelect" class="bg-slate-900 border border-slate-700/80 hover:border-slate-600 text-xs text-white rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium truncate flex-1 sm:flex-initial shadow-inner">
-          <optgroup label="🔥 直近・今週末のリアル開催レース">
-            <option value="tenno_aki_2026" selected>【明日11/1開催】第174回 天皇賞(秋) G1 確定17頭 (東京 芝2000m)</option>
-          </optgroup>
-          <optgroup label="📅 今後の注目G1レース (最新想定データ)">
-            <option value="queen_elizabeth_2026">エリザベス女王杯 G1 (京都 芝2200m)</option>
-            <option value="mile_cs_2026">マイルCS G1 (京都 芝1600m)</option>
-            <option value="japan_cup_2026">ジャパンカップ G1 (東京 芝2400m)</option>
-            <option value="arima_2026">有馬記念 G1 (中山 芝2500m)</option>
-          </optgroup>
-          <optgroup label="📋 ユーザー取り込みレース">
-            <option value="custom_race" disabled id="customRaceOption">（出走表コピペで追加）</option>
-          </optgroup>
+        <select id="raceSelect" class="bg-slate-900 border border-slate-700/80 hover:border-slate-600 text-xs text-white rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold truncate flex-1 sm:flex-initial shadow-inner">
+          <option value="tenno_aki_2026" selected>天皇賞(秋)</option>
+          <option value="queen_elizabeth_2026">エリ女</option>
+          <option value="mile_cs_2026">マイルCS</option>
+          <option value="japan_cup_2026">JC</option>
+          <option value="arima_2026">有馬記念</option>
         </select>
 
         <button id="openImportBtn" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition shadow-md shadow-indigo-950/50 whitespace-nowrap">
@@ -169,7 +162,7 @@
       <div class="flex items-center gap-2.5">
         <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-4 ring-emerald-500/20 animate-pulse"></div>
         <div class="text-xs">
-          <span id="activeRaceLabel" class="font-extrabold text-white text-sm tracking-tight">【明日11/1開催】第174回 天皇賞(秋) G1 (確定17頭フルゲート)</span>
+          <span id="activeRaceLabel" class="font-extrabold text-white text-sm tracking-tight">第174回 天皇賞(秋) G1 (確定17頭)</span>
           <span id="activeConditionLabel" class="text-slate-400 ml-2 text-[11px] font-mono">東京 芝2000m / 良 / 直線525m (だらだら坂あり)</span>
         </div>
       </div>
@@ -715,7 +708,7 @@
     const RACE_DATABASE = {
       tenno_aki_2026: {
         id: "tenno_aki_2026",
-        name: "【明日11/1開催】第174回 天皇賞(秋) G1 (確定17頭フルゲート)",
+        name: "第174回 天皇賞(秋) G1 (確定17頭)",
         courseName: "東京競馬場",
         distance: 2000,
         trackType: "芝",
@@ -1272,7 +1265,7 @@
       },
       queen_elizabeth_2026: {
         id: "queen_elizabeth_2026",
-        name: "エリザベス女王杯 G1 (11月中旬想定)",
+        name: "第51回 エリザベス女王杯 G1",
         courseName: "京都競馬場",
         distance: 2200,
         trackType: "芝",
@@ -1291,7 +1284,7 @@
       },
       mile_cs_2026: {
         id: "mile_cs_2026",
-        name: "マイルCS G1 (11月下旬想定)",
+        name: "第43回 マイルCS G1",
         courseName: "京都競馬場",
         distance: 1600,
         trackType: "芝",
@@ -1310,7 +1303,7 @@
       },
       japan_cup_2026: {
         id: "japan_cup_2026",
-        name: "ジャパンカップ G1 (11月最終週想定)",
+        name: "第46回 ジャパンカップ G1",
         courseName: "東京競馬場",
         distance: 2400,
         trackType: "芝",
@@ -1329,7 +1322,7 @@
       },
       arima_2026: {
         id: "arima_2026",
-        name: "有馬記念 G1 (年末グランプリ想定)",
+        name: "第71回 有馬記念 G1",
         courseName: "中山競馬場",
         distance: 2500,
         trackType: "芝",
