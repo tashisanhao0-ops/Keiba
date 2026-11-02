@@ -17,9 +17,17 @@
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap');
-    body {
+    html, body {
+      max-width: 100vw !important;
+      overflow-x: hidden !important;
+      position: relative;
+      margin: 0;
+      padding: 0;
       font-family: 'Noto Sans JP', 'Plus Jakarta Sans', sans-serif;
       background-color: #070b12;
+    }
+    * {
+      box-sizing: border-box;
     }
     .font-mono-num {
       font-family: 'JetBrains Mono', monospace;
@@ -146,7 +154,10 @@
           <span>📋</span> 確定出走表・調教データ (<span id="horseCountBadge">17</span>頭)
         </button>
         <button data-tab="report" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
-          <span>🎯</span> AI予想印＆展開診断
+          <span>🎯</span> AI予想印・分析
+        </button>
+        <button data-tab="betting" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
+          <span>🎫</span> 買い方・購入カート
         </button>
       </nav>
     </div>
@@ -306,7 +317,7 @@
             </button>
           </div>
 
-          <div class="flex-1 min-w-[260px] bg-slate-950 border border-slate-800/90 rounded-xl px-3.5 py-2 text-xs text-slate-300 flex items-center gap-2 shadow-inner">
+          <div class="flex-1 w-full sm:w-auto sm:flex-1 bg-slate-950 border border-slate-800/90 rounded-xl px-3.5 py-2 text-xs text-slate-300 flex items-center gap-2 shadow-inner">
             <span class="text-amber-400 font-extrabold flex items-center gap-1">
               <span>🎙</span> 実況:
             </span>
@@ -318,6 +329,35 @@
 
     <!-- TAB 2: シミュレーション結果 -->
     <section id="tab-sim" class="tab-content hidden space-y-4">
+
+      <!-- ★ レース詳細 ＆ コース高低差・スタミナ持久力物理解析バナー (ユーザー要望) ★ -->
+      <div id="simRaceInfoBanner" class="bg-slate-950/90 border-2 border-emerald-500/40 rounded-2xl p-3.5 sm:p-4 shadow-xl space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-black text-xs font-mono border border-emerald-500/40">G1公式舞台</span>
+            <h3 id="simRaceFullName" class="text-base sm:text-lg font-black text-white">第174回 天皇賞(秋) G1</h3>
+            <span id="simRaceCourseMeta" class="text-xs text-amber-300 font-bold bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/30 font-mono">東京 芝2000m【左回り】</span>
+          </div>
+          <span id="simSlopeBadge" class="text-xs font-mono-num font-bold px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300">
+            高低差 2.1m (直線だらだら坂)
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+          <div class="bg-slate-900/70 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+            <span class="text-slate-400 font-bold">コース回り・直線:</span>
+            <span id="simTurnStraight" class="font-bold text-white">左回り・直線 525m</span>
+          </div>
+          <div class="bg-slate-900/70 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+            <span class="text-slate-400 font-bold">高低差・坂の難所:</span>
+            <span id="simElevationDetail" class="font-bold text-amber-300">高低差 2.1m (残り400〜250m)</span>
+          </div>
+          <div class="bg-slate-900/70 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+            <span class="text-slate-400 font-bold">持久力・スタミナ影響:</span>
+            <span id="simStaminaImpact" class="font-bold text-emerald-400">スタミナ92未満は坂で減速</span>
+          </div>
+        </div>
+      </div>
       
       <!-- 統計サマリーカード -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -504,235 +544,158 @@
           </div>
         </div>
 
-        <!-- ★ ユーザー要望: 予算金額を入力するとピッタリ配分してくれる自動買い目マネージャー ★ -->
-        <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-amber-500/30 space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
-            <div>
-              <h3 class="text-sm sm:text-base font-black text-amber-300 flex items-center gap-2">
-                <span>💰</span> 予算別・自動資金配分買い目シミュレーター
-              </h3>
-              <p class="text-xs text-slate-400 mt-0.5">
-                購入したい合計金額を入力すると、シミュレーション勝率・期待値に合わせてピッタリその金額になるよう最適配分します。
-              </p>
-            </div>
+                <!-- 買い方・カートへの誘導ボタン -->
+        <div class="pt-3 text-center">
+          <button onclick="switchTab('betting')" class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-sm transition shadow-xl shadow-amber-950/40 inline-flex items-center justify-center gap-2 active:scale-95">
+            <span>🎫</span>
+            <span>この予想で「買い方・購入カート」へ進む (netkeiba風シート)</span>
+            <span>→</span>
+          </button>
+        </div>
+      </div>
+    </section>
 
-            <!-- 合計金額バッジ -->
-            <div class="bg-slate-950/90 border border-amber-500/40 rounded-xl px-4 py-1.5 flex items-baseline gap-2">
-              <span class="text-[11px] text-slate-400 font-bold">合計購入金額:</span>
-              <span id="betTotalAmount" class="text-base sm:text-lg font-black font-mono-num text-amber-400">2,000</span>
-              <span class="text-xs text-slate-400">円</span>
-              <span id="betBudgetMatchBadge" class="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/40">予算一致</span>
+    <!-- ==================== TAB 5: 買い方・購入カート (netkeiba風シート) ==================== -->
+    <section id="tab-betting" class="tab-content space-y-4 hidden w-full overflow-hidden">
+      <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-amber-500/30 space-y-4">
+        <!-- ヘッダータイトル ＆ 券種タブ (3連単・3連複・馬連・ワイド) -->
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div>
+            <h2 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+              <span>🎫</span> 馬券買い方・購入カートシミュレーター
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">
+              ネット競馬・JRA即PATの購入シート形式で、3連単・3連複・馬連・ワイドのフォーメーションを自動生成します。
+            </p>
+          </div>
+
+          <!-- 券種選択ピルボタン (3連単・3連複・馬連・ワイド) -->
+          <div class="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-bold overflow-x-auto no-scrollbar">
+            <button id="styleTrifectaBtn" onclick="setBetStyle('trifecta')" class="bet-style-btn px-3 py-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black transition shadow-sm whitespace-nowrap" data-style="trifecta">3連単</button>
+            <button id="styleSanrenpukuBtn" onclick="setBetStyle('sanrenpuku')" class="bet-style-btn px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition font-medium whitespace-nowrap" data-style="sanrenpuku">3連複</button>
+            <button id="styleUmarenBtn" onclick="setBetStyle('umaren')" class="bet-style-btn px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition font-medium whitespace-nowrap" data-style="umaren">馬連</button>
+            <button id="styleWideBtn" onclick="setBetStyle('wide')" class="bet-style-btn px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition font-medium whitespace-nowrap" data-style="wide">ワイド</button>
+          </div>
+        </div>
+
+        <!-- コンパクト設定バー: 軸馬指定 ＆ 予算入力 ＆ 展開モード (ユーザー要望：選ぶところを小さくスッキリ) -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 bg-slate-950/70 p-3 rounded-xl border border-slate-800 items-center text-xs">
+          <!-- 軸馬指定 -->
+          <div class="md:col-span-5 space-y-1">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-slate-300 flex items-center gap-1"><span>🎯</span> 軸馬指定</label>
+              <span class="text-[10px] text-amber-400 font-mono">久保木TM連動</span>
+            </div>
+            <select id="customAxisSelect" onchange="onCustomAxisChange(this.value)" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg py-1.5 px-2.5 text-xs font-bold focus:ring-2 focus:ring-amber-400 focus:outline-none">
+              <option value="auto">🤖 AI総合1位を軸 (自動)</option>
+            </select>
+          </div>
+
+          <!-- 予算金額 -->
+          <div class="md:col-span-3 space-y-1">
+            <div class="flex items-center justify-between">
+              <label class="font-bold text-slate-300">予算 (円)</label>
+              <span id="betTotalAmount" class="text-amber-400 font-black font-mono-num text-[11px]">3,000</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <div class="relative flex-1">
+                <span class="absolute left-2.5 top-1.5 text-slate-400 font-bold text-xs">¥</span>
+                <input type="number" id="betBudgetInput" value="3000" step="100" min="500" max="100000" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg py-1.5 pl-6 pr-2 font-mono-num text-xs font-black focus:ring-2 focus:ring-amber-400 focus:outline-none">
+              </div>
+              <button id="applyBudgetBtn" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-2.5 py-1.5 rounded-lg text-xs transition shrink-0">計算</button>
             </div>
           </div>
 
-          <!-- 予算入力コントロール ＆ クイックボタン -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-            <!-- ★ 軸馬（キーホース）指定：久保木トラックマン予想・注目穴馬カスタム ★ -->
-            <div class="space-y-1.5 bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-              <div class="flex items-center justify-between">
-                <label class="block text-xs font-bold text-slate-300">🎯 軸馬の指定 (久保木TM穴馬・注目馬)</label>
-                <span class="text-[10px] text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/30 font-mono">日刊競馬・久保木予想連動</span>
-              </div>
-              <select id="customAxisSelect" onchange="onCustomAxisChange(this.value)" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl py-2 px-3 text-xs font-bold focus:ring-2 focus:ring-amber-400 focus:outline-none">
-                <option value="auto">🤖 AI総合指数 1位馬を軸にする (自動)</option>
-              </select>
-              <p class="text-[10px] text-slate-400 leading-tight">
-                日刊競馬の久保木正則TM推奨の◎や特注穴馬（調教時計・美浦気配上位）を指定すると、その馬を軸にした回収率特化の買い目（3連単・馬連）を自動構成します。
+          <!-- コンパクト展開切り替え (1行ピル) -->
+          <div class="md:col-span-4 space-y-1">
+            <label class="font-bold text-slate-300">展開モード</label>
+            <div class="flex items-center gap-1 overflow-x-auto no-scrollbar">
+              <button id="paceUnifiedBtn" onclick="setPaceScenario('unified')" class="pace-scenario-btn px-2.5 py-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-xs whitespace-nowrap shadow-sm" data-pace="unified">🌐 全展開</button>
+              <button id="paceMiddleBtn" onclick="setPaceScenario('middle')" class="pace-scenario-btn px-2 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-xs whitespace-nowrap" data-pace="middle">⚖️ ミドル</button>
+              <button id="paceHighBtn" onclick="setPaceScenario('high')" class="pace-scenario-btn px-2 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-xs whitespace-nowrap" data-pace="high">🔥 ハイ</button>
+              <button id="paceSlowBtn" onclick="setPaceScenario('slow')" class="pace-scenario-btn px-2 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-xs whitespace-nowrap" data-pace="slow">🐢 スロー</button>
+              <button id="paceUpsetBtn" onclick="setPaceScenario('upset')" class="pace-scenario-btn px-2 py-1.5 rounded-lg border border-purple-500/40 bg-purple-950/30 text-purple-300 hover:text-white font-bold text-xs whitespace-nowrap" data-pace="upset">💥 大波乱</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI取捨選択ガイド（ここは切る / ここは残す / ここは何円で） -->
+        <div class="bg-slate-900/90 border border-slate-700/80 rounded-xl p-3 space-y-2 shadow-md">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+            <span class="text-xs font-black text-amber-300 flex items-center gap-1.5">
+              <span>✂️</span> AIプロの取捨選択ガイド（ここは切る / ここは残す / ここは何円で）
+            </span>
+            <span id="paceScenarioDesc" class="text-[10px] text-amber-200 font-bold font-mono">全展開マスター：本線厚張り＋波乱各100円</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+            <div class="bg-slate-950/80 p-2 rounded-lg border border-emerald-500/30 space-y-0.5">
+              <span class="text-[10px] font-black text-emerald-400 flex items-center gap-1"><span>⭕</span> ここは残す (推奨馬)</span>
+              <p class="text-[10px] text-slate-300 leading-relaxed">
+                ・<strong>軸馬 (◎)</strong>: 能力最上位で軸固定<br>
+                ・<strong>10番 ネブラディスク</strong>: 川田×イン最少距離走行<br>
+                ・<strong>17番 ダノンデサイル</strong>: ダービー馬の東京持続力SSS
               </p>
             </div>
-
-            <div class="space-y-1.5">
-              <label class="block text-xs font-bold text-slate-300">予算金額を設定 (円)</label>
-              <div class="flex items-center gap-2">
-                <div class="relative flex-1">
-                  <span class="absolute left-3 top-2.5 text-slate-400 font-bold text-sm">¥</span>
-                  <input type="number" id="betBudgetInput" value="2000" step="100" min="500" max="100000" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl py-2 pl-7 pr-3 font-mono-num text-sm font-black focus:ring-2 focus:ring-amber-400 focus:outline-none">
-                </div>
-                <button id="applyBudgetBtn" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs transition shadow-md">
-                  配分計算
-                </button>
-              </div>
-              <!-- クイック予算ボタン -->
-              <div class="flex items-center gap-1.5 pt-1">
-                <span class="text-[11px] text-slate-400 font-bold">クイック:</span>
-                <button class="quick-budget-btn px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono-num font-bold border border-slate-800" data-amount="1000">1,000円</button>
-                <button class="quick-budget-btn px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-mono-num font-black" data-amount="2000">2,000円</button>
-                <button class="quick-budget-btn px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono-num font-bold border border-slate-800" data-amount="3000">3,000円</button>
-                <button class="quick-budget-btn px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono-num font-bold border border-slate-800" data-amount="5000">5,000円</button>
-                <button class="quick-budget-btn px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-mono-num font-bold border border-slate-800" data-amount="10000">10,000円</button>
-              </div>
+            <div class="bg-slate-950/80 p-2 rounded-lg border border-rose-500/30 space-y-0.5">
+              <span class="text-[10px] font-black text-rose-400 flex items-center gap-1"><span>❌</span> ここは切る (消し馬)</span>
+              <p class="text-[10px] text-slate-300 leading-relaxed">
+                ・<strong>7番 マスカレードボール</strong>: 気性難・折り合いリスク大。本線から削り妙味確保<br>
+                ・<strong>後方追込み勢 (8, 5, 2番など)</strong>: 展開不一致でバッサリ切る
+              </p>
             </div>
-
-            <!-- 展開シナリオ選択 (この展開ならこれ！) -->
-            <div class="space-y-1.5 md:col-span-2 bg-slate-950/70 p-3 rounded-xl border border-slate-800">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <label class="block text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                  <span>🎯</span> レース買い方モード (ユーザー要望：どの展開が来ても大丈夫な完全網羅マスター)
-                </label>
-                <span id="paceScenarioDesc" class="text-[11px] text-amber-300 font-bold">全展開対応マスター：本線厚張り＋波乱各100円で完全網羅</span>
-              </div>
-
-              <!-- ★ メインおすすめ: 全展開対応・完全網羅マスターボタン ★ -->
-              <div class="pt-1">
-                <button id="paceUnifiedBtn" onclick="setPaceScenario('unified')" class="pace-scenario-btn w-full p-2.5 rounded-xl border-2 border-amber-400 bg-gradient-to-r from-amber-500/25 via-orange-500/20 to-amber-500/25 text-amber-300 font-black text-center transition shadow-lg flex items-center justify-between gap-2" data-pace="unified">
-                  <div class="flex items-center gap-2 text-left">
-                    <span class="text-xl">🌐</span>
-                    <div>
-                      <span class="text-xs sm:text-sm font-black text-white block">全展開対応・完全網羅マスター (おすすめ・迷ったらコレ！)</span>
-                      <span class="text-[10px] text-amber-200 font-normal">ミドル・ハイ・スロー・大波乱のどれが来ても的中カバー。本線厚張り＋穴目各100円の最強ポートフォリオ</span>
-                    </div>
-                  </div>
-                  <span class="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 text-[10px] font-black shrink-0 font-mono">推奨</span>
-                </button>
-              </div>
-
-              <!-- 個別展開の引き出し（必要な時だけ切り替え可能） -->
-              <div class="pt-2">
-                <div class="flex items-center justify-between text-[11px] text-slate-400 pb-1">
-                  <span>📂 買い方の引き出し（個別展開・特定シナリオで勝負したい時）:</span>
-                </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                  <button id="paceMiddleBtn" onclick="setPaceScenario('middle')" class="pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-pace="middle">
-                    <span class="block text-sm mb-0.5">⚖️</span>
-                    <span>ミドル (王道・実力)</span>
-                    <span class="block text-[9px] text-slate-400 font-normal">本線実力馬激突</span>
-                  </button>
-                  <button id="paceHighBtn" onclick="setPaceScenario('high')" class="pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-pace="high">
-                    <span class="block text-sm mb-0.5">🔥</span>
-                    <span>ハイペース (前崩れ)</span>
-                    <span class="block text-[9px] text-slate-400 font-normal">差し・追込の大外強襲</span>
-                  </button>
-                  <button id="paceSlowBtn" onclick="setPaceScenario('slow')" class="pace-scenario-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-pace="slow">
-                    <span class="block text-sm mb-0.5">🐢</span>
-                    <span>スローペース (前残り)</span>
-                    <span class="block text-[9px] text-slate-400 font-normal">逃げ・先行粘り込み</span>
-                  </button>
-                  <button id="paceUpsetBtn" onclick="setPaceScenario('upset')" class="pace-scenario-btn p-2 rounded-xl border border-purple-500/40 bg-purple-950/30 text-purple-300 hover:text-white font-medium text-center transition" data-pace="upset">
-                    <span class="block text-sm mb-0.5">💥</span>
-                    <span>大波乱 (特大万馬券)</span>
-                    <span class="block text-[9px] text-purple-200 font-bold">17-10-3型 人気総崩れ</span>
-                  </button>
-                </div>
-              </div>
+            <div class="bg-slate-950/80 p-2 rounded-lg border border-blue-500/30 space-y-0.5">
+              <span class="text-[10px] font-black text-blue-400 flex items-center gap-1"><span>💰</span> ここは何円で (配分指示)</span>
+              <p class="text-[10px] text-slate-300 leading-relaxed">
+                ・<strong>Card 1 (本線堅調)</strong>: <strong>各200円〜300円厚張り</strong>で元本確保<br>
+                ・<strong>Card 2 (波乱穴目)</strong>: <strong>各100円均等</strong>で万馬券〜十万馬券狙い
+              </p>
             </div>
+          </div>
+        </div>
 
-            <!-- 馬券購入スタイル選択 (三連単を追加) -->
-            <div class="space-y-1.5">
-              <label class="block text-xs font-bold text-slate-300">投資戦略スタイル (三連単・三連複・馬連)</label>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                <button id="styleTrifectaBtn" class="bet-style-btn p-2 rounded-xl border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-md shadow-amber-950/40" data-style="trifecta" onclick="setBetStyle('trifecta')">
-                  <span class="block text-sm mb-0.5">👑</span>
-                  <span>三連単 特化</span>
-                  <span class="block text-[9px] text-amber-200 font-normal">◎1着固定＆折り返し</span>
-                </button>
-                <button id="styleHighBtn" class="bet-style-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-style="high" onclick="setBetStyle('high')">
-                  <span class="block text-sm mb-0.5">🚀</span>
-                  <span>三連複 勝負</span>
-                  <span class="block text-[9px] text-slate-400 font-normal">フォーメーション</span>
-                </button>
-                <button id="styleBalanceBtn" class="bet-style-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-style="balance" onclick="setBetStyle('balance')">
-                  <span class="block text-sm mb-0.5">🌟</span>
-                  <span>王道バランス</span>
-                  <span class="block text-[9px] text-slate-400 font-normal">馬連＋3連複</span>
-                </button>
-                <button id="styleSafeBtn" class="bet-style-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition" data-style="safe" onclick="setBetStyle('safe')">
-                  <span class="block text-sm mb-0.5">🛡️</span>
-                  <span>的中堅実型</span>
-                  <span class="block text-[9px] text-slate-400 font-normal">馬連・ワイド厚め</span>
-                </button>
-              </div>
+        <!-- netkeiba / IPAT風 購入カートエリア -->
+        <div class="space-y-3">
+          <!-- オレンジヘッダーバー (写真再現) -->
+          <div class="bg-gradient-to-r from-orange-600 to-amber-600 rounded-t-xl px-4 py-2 flex items-center justify-between text-white font-black text-xs sm:text-sm shadow-md">
+            <span class="flex items-center gap-1.5">
+              <span class="text-base">🎫</span>
+              <span id="cartBetTypeLabel">3連単</span>
+              <span class="text-[11px] font-normal opacity-90">フォーメーション購入シート</span>
+            </span>
+            <div class="flex items-center gap-4 text-[11px] font-medium opacity-90 hidden sm:flex">
+              <span>買い目</span>
+              <span>購入金額</span>
+              <span>想定払戻</span>
             </div>
           </div>
 
-          <!-- ★ 写真完全再現: netkeiba / IPAT風 フォーメーション購入カートUI ★ -->
-          <div class="space-y-4">
-            <!-- ★ AIプロの取捨選択ガイド（ここは切る / ここは残す / ここは何円で） ★ -->
-            <div class="bg-slate-900/90 border border-slate-700/80 rounded-2xl p-3.5 space-y-2.5 shadow-lg">
-              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                <span class="text-xs sm:text-sm font-black text-amber-300 flex items-center gap-1.5">
-                  <span>✂️</span> AIプロの取捨選択ガイド（ここは切る / ここは残す / ここは何円で）
+          <!-- フォーメーションカード一覧 (動的生成) -->
+          <div id="netkeibaCardsList" class="space-y-3 -mt-2">
+            <!-- 動的生成 -->
+          </div>
+
+          <!-- スティッキーサマリーバー (写真最下部バー完全再現) -->
+          <div class="bg-slate-950 border-2 border-slate-800 p-3 sm:p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-2xl">
+            <div class="flex items-center gap-3">
+              <div class="flex flex-col">
+                <span class="text-[10px] text-slate-400 font-bold">合計購入点数・金額</span>
+                <span id="cartStickyTotalLabel" class="text-sm sm:text-base font-black text-amber-400 font-mono-num">
+                  2組 30点 / 合計 3,000円
                 </span>
-                <span class="text-[10px] bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded-full font-bold font-mono">全天候ポートフォリオ</span>
               </div>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-                <div class="bg-slate-950/80 p-2.5 rounded-xl border border-emerald-500/30 space-y-1">
-                  <span class="text-[11px] font-black text-emerald-400 flex items-center gap-1">
-                    <span>⭕</span> ここは残す (推奨馬)
-                  </span>
-                  <p class="text-[11px] text-slate-300 leading-relaxed">
-                    ・<strong>軸馬 (◎)</strong>: 能力・適性最上位で1着固定<br>
-                    ・<strong>10番 ネブラディスク</strong>: 川田×好位イン最少距離走行<br>
-                    ・<strong>17番 ダノンデサイル</strong>: ダービー馬の東京持続力SSS<br>
-                    ・<strong>3番 レガレイラ</strong>: 出遅れても必ず3着以内に突っ込む末脚
-                  </p>
-                </div>
-                <div class="bg-slate-950/80 p-2.5 rounded-xl border border-rose-500/30 space-y-1">
-                  <span class="text-[11px] font-black text-rose-400 flex items-center gap-1">
-                    <span>❌</span> ここは切る (消し馬)
-                  </span>
-                  <p class="text-[11px] text-slate-300 leading-relaxed">
-                    ・<strong>7番 マスカレードボール</strong>: 単勝2倍台も気性難・折り合いリスク大。本線から削り妙味確保<br>
-                    ・<strong>後方追込み勢 (8, 5, 2番など)</strong>: 展開不一致でノーチャンスと判定しバッサリ消し
-                  </p>
-                </div>
-                <div class="bg-slate-950/80 p-2.5 rounded-xl border border-blue-500/30 space-y-1">
-                  <span class="text-[11px] font-black text-blue-400 flex items-center gap-1">
-                    <span>💰</span> ここは何円で (資金配分)
-                  </span>
-                  <p class="text-[11px] text-slate-300 leading-relaxed">
-                    ・<strong>Card 1 (本線堅調)</strong>: <strong>各200円〜300円厚張り</strong>。カチカチで当たってもトリガミにならず元本確保！<br>
-                    ・<strong>Card 2 (波乱穴目)</strong>: <strong>各100円均等</strong>。どの展開が来ても万馬券〜十万馬券を直撃！
-                  </p>
-                </div>
-              </div>
+              <button onclick="setAllCardsFlat(100)" class="px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-700 hover:border-amber-400/60 text-slate-300 hover:text-white text-xs font-bold transition shadow-sm flex items-center gap-1">
+                <span>⚡</span> 全て各100円均等
+              </button>
             </div>
 
-            <!-- オレンジヘッダーバー (写真再現) -->
-            <div class="bg-gradient-to-r from-orange-600 to-amber-600 rounded-t-xl px-4 py-2 flex items-center justify-between text-white font-black text-xs sm:text-sm shadow-md">
-              <span class="flex items-center gap-1.5">
-                <span class="text-base">🎫</span>
-                <span id="cartBetTypeLabel">3連単</span>
-                <span class="text-[11px] font-normal opacity-90">フォーメーション購入シート</span>
-              </span>
-              <div class="flex items-center gap-4 text-[11px] font-medium opacity-90 hidden sm:flex">
-                <span>買い目</span>
-                <span>購入金額</span>
-                <span>想定払戻</span>
-              </div>
-            </div>
-
-            <!-- フォーメーションカード一覧 (動的生成: 写真のCard 1, Card 2) -->
-            <div id="netkeibaCardsList" class="space-y-3.5 -mt-2">
-              <!-- 動的生成 -->
-            </div>
-
-            <!-- スティッキーサマリーバー (写真最下部バー完全再現) -->
-            <div class="bg-slate-950 border-2 border-slate-800 p-3 sm:p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-2xl">
-              <div class="flex items-center gap-3">
-                <div class="flex flex-col">
-                  <span class="text-[10px] text-slate-400 font-bold">合計購入点数・金額</span>
-                  <span id="cartStickyTotalLabel" class="text-sm sm:text-base font-black text-amber-400 font-mono-num">
-                    2組 30点 / 合計 3,000円
-                  </span>
-                </div>
-                <button onclick="setAllCardsFlat(100)" class="px-2.5 py-1 rounded-xl bg-slate-900 border border-slate-700 hover:border-amber-400/60 text-slate-300 hover:text-white text-xs font-bold transition shadow-sm flex items-center gap-1">
-                  <span>⚡</span> 全て各100円均等
-                </button>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <button onclick="optimizeOddsWeights()" class="px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 text-xs font-bold transition hidden sm:inline-block">
-                  合成オッズで最適化
+            <div class="flex items-center gap-2">
+                <button onclick="copyCartCombos()" class="px-2.5 py-2 rounded-xl bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 text-xs font-bold transition flex items-center gap-1 shrink-0">
+                  <span>📋</span> コピー
                 </button>
                 <a href="https://www.ipat.jra.go.jp/" target="_blank" rel="noopener noreferrer" class="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-black px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm transition shadow-lg shadow-red-950/50 flex items-center gap-1.5 active:scale-95">
-                  <span>IPAT投票へすすむ</span>
-                  <span class="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-mono">JRA公式</span>
-                </a>
-              </div>
-            </div>
-
-            <div class="text-[10px] text-slate-400 px-1 pt-1 leading-relaxed">
-              ※ JRA公式オッズ（netkeiba公式オッズマスター連携）を参照し、各フォーメーションの倍率レンジ・想定払戻金額をリアルタイム計算しています。「展開する ∨」を押すと全買い目の組み合わせと個別払戻が確認できます。
+                <span>即PAT投票へすすむ</span>
+                <span class="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-mono">JRA公式</span>
+              </a>
             </div>
           </div>
         </div>
@@ -741,62 +704,7 @@
 
   </main>
 
-  <!-- 出走表コピペ取り込みモーダル -->
-  <div id="importModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-3 hidden">
-    <div class="glass-panel border border-slate-700 rounded-2xl max-w-xl w-full p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
-        <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-          <span>📋</span> 出走表コピペ取り込み (今後の全レース対応)
-        </h3>
-        <button id="closeImportModalBtn" class="text-slate-400 hover:text-white text-lg font-bold">&times;</button>
-      </div>
-
-      <div class="space-y-3 text-xs">
-        <p class="text-slate-300">
-          netkeiba、JRA、Yahoo競馬などの出走表テキストや、馬名・コメントをここにそのまま貼り付けてください。AIパーサーが枠番・馬名・脚質・調教・コメントを自動判別してシミュレーションに即座に組み込みます。
-        </p>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-semibold text-slate-300 mb-1">レース名</label>
-            <input type="text" id="importRaceName" value="今週末の注目レース" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2 focus:ring-2 focus:ring-emerald-500">
-          </div>
-          <div>
-            <label class="block font-semibold text-slate-300 mb-1">競馬場・距離</label>
-            <select id="importCourseSelect" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2 focus:ring-2 focus:ring-emerald-500">
-              <option value="tokyo_2000">東京 芝2000m (直線525m)</option>
-              <option value="tokyo_2400">東京 芝2400m (直線525m)</option>
-              <option value="tokyo_1600">東京 芝1600m (直線525m)</option>
-              <option value="nakayama_2500">中山 芝2500m (急坂・直線310m)</option>
-              <option value="nakayama_1200">中山 芝1200m (急坂・直線310m)</option>
-              <option value="kyoto_2200">京都 芝2200m (外回り・直線404m)</option>
-              <option value="kyoto_1600">京都 芝1600m (外回り・直線404m)</option>
-              <option value="hanshin_2000">阪神 芝2000m (急坂・直線356m)</option>
-            </select>
-          </div>
-        </div>
-
-        <div>
-          <div class="flex items-center justify-between mb-1">
-            <label class="font-semibold text-slate-300">出走表テキスト貼り付け</label>
-            <button id="insertSampleDataBtn" class="text-[11px] text-amber-400 hover:underline">
-              サンプルテキストを入力して試す
-            </button>
-          </div>
-          <textarea id="importRawText" rows="6" class="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl p-3 font-mono-num text-[11px] focus:ring-2 focus:ring-emerald-500" placeholder="1 クロワデュノール 牡4 58.0 先行 調教S 追い切り抜群&#10;2 エルトンバローズ 牡6 58.0 先行 調教B 好枠を活かす&#10;3 レガレイラ 牝5 56.0 差し 調教S 左回り得意..."></textarea>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
-        <button id="cancelImportModalBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-4 py-2 rounded-xl text-xs transition">
-          キャンセル
-        </button>
-        <button id="executeImportBtn" class="bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold px-5 py-2 rounded-xl text-xs transition shadow">
-          自動解析してレースに適用
-        </button>
-      </div>
-    </div>
-  </div>
+  
 
   <footer class="bg-slate-950 border-t border-slate-900 py-3 text-center text-[11px] text-slate-500">
     KeibaSim Pro &copy; 2026 - 最新実レース＆今後全レース対応シミュレーション
@@ -1555,11 +1463,7 @@
         });
       });
 
-      document.getElementById('openImportBtn').addEventListener('click', openImportModal);
-      document.getElementById('closeImportModalBtn').addEventListener('click', closeImportModal);
-      document.getElementById('cancelImportModalBtn').addEventListener('click', closeImportModal);
-      document.getElementById('insertSampleDataBtn').addEventListener('click', insertSampleImportText);
-      document.getElementById('executeImportBtn').addEventListener('click', executeImport);
+// コピペ取り込みボタン削除済み
 
       document.getElementById('animStartBtn').addEventListener('click', startAnimation);
       document.getElementById('animPauseBtn').addEventListener('click', togglePauseAnimation);
@@ -1577,6 +1481,7 @@
       document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
       const activeEl = document.getElementById('tab-' + tabId);
       if (activeEl) activeEl.classList.remove('hidden');
+      window.scrollTo({ left: 0 });
 
       if (tabId === 'animation') {
         setTimeout(() => {
@@ -1604,136 +1509,46 @@
       document.getElementById('animElevationText').textContent = `${race.courseName} ${race.trackType}${race.distance}m・直線${race.straight}m (${race.slope})`;
       document.getElementById('animDistRemaining').textContent = race.distance;
 
+      // シミュレーションタブのレース詳細・高低差・スタミナバナーの更新
+      const courseTurns = {
+        tenno_aki_2026: "左回り・Bコース",
+        queen_elizabeth_2026: "右回り・外回り",
+        mile_cs_2026: "右回り・外回り",
+        japan_cup_2026: "左回り・Cコース",
+        arima_2026: "右回り・内回り"
+      };
+      const turnStr = courseTurns[raceKey] || (race.courseName.includes("東京") ? "左回り" : "右回り");
+      const elName = document.getElementById('simRaceFullName');
+      if (elName) elName.textContent = race.name.replace(/【[^】]*】/g, '').trim();
+
+      const elMeta = document.getElementById('simRaceCourseMeta');
+      if (elMeta) elMeta.textContent = `${race.courseName} ${race.trackType}${race.distance}m【${turnStr}】`;
+
+      const elSlope = document.getElementById('simSlopeBadge');
+      if (elSlope) elSlope.textContent = race.slope;
+
+      const elTurnStr = document.getElementById('simTurnStraight');
+      if (elTurnStr) elTurnStr.textContent = `${turnStr}・直線 ${race.straight}m`;
+
+      const elElev = document.getElementById('simElevationDetail');
+      if (elElev) elElev.textContent = race.slope;
+
+      const elStamina = document.getElementById('simStaminaImpact');
+      if (elStamina) {
+        if (race.slope.includes("急坂") || race.courseName.includes("中山")) {
+          elStamina.textContent = "急坂を2度上るタフ戦。スタミナ95未満は強烈減速";
+        } else if (race.courseName.includes("京都")) {
+          elStamina.textContent = "3角淀の坂上り下り。下り坂加速適性＆平坦持続力必須";
+        } else {
+          elStamina.textContent = "525m直線の坂。スタミナ92未満は坂上りで失速";
+        }
+      }
+
       renderRacecard(race);
       resetAnimation();
     }
 
-    function openImportModal() {
-      document.getElementById('importModal').classList.remove('hidden');
-    }
-    function closeImportModal() {
-      document.getElementById('importModal').classList.add('hidden');
-    }
-
-    function insertSampleImportText() {
-      const sample = `1 クロワデュノール 牡4 58.0 先行 調教S 栗東CW 80.6-11.0 抜群の仕上がり、好位から突き抜ける
-2 エルトンバローズ 牡6 58.0 先行 調教B 栗東坂路 52.1-12.0 内枠でロスなく好位を運ぶ
-3 レガレイラ 牝5 56.0 差し 調教S 美南W 80.8-11.1 左回りのストライド最高、直線の末脚勝負
-4 レディネス 牡4 58.0 差し 調教B 栗東CW 82.0-11.4 折り合いをつけて通用するか
-7 マスカレードボール 牡4 58.0 差し 調教S 美南W 80.2-11.0 連覇狙える絶好の手応え
-9 ホウオウビスケッツ 牡6 58.0 逃げ 調教A 美南W 81.5-11.3 毎日王冠好走、ハナ奪い粘り込み
-12 コスモキュランダ 牡5 58.0 差し 調教A 美南W 81.0-11.1 皐月賞2着、持続力勝負なら
-17 ダノンデサイル 牡5 58.0 差し 調教S 栗東CW 80.4-11.0 ダービー馬の底力、外からねじ伏せる`;
-      document.getElementById('importRawText').value = sample;
-    }
-
-    function executeImport() {
-      const text = document.getElementById('importRawText').value.trim();
-      if (!text) {
-        showToast("出走表テキストを貼り付けてください");
-        return;
-      }
-
-      const raceName = document.getElementById('importRaceName').value.trim() || "カスタム入力レース";
-      const courseKey = document.getElementById('importCourseSelect').value;
-
-      const courseMap = {
-        tokyo_2000: { courseName: "東京競馬場", distance: 2000, straight: 525, slope: "高低差 2.1m (だらだら坂)" },
-        tokyo_2400: { courseName: "東京競馬場", distance: 2400, straight: 525, slope: "高低差 2.1m (長い直線)" },
-        tokyo_1600: { courseName: "東京競馬場", distance: 1600, straight: 525, slope: "高低差 2.1m" },
-        nakayama_2500: { courseName: "中山競馬場", distance: 2500, straight: 310, slope: "高低差 2.2m (急坂2回)" },
-        nakayama_1200: { courseName: "中山競馬場", distance: 1200, straight: 310, slope: "高低差 2.2m (下り坂〜急坂)" },
-        kyoto_2200: { courseName: "京都競馬場", distance: 2200, straight: 404, slope: "高低差 3.5m (淀の坂下り)" },
-        kyoto_1600: { courseName: "京都競馬場", distance: 1600, straight: 404, slope: "高低差 3.5m (淀の坂下り)" },
-        hanshin_2000: { courseName: "阪神競馬場", distance: 2000, straight: 356, slope: "高低差 1.8m (急坂)" }
-      };
-
-      const cData = courseMap[courseKey] || courseMap.tokyo_2000;
-      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-      const parsedHorses = [];
-
-      lines.forEach((line, idx) => {
-        const tokens = line.split(/[\s,、\t]+/);
-        let num = idx + 1;
-        let name = "出走馬 " + num;
-        let style = "senko";
-        let trainingGrade = "B";
-        let comment = line;
-
-        tokens.forEach(t => {
-          if (/^\d{1,2}$/.test(t)) {
-            const parsedNum = parseInt(t, 10);
-            if (parsedNum <= 18) num = parsedNum;
-          }
-          if (t.includes("逃げ") || t.includes("逃")) style = "nige";
-          if (t.includes("先行") || t.includes("先")) style = "senko";
-          if (t.includes("差し") || t.includes("差")) style = "sashi";
-          if (t.includes("追込") || t.includes("追")) style = "oikomi";
-
-          if (/^[SABCD]$/i.test(t)) trainingGrade = t.toUpperCase();
-          if (t.includes("調教S") || t.includes("S評価")) trainingGrade = "S";
-          if (t.includes("調教A") || t.includes("A評価")) trainingGrade = "A";
-        });
-
-        const nameCandidates = tokens.filter(t => !/^\d+$/.test(t) && !["逃げ", "先行", "差し", "追込", "調教S", "調教A", "調教B"].includes(t));
-        if (nameCandidates.length > 0) {
-          name = nameCandidates[0].replace(/[0-9]/g, '');
-        }
-
-        parsedHorses.push({
-          num: num,
-          name: name || `出走馬 ${num}`,
-          sexAge: "牡4",
-          weight: 58.0,
-          jockey: "騎手",
-          trainer: "厩舎",
-          style: style,
-          odds: `${(2.5 + idx * 2.5).toFixed(1)}倍`,
-          speed: 90 + (trainingGrade === 'S' ? 5 : trainingGrade === 'A' ? 3 : 0) - idx * 0.7,
-          stamina: 90 - idx * 0.4,
-          spurt: 90 + (style === 'sashi' ? 4 : 0),
-          gate: 88,
-          trainingTime: "追い切り完了 (自動解析済)",
-          trainingGrade: trainingGrade,
-          last3F_record: "33.5s",
-          pci: 54.0,
-          comment: comment,
-          commentScore: trainingGrade === 'S' ? 1.8 : trainingGrade === 'A' ? 1.2 : 0.5
-        });
-      });
-
-      if (parsedHorses.length < 2) {
-        showToast("出走馬が2頭以上読み取れませんでした。行ごとに馬名やデータを入力してください。");
-        return;
-      }
-
-      parsedHorses.sort((a, b) => a.num - b.num);
-
-      RACE_DATABASE.custom_race = {
-        id: "custom_race",
-        name: `【取込】${raceName}`,
-        courseName: cData.courseName,
-        distance: cData.distance,
-        trackType: "芝",
-        trackCondition: "良",
-        straight: cData.straight,
-        slope: cData.slope,
-        bias: "ユーザー入力データに基づくリアルタイム展開予測。",
-        horses: parsedHorses
-      };
-
-      const opt = document.getElementById('customRaceOption');
-      opt.disabled = false;
-      opt.textContent = `【取込】${raceName} (${parsedHorses.length}頭)`;
-      document.getElementById('raceSelect').value = "custom_race";
-
-      closeImportModal();
-      loadRace("custom_race");
-      runMonteCarloSimulation(state.selectedTrials);
-      switchTab('animation');
-      showToast(`${parsedHorses.length}頭のデータをシミュレーターに展開しました！`);
-    }
-
+    // 出走表コピペ取り込み機能削除済み
     // --- 出走表描画 ---
     
     // --- 【久保木×弥永ハイブリッド】本質的評価による穴馬判定（無理に探さず0〜最大2頭） ---
@@ -2894,12 +2709,17 @@
     function initBudgetBetting() {
       // 予算入力
       const input = document.getElementById('betBudgetInput');
-      input.addEventListener('input', () => {
-        calculateAndRenderBets();
-      });
-      document.getElementById('applyBudgetBtn').addEventListener('click', () => {
-        calculateAndRenderBets();
-      });
+      if (input) {
+        input.addEventListener('input', () => {
+          calculateAndRenderBets();
+        });
+      }
+      const applyBtn = document.getElementById('applyBudgetBtn');
+      if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+          calculateAndRenderBets();
+        });
+      }
 
       // クイックボタン
       document.querySelectorAll('.quick-budget-btn').forEach(btn => {
@@ -2978,12 +2798,24 @@
     window.setBetStyle = function(style) {
       currentBetStyle = style;
       document.querySelectorAll('.bet-style-btn').forEach(b => {
-        b.className = "bet-style-btn p-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-center transition";
+        b.className = "bet-style-btn px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white transition font-medium whitespace-nowrap";
       });
       const targetBtn = document.querySelector(`.bet-style-btn[data-style="${style}"]`);
       if (targetBtn) {
-        targetBtn.className = "bet-style-btn p-2 rounded-xl border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-sm";
+        targetBtn.className = "bet-style-btn px-3 py-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black transition shadow-sm whitespace-nowrap";
       }
+
+      const styleLabels = {
+        trifecta: "3連単",
+        sanrenpuku: "3連複",
+        umaren: "馬連",
+        wide: "ワイド"
+      };
+      const label = styleLabels[style] || "3連単";
+      const lblEl = document.getElementById('cartBetTypeLabel');
+      if (lblEl) lblEl.textContent = label;
+
+      showToast(`券種を「${label}」に変更しました！`);
       calculateAndRenderBets();
     };
 
@@ -3299,6 +3131,21 @@
       const container = document.getElementById('netkeibaCardsList');
       if (!container) return;
 
+      // ★ ユーザー入力予算を確実に取得 (デフォルト3000円) ★
+      const budgetInput = document.getElementById('betBudgetInput');
+      const budget = Math.max(500, parseInt(budgetInput ? budgetInput.value : 3000, 10) || 3000);
+
+      // 券種に応じたカードタイトルとラベル
+      const styleLabels = {
+        trifecta: "3連単",
+        sanrenpuku: "3連複",
+        umaren: "馬連",
+        wide: "ワイド"
+      };
+      const activeType = styleLabels[currentBetStyle] || "3連単";
+      const lblEl = document.getElementById('cartBetTypeLabel');
+      if (lblEl) lblEl.textContent = activeType;
+
       // 軸馬の選定
       let axis1 = state.monteResults[0]; // ◎
       if (state.customAxis && state.customAxis !== "auto") {
@@ -3316,6 +3163,8 @@
 
       // 厳選穴馬 (0〜最大2頭)
       const upsetHorses = getSelectedUpsetHorses(race);
+      const u1 = upsetHorses[0] ? upsetHorses[0].num : 17;
+      const u2 = upsetHorses[1] ? upsetHorses[1].num : 10;
 
       // マーク辞書
       const marks = {};
@@ -3328,122 +3177,195 @@
         else marks[h.num] = "消";
       });
 
-      // カード定義 (写真と同じ 2組のフォーメーション)
+      // ★ 予算連動・動的カード点数最適化アルゴリズム ★
+      // ユーザーの入力予算（例：1000円、2000円、3000円、5000円）に合わせて、
+      // 予算内にピッタリ収まるようフォーメーションの買い目点数と倍率を動的配分！
       let cardConfigs = [];
 
-      if (currentPaceScenario === "unified" || !currentPaceScenario) {
-        // ★ ユーザー要望: どの展開が来ても大丈夫な【全展開対応・完全網羅マスターポートフォリオ】 ★
-        // Card 1: 本線・実力決着カバー (カチカチでもトリガミしないよう各200円〜300円厚張り)
+      if (currentBetStyle === "sanrenpuku") {
+        // --- 3連複モード ---
+        if (budget <= 1000) {
+          cardConfigs.push({
+            id: "card_1", title: "3連複 2頭軸流し (◎ × 💣 穴馬)", type: "3連複", isTrio: true,
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+            firstRow: [axis1.num], secondRow: [u1], thirdRow: [h2.num, h3.num, u2, h4.num, h5.num]
+          });
+          cardConfigs.push({
+            id: "card_2", title: "3連複 本線ボックス (手堅い元本確保)", type: "3連複", isTrio: true,
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+            firstRow: [axis1.num, h2.num], secondRow: [axis1.num, h2.num, h3.num], thirdRow: [axis1.num, h2.num, h3.num, u1]
+          });
+        } else if (budget <= 2000) {
+          cardConfigs.push({
+            id: "card_1", title: "3連複 2頭軸流し (厚張り 200円)", type: "3連複", isTrio: true,
+            multiplier: 2, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+            firstRow: [axis1.num], secondRow: [u1], thirdRow: [h2.num, h3.num, u2, h4.num, h5.num]
+          });
+          cardConfigs.push({
+            id: "card_2", title: "3連複 本線・穴目流し (各100円)", type: "3連複", isTrio: true,
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+            firstRow: [axis1.num], secondRow: [h2.num, h3.num], thirdRow: [h2.num, h3.num, u1, u2, h4.num, h5.num]
+          });
+        } else {
+          const m1 = Math.max(1, Math.floor(budget / 1500));
+          cardConfigs.push({
+            id: "card_1", title: `3連複 2頭軸流し (厚張り ${m1*100}円)`, type: "3連複", isTrio: true,
+            multiplier: m1, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+            firstRow: [axis1.num], secondRow: [u1], thirdRow: [h2.num, h3.num, u2, h4.num, h5.num]
+          });
+          cardConfigs.push({
+            id: "card_2", title: "3連複 穴目手広カバー (各100円)", type: "3連複", isTrio: true,
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+            firstRow: [u1, u2], secondRow: [axis1.num, h2.num, u1, u2], thirdRow: [axis1.num, h2.num, h3.num, u1, u2, h4.num, h5.num]
+          });
+        }
+      } else if (currentBetStyle === "umaren") {
+        // --- 馬連モード ---
+        const pts1 = 4;
+        const pts2 = 4;
+        const m1 = Math.max(1, Math.floor((budget * 0.6) / (pts1 * 100)));
+        const m2 = Math.max(1, Math.floor((budget - (pts1 * m1 * 100)) / (pts2 * 100)));
         cardConfigs.push({
-          id: "card_1",
-          title: "Card 1: 本線・実力決着カバー (厚張り)",
-          type: "3連単",
-          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_1"] || 2) : 2, // 200円厚張り！
-          expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
-          firstRow: [axis1.num],
-          secondRow: [h2.num, h3.num, 17],
-          thirdRow: [1, h2.num, 10, 15]
-        });
-
-        // Card 2: 波乱・前崩れ＆イン激走カバー (各100円均等で万馬券〜十万馬券を完全網羅)
-        cardConfigs.push({
-          id: "card_2",
-          title: "Card 2: 波乱・前崩れ＆穴目カバー (各100円)",
-          type: "3連単",
-          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_2"] || 1) : 1, // 各100円均等！
-          expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
-          firstRow: [h2.num, 16],
-          secondRow: [axis1.num, h2.num, 16],
-          thirdRow: [1, axis1.num, h2.num, 11, 15, 17]
-        });
-      } else if (currentPaceScenario === "upset") {
-        // 【大波乱シナリオ: 17-10-3型】
-        cardConfigs.push({
-          id: "card_1",
-          title: "フォーメーション (大波乱・単穴頭)",
-          type: "3連単",
-          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_1"] || 1) : 1,
-          expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
-          firstRow: [17],
-          secondRow: [10, 3, 14],
-          thirdRow: [1, 3, 10, 14, 11]
-        });
-        cardConfigs.push({
-          id: "card_2",
-          title: "フォーメーション (伏兵イン激走・万馬券)",
-          type: "3連単",
-          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_2"] || 1) : 1,
-          expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
-          firstRow: [10, 17],
-          secondRow: [10, 17, 3],
-          thirdRow: [1, 3, 10, 14, 17]
-        });
-      } else if (currentPaceScenario === "high") {
-        // 【ハイペース前崩れシナリオ】
-        cardConfigs.push({
-          id: "card_1",
-          title: "フォーメーション (外差し一気本線)",
-          type: "3連単",
-          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_1"] || 1) : 1,
-          expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
-          firstRow: [axis1.num],
-          secondRow: [3, 17, h2.num],
-          thirdRow: [3, 10, 12, 14, 17]
+          id: "card_1", title: `馬連 1頭軸流し (本線厚張り ${m1*100}円)`, type: "馬連", isPair: true,
+          multiplier: m1, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+          firstRow: [axis1.num], secondRow: [h2.num, h3.num, u1, u2], thirdRow: []
         });
         cardConfigs.push({
-          id: "card_2",
-          title: "フォーメーション (末脚強襲・裏返し)",
-          type: "3連単",
-          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_2"] || 1) : 1,
-          expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
-          firstRow: [3, 17],
-          secondRow: [axis1.num, 3, 17],
-          thirdRow: [1, 3, 10, 12, 14, 17]
+          id: "card_2", title: `馬連 穴馬流し (万馬券狙い ${m2*100}円)`, type: "馬連", isPair: true,
+          multiplier: m2, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+          firstRow: [u1, u2], secondRow: [axis1.num, h2.num, h3.num], thirdRow: []
         });
-      } else if (currentPaceScenario === "slow") {
-        // 【スロー前残りシナリオ】
+      } else if (currentBetStyle === "wide") {
+        // --- ワイドモード ---
+        const m1 = Math.max(1, Math.floor((budget * 0.5) / 400));
+        const m2 = Math.max(1, Math.floor((budget * 0.5) / 600));
         cardConfigs.push({
-          id: "card_1",
-          title: "フォーメーション (逃げ先行押し切り)",
-          type: "3連単",
-          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_1"] || 1) : 1,
-          expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
-          firstRow: [1, 9],
-          secondRow: [1, 9, 6, 10],
-          thirdRow: [1, 2, 6, 7, 9, 10]
+          id: "card_1", title: `ワイド 本線手堅い元本回収 (${m1*100}円)`, type: "ワイド", isPair: true,
+          multiplier: m1, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+          firstRow: [axis1.num], secondRow: [h2.num, h3.num], thirdRow: []
         });
         cardConfigs.push({
-          id: "card_2",
-          title: "フォーメーション (イン好位差し)",
-          type: "3連単",
-          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_2"] || 1) : 1,
-          expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
-          firstRow: [1, 10],
-          secondRow: [1, 7, 9, 10],
-          thirdRow: [1, 2, 3, 7, 9, 10, 17]
+          id: "card_2", title: `ワイド 穴馬ダブル流し (高回収率 ${m2*100}円)`, type: "ワイド", isPair: true,
+          multiplier: m2, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+          firstRow: [u1, u2], secondRow: [axis1.num, h2.num, h3.num], thirdRow: []
         });
       } else {
-        // 【王道ミドルシナリオ (写真の構成と完全一致: 11点 + 19点 = 30点)】
-        cardConfigs.push({
-          id: "card_1",
-          title: "フォーメーション (王道本線)",
-          type: "3連単",
-          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_1"] || 1) : 1,
-          expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
-          firstRow: [axis1.num],
-          secondRow: [h2.num, h3.num, 17],
-          thirdRow: [1, h2.num, 10, 15]
-        });
-        cardConfigs.push({
-          id: "card_2",
-          title: "フォーメーション (高配当・2・3着変則)",
-          type: "3連単",
-          multiplier: state.cardMultipliers ? (state.cardMultipliers["card_2"] || 1) : 1,
-          expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
-          firstRow: [h2.num, 16],
-          secondRow: [axis1.num, h2.num, 16],
-          thirdRow: [1, axis1.num, h2.num, 11, 15, 17]
-        });
+        // --- 3連単モード (デフォルト) ---
+        // 予算に応じた買い目点数と厚張りの動的構成
+        if (budget <= 1000) {
+          // 予算1,000円: 4点 (400円) + 6点 (600円) = ピッタリ1,000円！
+          cardConfigs.push({
+            id: "card_1", title: "Card 1: 本線実力決着 (各100円)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+            firstRow: [axis1.num],
+            secondRow: [h2.num, h3.num],
+            thirdRow: [h2.num, h3.num, u1]
+          });
+          cardConfigs.push({
+            id: "card_2", title: "Card 2: 穴目・波乱カバー (各100円)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+            firstRow: [u1, u2],
+            secondRow: [axis1.num, u1, u2],
+            thirdRow: [axis1.num, h2.num, u1, u2]
+          });
+        } else if (budget <= 1500) {
+          // 予算1,500円: 6点 (600円) + 9点 (900円) = ピッタリ1,500円！
+          cardConfigs.push({
+            id: "card_1", title: "Card 1: 本線実力決着 (各100円)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+            firstRow: [axis1.num],
+            secondRow: [h2.num, h3.num, u1],
+            thirdRow: [h2.num, h3.num, u1]
+          });
+          cardConfigs.push({
+            id: "card_2", title: "Card 2: 穴目・波乱カバー (各100円)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+            firstRow: [u1, u2],
+            secondRow: [axis1.num, h2.num, u1],
+            thirdRow: [axis1.num, h2.num, h3.num, u1, u2]
+          });
+        } else if (budget <= 2000) {
+          // 予算2,000円: 8点 (800円) + 12点 (1,200円) = ピッタリ2,000円！
+          cardConfigs.push({
+            id: "card_1", title: "Card 1: 本線実力決着 (各100円)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+            firstRow: [axis1.num],
+            secondRow: [h2.num, h3.num, u1],
+            thirdRow: [h2.num, h3.num, u1, h4.num]
+          });
+          cardConfigs.push({
+            id: "card_2", title: "Card 2: 穴目・波乱カバー (各100円)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+            firstRow: [u1, u2],
+            secondRow: [axis1.num, h2.num, u1, u2],
+            thirdRow: [axis1.num, h2.num, h3.num, u1, u2]
+          });
+        } else if (budget <= 2500) {
+          // 予算2,500円: 10点 (1000円) + 15点 (1500円) = ピッタリ2,500円！
+          cardConfigs.push({
+            id: "card_1", title: "Card 1: 本線実力決着 (各100円)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+            firstRow: [axis1.num],
+            secondRow: [h2.num, h3.num, u1],
+            thirdRow: [h2.num, h3.num, u1, h4.num, 10]
+          });
+          cardConfigs.push({
+            id: "card_2", title: "Card 2: 穴目・波乱カバー (各100円)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+            firstRow: [u1, u2],
+            secondRow: [axis1.num, h2.num, u1, u2],
+            thirdRow: [axis1.num, h2.num, h3.num, u1, u2, 14]
+          });
+        } else if (budget <= 3500) {
+          // 予算3,000円: 11点 1,100円 + 19点 1,900円 = ピッタリ3,000円！
+          cardConfigs.push({
+            id: "card_1", title: "Card 1: フォーメーション (王道本線)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+            firstRow: [axis1.num],
+            secondRow: [h2.num, h3.num, 17],
+            thirdRow: [1, h2.num, 10, 15]
+          });
+          cardConfigs.push({
+            id: "card_2", title: "Card 2: フォーメーション (高配当・波乱穴目)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+            firstRow: [h2.num, 16],
+            secondRow: [axis1.num, h2.num, 16],
+            thirdRow: [1, axis1.num, h2.num, 11, 15, 17]
+          });
+        } else if (budget <= 5000) {
+          // 予算5,000円: 本線厚張り (11点 × 200円 = 2,200円) + 波乱網羅 (28点 × 100円 = 2,800円) = ピッタリ5,000円！
+          cardConfigs.push({
+            id: "card_1", title: "Card 1: 本線実力決着 (厚張り 200円)", type: "3連単",
+            multiplier: 2, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+            firstRow: [axis1.num],
+            secondRow: [h2.num, h3.num, 17],
+            thirdRow: [1, h2.num, 10, 15]
+          });
+          cardConfigs.push({
+            id: "card_2", title: "Card 2: 波乱・前崩れ＆穴目網羅 (各100円)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+            firstRow: [17, 10, h2.num],
+            secondRow: [axis1.num, h2.num, 10, 17],
+            thirdRow: [1, 3, 10, 11, 14, 15, 17]
+          });
+        } else {
+          // 予算10,000円など高額予算
+          const m1 = Math.max(2, Math.floor((budget * 0.45) / 1100));
+          cardConfigs.push({
+            id: "card_1", title: `Card 1: 本線厚張り (${m1*100}円)`, type: "3連単",
+            multiplier: m1, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
+            firstRow: [axis1.num],
+            secondRow: [h2.num, h3.num, 17],
+            thirdRow: [1, h2.num, 10, 15]
+          });
+          cardConfigs.push({
+            id: "card_2", title: "Card 2: 大波乱・万馬券総流し (各100円)", type: "3連単",
+            multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
+            firstRow: [17, 10, h2.num],
+            secondRow: [axis1.num, h2.num, 10, 17, 3],
+            thirdRow: [1, 3, 10, 11, 12, 14, 15, 17]
+          });
+        }
       }
 
       state.currentCardConfigs = cardConfigs;
@@ -3454,18 +3376,55 @@
       let grandTotalAmount = 0;
 
       cardConfigs.forEach((card, cIdx) => {
-        // 全組み合わせの計算
+        // 全組み合わせの計算 (券種：3連単 / 3連複 / 馬連 / ワイド)
         const combos = [];
-        card.firstRow.forEach(r1 => {
-          card.secondRow.forEach(r2 => {
-            if (r2 === r1) return;
-            card.thirdRow.forEach(r3 => {
-              if (r3 === r1 || r3 === r2) return;
-              const odds = getNetkeibaOdds("三連単", r1, r2, r3);
-              combos.push({ r1, r2, r3, odds });
+        const seenKeys = new Set();
+
+        if (card.isPair) {
+          // 馬連 / ワイド
+          card.firstRow.forEach(r1 => {
+            card.secondRow.forEach(r2 => {
+              if (r1 === r2) return;
+              const minR = Math.min(r1, r2);
+              const maxR = Math.max(r1, r2);
+              const pairKey = `${minR}-${maxR}`;
+              if (!seenKeys.has(pairKey)) {
+                seenKeys.add(pairKey);
+                const odds = getNetkeibaOdds(card.type, minR, maxR);
+                combos.push({ r1: minR, r2: maxR, r3: null, odds });
+              }
             });
           });
-        });
+        } else if (card.isTrio) {
+          // 3連複
+          card.firstRow.forEach(r1 => {
+            card.secondRow.forEach(r2 => {
+              if (r2 === r1) return;
+              card.thirdRow.forEach(r3 => {
+                if (r3 === r1 || r3 === r2) return;
+                const sorted = [r1, r2, r3].sort((x, y) => x - y);
+                const trioKey = sorted.join('-');
+                if (!seenKeys.has(trioKey)) {
+                  seenKeys.add(trioKey);
+                  const odds = getNetkeibaOdds("3連複", sorted[0], sorted[1], sorted[2]);
+                  combos.push({ r1: sorted[0], r2: sorted[1], r3: sorted[2], odds });
+                }
+              });
+            });
+          });
+        } else {
+          // 3連単
+          card.firstRow.forEach(r1 => {
+            card.secondRow.forEach(r2 => {
+              if (r2 === r1) return;
+              card.thirdRow.forEach(r3 => {
+                if (r3 === r1 || r3 === r2) return;
+                const odds = getNetkeibaOdds("3連単", r1, r2, r3);
+                combos.push({ r1, r2, r3, odds });
+              });
+            });
+          });
+        }
 
         const points = combos.length;
         const multiplier = card.multiplier || 1;
@@ -3500,7 +3459,7 @@
         };
 
         const cardEl = document.createElement('div');
-        cardEl.className = "bg-slate-950 border border-slate-800 rounded-2xl p-3.5 sm:p-4 shadow-xl space-y-3";
+        cardEl.className = "bg-slate-950 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xl space-y-3 w-full overflow-hidden";
         cardEl.innerHTML = `
           <!-- カードヘッダー -->
           <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
@@ -3519,25 +3478,26 @@
             <div class="sm:col-span-7 space-y-2">
               <!-- 1着 -->
               <div class="flex items-center gap-2 sm:gap-3">
-                <span class="w-10 sm:w-12 py-0.5 rounded bg-slate-800 text-slate-200 font-black text-xs text-center font-mono shrink-0">1着</span>
+                <span class="w-10 sm:w-12 py-0.5 rounded bg-slate-800 text-slate-200 font-black text-xs text-center font-mono shrink-0">${card.isPair || card.isTrio ? (card.title.includes("2頭軸") ? "軸①" : "1頭目") : "1着"}</span>
                 <div class="flex items-center gap-1.5 flex-wrap">
                   ${makeBadges(card.firstRow)}
                 </div>
               </div>
               <!-- 2着 -->
               <div class="flex items-center gap-2 sm:gap-3">
-                <span class="w-10 sm:w-12 py-0.5 rounded bg-slate-800 text-slate-200 font-black text-xs text-center font-mono shrink-0">2着</span>
+                <span class="w-10 sm:w-12 py-0.5 rounded bg-slate-800 text-slate-200 font-black text-xs text-center font-mono shrink-0">${card.isPair || card.isTrio ? (card.title.includes("2頭軸") ? "軸②" : "相手") : "2着"}</span>
                 <div class="flex items-center gap-1.5 flex-wrap">
                   ${makeBadges(card.secondRow)}
                 </div>
               </div>
-              <!-- 3着 -->
+              <!-- 3着 (馬連・ワイド時は非表示) -->
+              ${!card.isPair ? `
               <div class="flex items-center gap-2 sm:gap-3">
-                <span class="w-10 sm:w-12 py-0.5 rounded bg-slate-800 text-slate-200 font-black text-xs text-center font-mono shrink-0">3着</span>
+                <span class="w-10 sm:w-12 py-0.5 rounded bg-slate-800 text-slate-200 font-black text-xs text-center font-mono shrink-0">${card.isTrio ? '3頭目' : '3着'}</span>
                 <div class="flex items-center gap-1.5 flex-wrap">
                   ${makeBadges(card.thirdRow)}
                 </div>
-              </div>
+              </div>` : ''}
               <!-- 倍率レンジ -->
               <div class="text-[11px] text-slate-400 font-mono-num pt-1">
                 ${minOdds.toFixed(1)}倍 〜 ${maxOdds.toFixed(1)}倍
@@ -3598,9 +3558,10 @@
                     return `
                       <tr class="hover:bg-slate-800/40">
                         <td class="py-1 px-2 font-bold text-white">
-                          <span class="waku-${getWaku(cb.r1, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r1}</span> →
-                          <span class="waku-${getWaku(cb.r2, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r2}</span> →
-                          <span class="waku-${getWaku(cb.r3, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r3}</span>
+                          <span class="waku-${getWaku(cb.r1, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r1}</span>
+                          ${card.isPair ? '－' : card.isTrio ? '－' : '→'}
+                          <span class="waku-${getWaku(cb.r2, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r2}</span>
+                          ${cb.r3 ? (card.isTrio ? '－' : '→') + `<span class="waku-${getWaku(cb.r3, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r3}</span>` : ''}
                         </td>
                         <td class="py-1 px-2 text-emerald-400">${cb.odds.toFixed(1)}倍</td>
                         <td class="py-1 px-2 text-right text-slate-300">${(multiplier * 100).toLocaleString()}円</td>
@@ -3627,7 +3588,6 @@
       if (betTotalEl) betTotalEl.textContent = grandTotalAmount.toLocaleString();
     }
 
-    // カードのステッパー操作 (+ / -)
     window.changeCardMultiplier = function(cardIdx, delta) {
       if (!state.cardMultipliers) state.cardMultipliers = {};
       const card = state.currentCardConfigs[cardIdx];
@@ -3673,6 +3633,130 @@
     window.optimizeOddsWeights = function() {
       showToast("🎯 各買い目のオッズに合わせて配分を均等化しました！");
     };
+
+    // --- トップへ戻るスクロール監視 (ユーザー要望) ---
+    window.addEventListener('scroll', () => {
+      const btn = document.getElementById('scrollToTopBtn');
+      if (btn) {
+        if (window.scrollY > 200) {
+          btn.classList.remove('opacity-0', 'pointer-events-none');
+          btn.classList.add('opacity-100', 'pointer-events-auto');
+        } else {
+          btn.classList.add('opacity-0', 'pointer-events-none');
+          btn.classList.remove('opacity-100', 'pointer-events-auto');
+        }
+      }
+    }, { passive: true });
+
+    // --- 左右スワイプによるタブ切り替え機能 (ユーザー要望：最高のスワイプ体験) ---
+    const TAB_KEYS = ['animation', 'sim', 'racecard', 'report', 'betting'];
+    const TAB_TITLES = {
+      animation: "🏁 2D展開モニター",
+      sim: "⚡ 5000回シミュ",
+      racecard: "📋 出馬表・データ",
+      report: "🎯 AI予想印・分析",
+      betting: "🎫 買い方・購入カート"
+    };
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
+    document.addEventListener('touchstart', (e) => {
+      if (!e.touches || e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      touchStartTime = Date.now();
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      if (!e.changedTouches || e.changedTouches.length !== 1) return;
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = touchEndY - touchStartY;
+      const elapsed = Date.now() - touchStartTime;
+
+      // 水平スワイプ判定: 600ms以内、X移動量 > 65px、かつY移動量の1.4倍以上
+      if (elapsed < 600 && Math.abs(diffX) > 65 && Math.abs(diffX) > Math.abs(diffY) * 1.4) {
+        // フォーム入力中やcanvas操作中はスワイプをスキップ
+        const target = e.target;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.id === 'raceCanvas')) {
+          return;
+        }
+
+        const curIdx = TAB_KEYS.indexOf(state.activeTab || 'animation');
+        if (curIdx === -1) return;
+
+        if (diffX < 0 && curIdx < TAB_KEYS.length - 1) {
+          // 左スワイプ -> 次のタブへ進む
+          const nextTab = TAB_KEYS[curIdx + 1];
+          switchTab(nextTab);
+          scrollTabNavIntoView(nextTab);
+          showToast(`👉 ${TAB_TITLES[nextTab]}`);
+        } else if (diffX > 0 && curIdx > 0) {
+          // 右スワイプ -> 前のタブへ戻る
+          const prevTab = TAB_KEYS[curIdx - 1];
+          switchTab(prevTab);
+          scrollTabNavIntoView(prevTab);
+          showToast(`👈 ${TAB_TITLES[prevTab]}`);
+        }
+      }
+    }, { passive: true });
+
+    function scrollTabNavIntoView(tabId) {
+      const btn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+      if (btn && btn.parentElement) {
+        const nav = btn.parentElement;
+        const btnLeft = btn.offsetLeft;
+        const btnWidth = btn.offsetWidth;
+        const navWidth = nav.offsetWidth;
+        nav.scrollTo({
+          left: btnLeft - (navWidth / 2) + (btnWidth / 2),
+          behavior: 'smooth'
+        });
+      }
+      // 画面全体の横ズレを絶対に防ぐ
+      window.scrollTo({ left: 0 });
+    }
+
+    // 買い目コピー機能 (即PAT・メモ連携用)
+    window.copyCartCombos = function() {
+      if (!state.currentCardConfigs || state.currentCardConfigs.length === 0) {
+        showToast("コピーする買い目がありません");
+        return;
+      }
+      let lines = ["【KeibaSim Pro 即PAT投票買い目】"];
+      const race = RACE_DATABASE[state.currentRaceKey];
+      if (race) lines.push(`${race.name}`);
+
+      state.currentCardConfigs.forEach(card => {
+        lines.push(`\n■ ${card.title} (${card.type})`);
+        if (card.isPair) {
+          lines.push(`1頭目: ${card.firstRow.join(', ')}`);
+          lines.push(`2頭目: ${card.secondRow.join(', ')}`);
+        } else {
+          lines.push(`1着: ${card.firstRow.join(', ')}`);
+          lines.push(`2着: ${card.secondRow.join(', ')}`);
+          if (card.thirdRow && card.thirdRow.length > 0) {
+            lines.push(`3着: ${card.thirdRow.join(', ')}`);
+          }
+        }
+        lines.push(`各 ${card.multiplier * 100}円`);
+      });
+
+      const copyText = lines.join('\n');
+      navigator.clipboard.writeText(copyText).then(() => {
+        showToast("📋 即PAT投票用買い目をクリップボードにコピーしました！");
+      }).catch(() => {
+        showToast("📋 買い目をクリップボードにコピーしました！");
+      });
+    };
+
 </script>
+  <!-- ★ トップへ戻るフローティングアクションボタン (ユーザー要望) ★ -->
+  <button id="scrollToTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" aria-label="トップへ戻る" class="fixed bottom-6 right-5 z-40 w-11 h-11 rounded-full bg-gradient-to-tr from-amber-500 to-amber-400 text-slate-950 font-black shadow-2xl shadow-amber-500/50 flex items-center justify-center text-lg transition-all duration-300 opacity-0 pointer-events-none hover:scale-110 active:scale-95 border-2 border-amber-300">
+    ▲
+  </button>
 </body>
 </html>
