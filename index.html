@@ -117,16 +117,11 @@
       <!-- レース切り替えセレクタ & 取込ボタン -->
       <div class="flex items-center gap-2 flex-1 max-w-lg justify-end">
         <select id="raceSelect" class="bg-slate-900 border border-slate-700/80 hover:border-slate-600 text-xs text-white rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold truncate flex-1 sm:flex-initial shadow-inner">
-          <option value="tenno_aki_2026" selected>天皇賞(秋)</option>
-          <option value="queen_elizabeth_2026">エリ女</option>
-          <option value="mile_cs_2026">マイルCS</option>
-          <option value="japan_cup_2026">JC</option>
-          <option value="arima_2026">有馬記念</option>
+          <option value="argentine_2026" selected>アルゼンチン共和国杯 (G2) 今週</option>
+          <option value="miyako_s_2026">みやこS (G3) 今週</option>
+          <option value="keio_hai_2026">京王杯2歳S (G2) 今週</option>
+          <option value="queen_elizabeth_2026">エリ女 (G1) 次週・特別登録</option>
         </select>
-
-        <button id="openImportBtn" class="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition shadow-md shadow-indigo-950/50 whitespace-nowrap">
-          <span>📋</span> <span class="hidden sm:inline">出走表</span>コピペ取込
-        </button>
 
         <button id="toggleHeaderBtn" class="bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white p-1.5 rounded-xl text-xs border border-slate-800" title="ヘッダーを縮小/展開">
           <span id="toggleHeaderIcon">▲</span>
@@ -339,31 +334,68 @@
     <!-- TAB 2: シミュレーション結果 -->
     <section id="tab-sim" class="tab-content hidden space-y-4">
 
-      <!-- ★ レース詳細 ＆ コース高低差・スタミナ持久力物理解析バナー (ユーザー要望) ★ -->
-      <div id="simRaceInfoBanner" class="bg-slate-950/90 border-2 border-emerald-500/40 rounded-2xl p-3.5 sm:p-4 shadow-xl space-y-2.5">
+      <!-- ★ レース詳細 ＆ コース高低差・スタミナ物理解析 ＆ JRA公式クッション値・トラックバイアス連動バナー ★ -->
+      <div id="simRaceInfoBanner" class="bg-slate-950/90 border-2 border-emerald-500/40 rounded-2xl p-3.5 sm:p-4 shadow-xl space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-2">
           <div class="flex items-center gap-2.5 flex-wrap">
-            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-black text-xs font-mono border border-emerald-500/40">G1公式舞台</span>
-            <h3 id="simRaceFullName" class="text-base sm:text-lg font-black text-white">第174回 天皇賞(秋) G1</h3>
-            <span id="simRaceCourseMeta" class="text-xs text-amber-300 font-bold bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/30 font-mono">東京 芝2000m【左回り】</span>
+            <span id="simRaceGradeBadge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-black text-xs font-mono border border-emerald-500/40">今週の重賞</span>
+            <h3 id="simRaceFullName" class="text-base sm:text-lg font-black text-white">第51回 エリザベス女王杯 G1</h3>
+            <span id="simRaceCourseMeta" class="text-xs text-amber-300 font-bold bg-amber-500/10 px-2.5 py-0.5 rounded-lg border border-amber-500/30 font-mono">京都 芝2200m【右回り・外回り】</span>
           </div>
           <span id="simSlopeBadge" class="text-xs font-mono-num font-bold px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-slate-300">
-            高低差 2.1m (直線だらだら坂)
+            高低差 3.5m (3コーナー淀の坂)
           </span>
         </div>
 
+        <!-- 舞台物理プロファイル -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
           <div class="bg-slate-900/70 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
             <span class="text-slate-400 font-bold">コース回り・直線:</span>
-            <span id="simTurnStraight" class="font-bold text-white">左回り・直線 525m</span>
+            <span id="simTurnStraight" class="font-bold text-white">右回り・直線 404m</span>
           </div>
           <div class="bg-slate-900/70 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
             <span class="text-slate-400 font-bold">高低差・坂の難所:</span>
-            <span id="simElevationDetail" class="font-bold text-amber-300">高低差 2.1m (残り400〜250m)</span>
+            <span id="simElevationDetail" class="font-bold text-amber-300">高低差 3.5m (3角淀の坂)</span>
           </div>
           <div class="bg-slate-900/70 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
             <span class="text-slate-400 font-bold">持久力・スタミナ影響:</span>
-            <span id="simStaminaImpact" class="font-bold text-emerald-400">スタミナ92未満は坂で減速</span>
+            <span id="simStaminaImpact" class="font-bold text-emerald-400">下り坂加速適性＆平坦スタミナ耐久</span>
+          </div>
+        </div>
+
+        <!-- ★ JRA公式クッション値 ＆ トラックバイアス演算コントローラー (ユーザー要望) ★ -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 p-3 rounded-xl border border-amber-500/30 space-y-2 text-xs">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="font-black text-amber-300 flex items-center gap-1.5">
+              <span>📊</span> JRA公式 クッション値 ＆ トラックバイアス演算
+            </span>
+            <span id="cushionDescBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold font-mono">標準硬さ (9.4) ｜ イン前やや有利</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <!-- クッション値スライダー -->
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-slate-400 font-bold">芝クッション値 (反発力):</span>
+                <span id="cushionValDisplay" class="font-black font-mono-num text-amber-400">9.4 (標準)</span>
+              </div>
+              <input type="range" id="cushionInput" min="7.0" max="11.5" step="0.1" value="9.4" oninput="onCushionChange(this.value)" class="w-full accent-amber-400 bg-slate-800 rounded-lg h-2 cursor-pointer">
+              <div class="flex justify-between text-[9px] text-slate-500 font-mono-num">
+                <span>7.0 (軟らかめ・タフ)</span>
+                <span>9.0〜9.9 (標準)</span>
+                <span>10.5+ (硬め・超高速)</span>
+              </div>
+            </div>
+
+            <!-- 内外トラックバイアスセレクター -->
+            <div class="space-y-1">
+              <span class="text-slate-400 font-bold block text-[11px]">馬場内外バイアス (通り所有利不利):</span>
+              <div class="grid grid-cols-3 gap-1 text-[11px]">
+                <button onclick="setTrackBias('inside')" id="tbInsideBtn" class="tb-btn p-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition">イン前有利</button>
+                <button onclick="setTrackBias('flat')" id="tbFlatBtn" class="tb-btn p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition">フラット</button>
+                <button onclick="setTrackBias('outside')" id="tbOutsideBtn" class="tb-btn p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition">外差し天国</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -761,575 +793,92 @@
   <script>
     // --- レースデータベース (公式確定17頭フルゲート) ---
     const RACE_DATABASE = {
-      tenno_aki_2026: {
-        id: "tenno_aki_2026",
-        name: "第174回 天皇賞(秋) G1 (確定17頭)",
+      argentine_2026: {
+        id: "argentine_2026",
+        name: "第64回 アルゼンチン共和国杯 G2 (ハンデ)",
         courseName: "東京競馬場",
-        distance: 2000,
+        distance: 2500,
         trackType: "芝",
         trackCondition: "良",
+        cushionValue: 9.3,
+        trackBias: "inside",
+        straight: 525,
+        slope: "高低差 2.1m (坂を2度上るタフ長距離)",
+        bias: "東京芝2500m。スタンド前の坂下からスタートし坂を2度上るタフなハンデ重賞。内枠先行利と中団差しの持続力勝負。",
+        tacticalPoint: "残り600m (3〜4角中間) 〜 残り400m直線坂下",
+        triggerHorse: "キングスコール ＆ レッドバンデ",
+        triggerAction: "坂の途中スタートで前半はスロー必至。残り800mから隊列が徐々に加速し、直線坂下で一気にトップギアへ！",
+        tacticalAdvantage: "長丁場で脚を溜められる内枠馬。東京の長い直線で坂を苦にしないスタミナ＆末脚持続力型。",
+        pedigreeInsight: "キングマンボ系・ドゥラメンテ産駒・ステイゴールド系の長距離スタミナ＆坂耐久血統。",
+        horses: [
+          { num: 1, waku: 1, name: "キングスコール", sexAge: "牡4", weight: 56.5, jockey: "横山典弘", trainer: "矢作芳人", style: "senko", odds: "3.2倍 (1人気)", speed: 95, stamina: 96, spurt: 93, gate: 90, sire: "ドゥラメンテ", bms: "ハービンジャー", pedigreeFit: "SSS (東京芝2500m最高適性)", formEval: "充実一途", jockeyRank: "S", jockeyTactic: "典弘絶妙ペース配分・好位イン抜け出し", gateHabit: "好発", gateDelayRate: 0.03, trainingTime: "栗東CW 80.8-11.2 (抜群)", trainingGrade: "S", last3F_record: "33.8s", pci: 53.0, tacticalIntent: "最内枠から絶好のポジションをキープ。典弘がスローに落として直線の坂下から抜け出す王道勝利シナリオ。", comment: "六社S圧勝。スタミナ・折り合い完璧でここは重賞戴冠の好機。" },
+          { num: 2, waku: 2, name: "レッドバンデ", sexAge: "牡4", weight: 55.5, jockey: "C.ルメール", trainer: "大竹正博", style: "sashi", odds: "4.1倍 (2人気)", speed: 94, stamina: 95, spurt: 94, gate: 88, sire: "キズナ", bms: "Lord of England", pedigreeFit: "A+ (持続力＆東京巧者)", formEval: "絶好調", jockeyRank: "S+", jockeyTactic: "ルメール神騎乗・直線外出し強襲", gateHabit: "好発", gateDelayRate: 0.04, trainingTime: "美南W 81.2-11.3 (抜群)", trainingGrade: "S", last3F_record: "33.6s", pci: 55.5, tacticalIntent: "好位〜中団でじっくり脚を溜め、ルメールが坂上で一気に前を捉え切る。", comment: "昇仙峡Sの勝ちっぷりが優秀。ルメール騎乗で勝負気配濃厚。" },
+          { num: 3, waku: 3, name: "ウエストナウ", sexAge: "牡4", weight: 56.0, jockey: "西村淳也", trainer: "佐々木晶三", style: "senko", odds: "6.5倍 (3人気)", speed: 92, stamina: 94, spurt: 91, gate: 92, sire: "キズナ", bms: "オルフェーヴル", pedigreeFit: "A (長距離スタミナ型)", formEval: "好調", jockeyRank: "A+", jockeyTactic: "西村早め先頭粘り込み", gateHabit: "好発抜群", gateDelayRate: 0.02, trainingTime: "栗東CW 81.5-11.4", trainingGrade: "A", last3F_record: "34.2s", pci: 51.5, tacticalIntent: "先手を伺い2〜3番手を追走。坂を越えてからのスタミナ勝負に持ち込む。", comment: "京都大賞典でも見せ場十分。長距離適性は非常に高い。" },
+          { num: 4, waku: 4, name: "キングズパレス", sexAge: "牡5", weight: 57.0, jockey: "松岡正海", trainer: "戸田博文", style: "sashi", odds: "8.2倍 (4人気)", speed: 91, stamina: 93, spurt: 92, gate: 84, sire: "キングヘイロー", bms: "サンデーサイレンス", pedigreeFit: "A (重賞連続好走の実力)", formEval: "平行線", jockeyRank: "A", jockeyTactic: "松岡イン差し", gateHabit: "普通", gateDelayRate: 0.08, trainingTime: "美南W 82.0-11.5", trainingGrade: "B+", last3F_record: "34.0s", pci: 54.0, tacticalIntent: "中団インで脚を溜め、直線の切れ味で上位争いに加わる。", comment: "崩れ知らずの安定感。ハンデ57kgでも東京芝2500mなら。" },
+          { num: 5, waku: 5, name: "ジョイボーイ", sexAge: "牡4", weight: 54.0, jockey: "横山武史", trainer: "宮田敬介", style: "sashi", odds: "14.5倍 (5人気)", speed: 90, stamina: 92, spurt: 93, gate: 86, sire: "ドゥラメンテ", bms: "ロカ", pedigreeFit: "SSS (軽量54kg・爆発的末脚穴)", formEval: "メイチ仕上げ", jockeyRank: "S", jockeyTactic: "武史一発狙い外差し", gateHabit: "普通", gateDelayRate: 0.06, trainingTime: "美南W 81.0-11.2 (猛時計)", trainingGrade: "S", last3F_record: "33.4s", pci: 56.5, tacticalIntent: "ハンデ54kgの恩恵を最大限に活用。直線坂下から武史が仕掛けて豪快に差し切る激走穴馬！", comment: "54kgは恵まれた。調教の動きは出走馬中屈指の迫力。" },
+          { num: 6, waku: 6, name: "ハヤヤッコ", sexAge: "牡8", weight: 58.5, jockey: "吉田豊", trainer: "国枝栄", style: "oikomi", odds: "28.0倍 (6人気)", speed: 88, stamina: 95, spurt: 90, gate: 75, sire: "キングカメハメハ", bms: "マシュケバド", pedigreeFit: "A+ (白毛のベテラン・重馬場坂巧者)", formEval: "変わり身", jockeyRank: "B+", jockeyTactic: "後方待機一気追い込み", gateHabit: "出遅れ癖 (30%)", gateDelayRate: 0.30, trainingTime: "美南W 82.5-11.6", trainingGrade: "A", last3F_record: "34.2s", pci: 58.0, tacticalIntent: "後方ポツンから前が崩れるのを待ち、直線大外からスタミナで押し寄せる。", comment: "トップハンデだがスタミナは無尽蔵。タフな展開になれば。" },
+          { num: 7, waku: 7, name: "マイネルウィルトス", sexAge: "牡8", weight: 57.5, jockey: "丹内祐次", trainer: "宮徹", style: "sashi", odds: "35.0倍 (7人気)", speed: 89, stamina: 94, spurt: 89, gate: 82, sire: "スクリーンヒーロー", bms: "ロージズインメイ", pedigreeFit: "A (アルゼンチン共和国杯巧者)", formEval: "ベテラン元気", jockeyRank: "A", jockeyTactic: "丹内捲り強襲", gateHabit: "普通", gateDelayRate: 0.10, trainingTime: "栗東坂路 52.8-12.1", trainingGrade: "B+", last3F_record: "34.5s", pci: 53.5, tacticalIntent: "3コーナーから早めに動き、直線の坂を泥臭くしぶとく伸びてくる。", comment: "この舞台での好走実績多数。しぶとさを生かせば馬券圏内。" },
+          { num: 8, waku: 8, name: "フォワードアゲン", sexAge: "せん7", weight: 53.0, jockey: "柴田善臣", trainer: "中野栄治", style: "oikomi", odds: "68.0倍 (8人気)", speed: 86, stamina: 91, spurt: 90, gate: 80, sire: "ローズキングダム", bms: "ファスリエフ", pedigreeFit: "B+ (超軽量53kg伏兵)", formEval: "平行線", jockeyRank: "B+", jockeyTactic: "最内経済コース一撃", gateHabit: "普通", gateDelayRate: 0.12, trainingTime: "美南W 83.0-11.8", trainingGrade: "B", last3F_record: "34.1s", pci: 55.0, tacticalIntent: "内ラチ沿いに潜り込み、53kgの軽さを武器に直線で隙を突く。", comment: "軽量を生かしてどこまで食い込めるか。" }
+        ]
+      },
+      miyako_s_2026: {
+        id: "miyako_s_2026",
+        name: "第16回 みやこステークス G3",
+        courseName: "京都競馬場",
+        distance: 1800,
+        trackType: "ダート",
+        trackCondition: "良",
+        cushionValue: 8.5,
+        trackBias: "inside",
+        straight: 329,
+        slope: "高低差 3.5m (淀の坂上り下り)",
+        bias: "京都ダート1800m。3コーナー淀の坂を越えて下り坂からロングスパート。チャンピオンズCへの直結ステップ重賞。",
+        tacticalPoint: "残り800m (3角淀の坂下り)",
+        triggerHorse: "ヴァルツァーシャル ＆ ロードクロンヌ",
+        triggerAction: "淀の坂下りから一気に仕掛けて先行勢を射程に捕らえる！",
+        tacticalAdvantage: "下り坂をスムーズに下れる機動力と、京都ダートの短い直線での抜け出し力。",
+        pedigreeInsight: "ヘニーヒューズ・シニスターミニスター等のダート中距離パワー持続型。",
+        horses: [
+          { num: 1, waku: 1, name: "ヴァルツァーシャル", sexAge: "牡7", weight: 57.0, jockey: "斎藤新", trainer: "高木登", style: "sashi", odds: "3.5倍 (1人気)", speed: 94, stamina: 92, spurt: 95, gate: 88, sire: "スマートファルコン", bms: "クロフネ", pedigreeFit: "SSS (シリウスS快勝・充実一途)", formEval: "絶好調", jockeyRank: "A", jockeyTactic: "斎藤好位差し抜け出し", gateHabit: "好発", gateDelayRate: 0.04, trainingTime: "美南W 81.2-11.4", trainingGrade: "S", last3F_record: "36.2s", pci: 55.0, tacticalIntent: "中団インから坂下りでポジションを押し上げ、直線短い京都で豪快に突き抜ける。", comment: "重賞連勝を狙う。今のデキならここも最上位。" },
+          { num: 2, waku: 2, name: "サイモンザナドゥ", sexAge: "牡6", weight: 57.0, jockey: "富田暁", trainer: "小林真也", style: "sashi", odds: "5.2倍 (2人気)", speed: 92, stamina: 93, spurt: 93, gate: 86, sire: "シニスターミニスター", bms: "ゴールドアリュール", pedigreeFit: "A+ (京都ダート巧者)", formEval: "好調", jockeyRank: "A", jockeyTactic: "外回しロングスパート", gateHabit: "普通", gateDelayRate: 0.07, trainingTime: "栗東坂路 52.2-12.0", trainingGrade: "A", last3F_record: "36.5s", pci: 54.0, tacticalIntent: "下り坂からスピードに乗せて早めに前を捉えに行く王道競馬。", comment: "前走2着の悔しさを晴らす。京都ダート適性は証明済み。" },
+          { num: 3, waku: 3, name: "ロードクロンヌ", sexAge: "牡4", weight: 57.0, jockey: "川田将雅", trainer: "四位洋文", style: "senko", odds: "4.8倍 (3人気)", speed: 95, stamina: 89, spurt: 91, gate: 94, sire: "ロードカナロア", bms: "ハーツクライ", pedigreeFit: "A (先行スピード型)", formEval: "上昇", jockeyRank: "S", jockeyTactic: "川田積極2番手キープ", gateHabit: "好発抜群", gateDelayRate: 0.02, trainingTime: "栗東CW 81.0-11.2", trainingGrade: "S", last3F_record: "36.8s", pci: 50.5, tacticalIntent: "川田が好発から迷わず好位2番手を確保。坂下りから早めに先頭に立つ！", comment: "能力は高い。川田騎乗で先行力をフルに生かしたい。" },
+          { num: 4, waku: 4, name: "ショウナンバンライ", sexAge: "牡5", weight: 57.0, jockey: "池添謙一", trainer: "奥村豊", style: "oikomi", odds: "12.0倍 (4人気)", speed: 90, stamina: 91, spurt: 94, gate: 76, sire: "マジェスティックウォリアー", bms: "フジキセキ", pedigreeFit: "A (一撃の末脚)", formEval: "好調", jockeyRank: "A+", jockeyTactic: "池添大外強襲", gateHabit: "出遅れ癖 (35%)", gateDelayRate: 0.35, trainingTime: "栗東坂路 52.5-11.9", trainingGrade: "A", last3F_record: "36.0s", pci: 57.5, tacticalIntent: "後方待機から池添の勝負勘で直線外から一気に強襲する！", comment: "ハイペースになれば浮上。末脚の威力は侮れない。" },
+          { num: 5, waku: 5, name: "シゲルショウグン", sexAge: "牡6", weight: 57.0, jockey: "太宰啓介", trainer: "大橋勇樹", style: "nige", odds: "21.0倍 (5人気)", speed: 91, stamina: 88, spurt: 85, gate: 92, sire: "フリオーソ", bms: "スズカマンボ", pedigreeFit: "B+ (単騎逃げ粘り穴)", formEval: "平行線", jockeyRank: "B+", jockeyTactic: "単騎ハナ主張", gateHabit: "好発", gateDelayRate: 0.03, trainingTime: "栗東CW 82.5-11.8", trainingGrade: "B+", last3F_record: "37.5s", pci: 47.0, tacticalIntent: "スタートからハナを奪い、マイペースに持ち込んで坂下りまで粘る。", comment: "単騎で行ければしぶとい。前残りの展開に持ち込みたい。" }
+        ]
+      },
+      keio_hai_2026: {
+        id: "keio_hai_2026",
+        name: "第62回 京王杯2歳ステークス G2",
+        courseName: "東京競馬場",
+        distance: 1400,
+        trackType: "芝",
+        trackCondition: "良",
+        cushionValue: 9.4,
+        trackBias: "inside",
         straight: 525,
         slope: "高低差 2.1m (直線だらだら坂)",
-        bias: "525mの直線勝負。極限の上がり3F瞬発力と高速巡航の持続力、そして開幕週の好位イン立ち回りが勝敗の鍵。",
-        tacticalPoint: "残り400m (直線だらだら坂下)",
-        triggerHorse: "17番 ダノンデサイル (戸崎圭太)",
-        triggerAction: "坂下まで脚を温存し、坂の登り始めから一気にスパート開始。先行勢のスタミナを削って大外一気に飲み込む！",
-        tacticalAdvantage: "道中インピタ最少走行の10番ネブラディスクが内からロスなく抜け出し粘り込み。",
-        pedigreeInsight: "エピファネイア産駒の東京芝持続力SSS。坂を上ってからの我慢比べで無類の強さを発揮。",
+        bias: "東京芝1400m。直線の長いコースで2歳馬の瞬発力と坂を登坂するパワーが問われる登竜門。",
+        tacticalPoint: "残り400m (直線坂下)",
+        triggerHorse: "インパルスドライブ ＆ グルーヴェンス",
+        triggerAction: "直線坂下からC.デムーロが豪快に追い出しを開始！",
+        tacticalAdvantage: "東京芝の525m直線を活かせる末脚の持続力と完成度の高い2歳馬。",
+        pedigreeInsight: "エピファネイア・キズナ・ロードカナロア産駒の東京マイル・1400m適性。",
         horses: [
-          {
-                    "num": 1,
-                    "waku": 1,
-                    "name": "クロワデュノール",
-                    "sexAge": "牡4",
-                    "weight": 58.0,
-                    "jockey": "C.デムーロ",
-                    "trainer": "斉藤崇史",
-                    "style": "senko",
-                    "odds": "2.7倍 (1人気)",
-                    "speed": 97,
-                    "stamina": 94,
-                    "spurt": 96,
-                    "gate": 93,
-                    "sire": "キタサンブラック",
-                    "bms": "Cape Cross",
-                    "pedigreeFit": "SSS (東京芝2000m絶好)",
-                    "recentRuns": [
-                              "ダービー 1着",
-                              "皐月賞 1着",
-                              "ホープフルS 1着"
-                    ],
-                    "formEval": "絶頂期",
-                    "jockeyRank": "S",
-                    "jockeyTactic": "剛腕先行・勝負根性強化 (ゴール前の競り合い抜かせない)", "gateHabit": "好発 (センス抜群)", "gateDelayRate": 0.02, "gateComment": "ゲートセンス抜群。好スタートからスムーズに先行好位へ。",
-                    "trainingTime": "栗東CW 6F 80.6 - 11.0 (一杯・抜群)",
-                    "trainingGrade": "S",
-                    "last3F_record": "33.1s",
-                    "pci": 54.5,
-                    "comment": "斉藤崇師「しっかり動いてフィニッシュ。ここまで順調に来ることができた。」",
-                    "commentScore": 2.0
-          },
-          {
-                    "num": 2,
-                    "waku": 1,
-                    "name": "エルトンバローズ",
-                    "sexAge": "牡6",
-                    "weight": 58.0,
-                    "jockey": "松若風馬",
-                    "trainer": "杉山晴紀",
-                    "style": "senko",
-                    "odds": "172.7倍 (16人気)",
-                    "speed": 89,
-                    "stamina": 88,
-                    "spurt": 88,
-                    "gate": 88,
-                    "sire": "ディープブリランテ",
-                    "bms": "ブライアンズタイム",
-                    "pedigreeFit": "B+ (内枠立ち回り向き)",
-                    "recentRuns": [
-                              "毎日王冠 9着",
-                              "中京記念 3着",
-                              "安田記念 12着"
-                    ],
-                    "formEval": "平行線",
-                    "jockeyRank": "B",
-                    "jockeyTactic": "好位イン追走・最短距離走法", "gateHabit": "出脚モタつき (ズブい)", "gateDelayRate": 0.38, "gateComment": "陣営コメント通り年齢でズブさが出ており、ゲートを出てから行き脚がつかない。",
-                    "trainingTime": "栗東坂路 4F 52.1 - 12.0 (馬なり)",
-                    "trainingGrade": "B",
-                    "last3F_record": "33.8s",
-                    "pci": 51.5,
-                    "comment": "花田助手「内でロスなく立ち回れる、いい枠。相性を生かしたい。」",
-                    "commentScore": 0.8
-          },
-          {
-                    "num": 3,
-                    "waku": 2,
-                    "name": "レガレイラ",
-                    "sexAge": "牝5",
-                    "weight": 56.0,
-                    "jockey": "岩田望来",
-                    "trainer": "木村哲也",
-                    "style": "sashi",
-                    "odds": "8.7倍 (3人気)",
-                    "speed": 96,
-                    "stamina": 92,
-                    "spurt": 98,
-                    "gate": 86,
-                    "sire": "スワーヴリチャード",
-                    "bms": "ハービンジャー",
-                    "pedigreeFit": "SSS (東京芝の鬼・左回り特化)",
-                    "recentRuns": [
-                              "オールカマー 4着",
-                              "日本ダービー 5着",
-                              "ホープフルS 1着"
-                    ],
-                    "formEval": "上昇",
-                    "jockeyRank": "A",
-                    "jockeyTactic": "外目スムーズ進出・末脚全開ロングスパート", "gateHabit": "出遅れ癖 (発馬不安)", "gateDelayRate": 0.45, "gateComment": "過去G1でもゲート内で落ち着きがなく、ポコッと出遅れて後方からになる癖がある。",
-                    "trainingTime": "美南W 6F 80.8 - 11.1 (馬なり・抜群)",
-                    "trainingGrade": "S",
-                    "last3F_record": "32.8s (最速)",
-                    "pci": 58.6,
-                    "comment": "木村師「左回りに苦手意識はなく体の緩みもない。先週は岩田望騎手がいい印象を持ってくれた。」",
-                    "commentScore": 1.9
-          },
-          {
-                    "num": 4,
-                    "waku": 2,
-                    "name": "レディネス",
-                    "sexAge": "牡4",
-                    "weight": 58.0,
-                    "jockey": "横山典弘",
-                    "trainer": "昆貢",
-                    "style": "sashi",
-                    "odds": "63.6倍 (11人気)",
-                    "speed": 88,
-                    "stamina": 89,
-                    "spurt": 91,
-                    "gate": 82,
-                    "sire": "キズナ",
-                    "bms": "シンボリクリスエス",
-                    "pedigreeFit": "A (スタミナ持続型)",
-                    "recentRuns": [
-                              "毎日王冠 3着",
-                              "エプソムC 4着",
-                              "新潟大賞典 2着"
-                    ],
-                    "formEval": "充実",
-                    "jockeyRank": "A+",
-                    "jockeyTactic": "典ポツン・後方完全待機からの大外一気奇襲", "gateHabit": "やや遅い", "gateDelayRate": 0.25, "gateComment": "出足がゆっくりで中団後方に構える。",
-                    "trainingTime": "栗東CW 6F 82.0 - 11.4 (強め)",
-                    "trainingGrade": "B",
-                    "last3F_record": "33.6s",
-                    "pci": 55.0,
-                    "comment": "昆助手「ロスなく運べる枠。折り合いをつけてどれだけ通用するか。」",
-                    "commentScore": 0.5
-          },
-          {
-                    "num": 5,
-                    "waku": 3,
-                    "name": "シャンパンカラー",
-                    "sexAge": "牡6",
-                    "weight": 58.0,
-                    "jockey": "内田博幸",
-                    "trainer": "田中剛",
-                    "style": "oikomi",
-                    "odds": "128.4倍 (15人気)",
-                    "speed": 86,
-                    "stamina": 87,
-                    "spurt": 92,
-                    "gate": 78,
-                    "sire": "ドゥラメンテ",
-                    "bms": "Reckless Abandon",
-                    "pedigreeFit": "B (荒れ馬場・雨歓迎)",
-                    "recentRuns": [
-                              "安田記念 17着",
-                              "フェブラリー 16着",
-                              "NHKマイル 1着"
-                    ],
-                    "formEval": "復調途上",
-                    "jockeyRank": "B+",
-                    "jockeyTactic": "力感あふれる豪快追込み・タフ消耗戦対応", "gateHabit": "発馬難 (後方一手)", "gateDelayRate": 0.42, "gateComment": "スタートが苦手でほぼ確実に後方からの競馬になる。",
-                    "trainingTime": "美南W 6F 82.8 - 11.6 (馬なり)",
-                    "trainingGrade": "B",
-                    "last3F_record": "33.9s",
-                    "pci": 57.5,
-                    "comment": "浜野谷助手「馬場が荒れているのは、この馬にとっては歓迎。」",
-                    "commentScore": 0.2
-          },
-          {
-                    "num": 6,
-                    "waku": 3,
-                    "name": "セイウンハーデス",
-                    "sexAge": "牡7",
-                    "weight": 58.0,
-                    "jockey": "幸英明",
-                    "trainer": "橋口慎介",
-                    "style": "senko",
-                    "odds": "20.3倍 (6人気)",
-                    "speed": 91,
-                    "stamina": 90,
-                    "spurt": 88,
-                    "gate": 92,
-                    "sire": "シルバーステート",
-                    "bms": "マンハッタンカフェ",
-                    "pedigreeFit": "A (先行押し切り型)",
-                    "recentRuns": [
-                              "毎日王冠 2着",
-                              "新潟記念 4着",
-                              "七夕賞 1着"
-                    ],
-                    "formEval": "好調キープ",
-                    "jockeyRank": "A",
-                    "jockeyTactic": "折り合い重視の2〜3番手追走・しぶとい粘り", "gateHabit": "安定 (好発)", "gateDelayRate": 0.04, "gateComment": "スタートはおとなしく枠なりにポンと出られる。",
-                    "trainingTime": "栗東CW 6F 81.2 - 11.3 (一杯)",
-                    "trainingGrade": "A",
-                    "last3F_record": "33.5s",
-                    "pci": 51.0,
-                    "comment": "橋口師「極端な内外を避けたかったので良い枠。スタートも安定。」",
-                    "commentScore": 1.1
-          },
-          {
-                    "num": 7,
-                    "waku": 4,
-                    "name": "マスカレードボール",
-                    "sexAge": "牡4",
-                    "weight": 58.0,
-                    "jockey": "C.ルメール",
-                    "trainer": "手塚貴久",
-                    "style": "sashi",
-                    "odds": "2.7倍 (2人気)",
-                    "speed": 97,
-                    "stamina": 93,
-                    "spurt": 99,
-                    "gate": 88,
-                    "sire": "ドゥラメンテ",
-                    "bms": "Masked Marvel",
-                    "pedigreeFit": "SSS (瞬発力特化・連覇の血)",
-                    "recentRuns": [
-                              "天皇賞秋 1着(前年)",
-                              "安田記念 2着",
-                              "大阪杯 3着"
-                    ],
-                    "formEval": "絶好調",
-                    "jockeyRank": "S+",
-                    "jockeyTactic": "東京マイスター・外目進路確保で詰まりゼロ・神騎乗", "gateHabit": "ルメール好発 (安定)", "gateDelayRate": 0.02, "gateComment": "ルメールの抜群のゲート誘導で出遅れリスクが極めて低い。",
-                    "trainingTime": "美南W 6F 80.2 - 11.0 (一杯・絶好)",
-                    "trainingGrade": "S",
-                    "last3F_record": "32.9s",
-                    "pci": 58.2,
-                    "comment": "手塚久師「去年勝った時と同じ7番枠で縁起が良い。連覇を狙える態勢。」",
-                    "commentScore": 2.0
-          },
-          {
-                    "num": 8,
-                    "waku": 4,
-                    "name": "ジュンブロッサム",
-                    "sexAge": "牡7",
-                    "weight": 58.0,
-                    "jockey": "杉原誠人",
-                    "trainer": "友道康夫",
-                    "style": "sashi",
-                    "odds": "194.4倍 (17人気)",
-                    "speed": 90,
-                    "stamina": 88,
-                    "spurt": 93,
-                    "gate": 84,
-                    "sire": "ワールドエース",
-                    "bms": "クロフネ",
-                    "pedigreeFit": "B+ (切れ味勝負)",
-                    "recentRuns": [
-                              "富士S 1着",
-                              "関屋記念 3着",
-                              "水無月S 1着"
-                    ],
-                    "formEval": "上向き",
-                    "jockeyRank": "B",
-                    "jockeyTactic": "内の先行馬を見ながらロスなく運ぶ", "gateHabit": "標準", "gateDelayRate": 0.15, "gateComment": "平均的なスタート。",
-                    "trainingTime": "栗東CW 6F 81.6 - 11.2 (強め)",
-                    "trainingGrade": "A",
-                    "last3F_record": "33.2s",
-                    "pci": 56.0,
-                    "comment": "藤本助手「内の先行馬を見ながら運べる好枠。状態も良い。」",
-                    "commentScore": 1.0
-          },
-          {
-                    "num": 9,
-                    "waku": 5,
-                    "name": "ホウオウビスケッツ",
-                    "sexAge": "牡6",
-                    "weight": 58.0,
-                    "jockey": "岩田康誠",
-                    "trainer": "奥村武",
-                    "style": "nige",
-                    "odds": "53.4倍 (10人気)",
-                    "speed": 94,
-                    "stamina": 91,
-                    "spurt": 86,
-                    "gate": 96,
-                    "sire": "マインドユアビスケッツ",
-                    "bms": "ルーラーシップ",
-                    "pedigreeFit": "A (持続力・小回り〜中距離)",
-                    "recentRuns": [
-                              "毎日王冠 1着",
-                              "函館記念 1着",
-                              "巴賞 1着"
-                    ],
-                    "formEval": "充実期",
-                    "jockeyRank": "A+",
-                    "jockeyTactic": "インベタ強襲の鬼・最内最短距離を突く単騎逃げ", "gateHabit": "抜群 (テン最速)", "gateDelayRate": 0.01, "gateComment": "発馬ダッシュ力はメンバー最速。抜群の飛び出しでハナを奪う。",
-                    "trainingTime": "美南W 6F 81.4 - 11.2 (一杯)",
-                    "trainingGrade": "A",
-                    "last3F_record": "34.0s",
-                    "pci": 48.0,
-                    "comment": "中尾助手「外ではなくて良かった。毎日王冠同様に積極策で粘り込む。」",
-                    "commentScore": 1.3
-          },
-          {
-                    "num": 10,
-                    "waku": 5,
-                    "name": "ネブラディスク",
-                    "sexAge": "牡4",
-                    "weight": 58.0,
-                    "jockey": "川田将雅",
-                    "trainer": "福永祐一",
-                    "style": "senko",
-                    "odds": "40.3倍 (8人気)",
-                    "speed": 92,
-                    "stamina": 90,
-                    "spurt": 90,
-                    "gate": 90,
-                    "sire": "ドレフォン",
-                    "bms": "ディープインパクト",
-                    "pedigreeFit": "A (スピード＆瞬発力融合)",
-                    "recentRuns": [
-                              "オールカマー 2着",
-                              "宝塚記念 6着",
-                              "目黒記念 3着"
-                    ],
-                    "formEval": "安定",
-                    "jockeyRank": "S",
-                    "jockeyTactic": "先行抜け出しの絶対的精度・絶妙な追い出しタイミング", "gateHabit": "川田好発", "gateDelayRate": 0.03, "gateComment": "川田がスタートを完璧に決めて好位へ。",
-                    "trainingTime": "栗東CW 6F 81.0 - 11.2 (馬なり)",
-                    "trainingGrade": "A",
-                    "last3F_record": "33.6s",
-                    "pci": 52.5,
-                    "comment": "野元助手「先行勢を見ながら内に入って行ける。順調です。」",
-                    "commentScore": 1.2
-          },
-          {
-                    "num": 11,
-                    "waku": 6,
-                    "name": "シェイクユアハート",
-                    "sexAge": "牡6",
-                    "weight": 58.0,
-                    "jockey": "古川吉洋",
-                    "trainer": "宮徹",
-                    "style": "sashi",
-                    "odds": "9.6倍 (4人気)",
-                    "speed": 88,
-                    "stamina": 89,
-                    "spurt": 89,
-                    "gate": 85,
-                    "sire": "ハーツクライ",
-                    "bms": "キングカメハメハ",
-                    "pedigreeFit": "A+ (東京中距離王道血統)",
-                    "recentRuns": [
-                              "札幌記念 1着",
-                              "函館記念 4着",
-                              "鳴尾記念 2着"
-                    ],
-                    "formEval": "重賞制覇の勢い",
-                    "jockeyRank": "B",
-                    "jockeyTactic": "器用なコーナリング・中団からのソツない立ち回り", "gateHabit": "標準", "gateDelayRate": 0.14, "gateComment": "平均的なゲート。",
-                    "trainingTime": "栗東CW 6F 82.2 - 11.5 (馬なり)",
-                    "trainingGrade": "B",
-                    "last3F_record": "33.7s",
-                    "pci": 54.0,
-                    "comment": "増井雅助手「器用さがあるので、前を見ながら進出したい。」",
-                    "commentScore": 0.6
-          },
-          {
-                    "num": 12,
-                    "waku": 6,
-                    "name": "コスモキュランダ",
-                    "sexAge": "牡5",
-                    "weight": 58.0,
-                    "jockey": "丹内祐次",
-                    "trainer": "加藤士津八",
-                    "style": "sashi",
-                    "odds": "90.1倍 (13人気)",
-                    "speed": 93,
-                    "stamina": 93,
-                    "spurt": 94,
-                    "gate": 86,
-                    "sire": "アルアイン",
-                    "bms": "Southern Halo",
-                    "pedigreeFit": "A (ロングスパート適性)",
-                    "recentRuns": [
-                              "セントライト 2着",
-                              "日本ダービー 6着",
-                              "皐月賞 2着"
-                    ],
-                    "formEval": "地力上位",
-                    "jockeyRank": "A",
-                    "jockeyTactic": "3〜4コーナー捲り・無尽蔵のスタミナ持続力勝負", "gateHabit": "標準", "gateDelayRate": 0.18, "gateComment": "標準的だが無理に出さず中団へ。",
-                    "trainingTime": "美南W 6F 81.0 - 11.1 (強め)",
-                    "trainingGrade": "A",
-                    "last3F_record": "33.4s",
-                    "pci": 55.5,
-                    "comment": "加藤士師「逃げ馬を見ながら運べるいい枠。持続力勝負なら強い。」",
-                    "commentScore": 1.4
-          },
-          {
-                    "num": 13,
-                    "waku": 7,
-                    "name": "リアライズシリウス",
-                    "sexAge": "牡3",
-                    "weight": 56.0,
-                    "jockey": "津村明秀",
-                    "trainer": "手塚貴久",
-                    "style": "sashi",
-                    "odds": "31.0倍 (7人気)",
-                    "speed": 90,
-                    "stamina": 89,
-                    "spurt": 93,
-                    "gate": 84,
-                    "sire": "キタサンブラック",
-                    "bms": "オルフェーヴル",
-                    "pedigreeFit": "A+ (大舞台の成長力・スタミナ)",
-                    "recentRuns": [
-                              "皐月賞 2着",
-                              "若葉S 1着",
-                              "ホープフル 4着"
-                    ],
-                    "formEval": "3歳屈指の器",
-                    "jockeyRank": "A",
-                    "jockeyTactic": "56kgの斤量利を生かした好位差し", "gateHabit": "安定", "gateDelayRate": 0.08, "gateComment": "駐立が落ち着いておりスタート無難。",
-                    "trainingTime": "美南W 6F 81.8 - 11.3 (馬なり)",
-                    "trainingGrade": "A",
-                    "last3F_record": "33.3s",
-                    "pci": 56.0,
-                    "comment": "手塚久師「斤量56kgを生かして上位に食い込みたい。」",
-                    "commentScore": 1.0
-          },
-          {
-                    "num": 14,
-                    "waku": 7,
-                    "name": "タガノデュード",
-                    "sexAge": "牡5",
-                    "weight": 58.0,
-                    "jockey": "M.デムーロ",
-                    "trainer": "宮徹",
-                    "style": "oikomi",
-                    "odds": "114.8倍 (14人気)",
-                    "speed": 86,
-                    "stamina": 88,
-                    "spurt": 91,
-                    "gate": 76,
-                    "sire": "ヤマカツエース",
-                    "bms": "ハーツクライ",
-                    "pedigreeFit": "B (後方一気・直線勝負)",
-                    "recentRuns": [
-                              "毎日王冠 10着",
-                              "関屋記念 7着",
-                              "京王杯SC 4着"
-                    ],
-                    "formEval": "一変狙い",
-                    "jockeyRank": "A+",
-                    "jockeyTactic": "ミルコの大外一気・直線豪快な追い比べ", "gateHabit": "出遅れ癖 (後方待機)", "gateDelayRate": 0.4, "gateComment": "出足が遅く、ミルコも最初から溜める競馬をする。",
-                    "trainingTime": "栗東坂路 4F 51.8 - 12.0 (一杯)",
-                    "trainingGrade": "B",
-                    "last3F_record": "33.8s",
-                    "pci": 58.0,
-                    "comment": "増井雅助手「しまいを生かすタイプ。東京の長い直線は合う。」",
-                    "commentScore": 0.4
-          },
-          {
-                    "num": 15,
-                    "waku": 8,
-                    "name": "サクラファレル",
-                    "sexAge": "牡4",
-                    "weight": 58.0,
-                    "jockey": "佐々木大輔",
-                    "trainer": "堀宣行",
-                    "style": "senko",
-                    "odds": "82.4倍 (12人気)",
-                    "speed": 88,
-                    "stamina": 88,
-                    "spurt": 88,
-                    "gate": 88,
-                    "sire": "モーリス",
-                    "bms": "サクラバクシンオー",
-                    "pedigreeFit": "B+ (パワー＆先行力)",
-                    "recentRuns": [
-                              "札幌記念 2着",
-                              "函館記念 5着",
-                              "白富士S 1着"
-                    ],
-                    "formEval": "順調",
-                    "jockeyRank": "A",
-                    "jockeyTactic": "若手ホープの果敢な先行策・しぶとい粘り込み", "gateHabit": "好発", "gateDelayRate": 0.06, "gateComment": "大外だがスタート良く出していける。",
-                    "trainingTime": "美南W 6F 82.0 - 11.4 (馬なり)",
-                    "trainingGrade": "B",
-                    "last3F_record": "34.0s",
-                    "pci": 51.0,
-                    "comment": "堀厩舎「仕上がり順調。外枠だが先行力を活かして粘り込みを狙う。」",
-                    "commentScore": 0.5
-          },
-          {
-                    "num": 16,
-                    "waku": 8,
-                    "name": "ジョバンニ",
-                    "sexAge": "牡4",
-                    "weight": 58.0,
-                    "jockey": "松山弘平",
-                    "trainer": "杉山晴紀",
-                    "style": "sashi",
-                    "odds": "44.3倍 (9人気)",
-                    "speed": 87,
-                    "stamina": 88,
-                    "spurt": 90,
-                    "gate": 83,
-                    "sire": "エピファネイア",
-                    "bms": "ロードカナロア",
-                    "pedigreeFit": "A (東京芝向きの切れ)",
-                    "recentRuns": [
-                              "毎日王冠 4着",
-                              "エプソムC 2着",
-                              "きさらぎ賞 2着"
-                    ],
-                    "formEval": "堅実",
-                    "jockeyRank": "A",
-                    "jockeyTactic": "中団外目追走・折り合い重視のスパート", "gateHabit": "標準", "gateDelayRate": 0.16, "gateComment": "平均的。",
-                    "trainingTime": "栗東CW 6F 81.8 - 11.4 (強め)",
-                    "trainingGrade": "B",
-                    "last3F_record": "33.7s",
-                    "pci": 55.0,
-                    "comment": "花田助手「馬の状態の良さで頑張ってもらいたいです。」",
-                    "commentScore": 0.6
-          },
-          {
-                    "num": 17,
-                    "waku": 8,
-                    "name": "ダノンデサイル",
-                    "sexAge": "牡5",
-                    "weight": 58.0,
-                    "jockey": "戸崎圭太",
-                    "trainer": "安田翔伍",
-                    "style": "sashi",
-                    "odds": "10.6倍 (5人気)",
-                    "speed": 95,
-                    "stamina": 96,
-                    "spurt": 96,
-                    "gate": 85,
-                    "sire": "エピファネイア",
-                    "bms": "Congrats",
-                    "pedigreeFit": "SSS (東京芝のダービー馬血統)",
-                    "recentRuns": [
-                              "日本ダービー 1着",
-                              "京成杯 1着",
-                              "京都2歳S 4着"
-                    ],
-                    "formEval": "ダービー馬の威厳",
-                    "jockeyRank": "S",
-                    "jockeyTactic": "東京マイスター戸崎・大外枠を克服する完璧なエスコート", "gateHabit": "大外慎重発馬", "gateDelayRate": 0.2, "gateComment": "大外17番枠。無理に前へ行かず折り合い優先でそろっと出す。",
-                    "trainingTime": "栗東CW 6F 80.4 - 11.0 (一杯・迫力満点)",
-                    "trainingGrade": "S",
-                    "last3F_record": "33.2s",
-                    "pci": 56.5,
-                    "comment": "安田翔師「大外17番だが地力は最上位。外からねじ伏せに行く。」",
-                    "commentScore": 1.7
-          }
-]
+          { num: 1, waku: 1, name: "インパルスドライブ", sexAge: "牡2", weight: 56.0, jockey: "C.デムーロ", trainer: "手塚貴久", style: "sashi", odds: "2.6倍 (1人気)", speed: 96, stamina: 89, spurt: 96, gate: 90, sire: "エピファネイア", bms: "ディープインパクト", pedigreeFit: "SSS (東京芝1400m絶好)", formEval: "新馬圧勝", jockeyRank: "S+", jockeyTactic: "デムーロ剛腕早め先頭", gateHabit: "好発", gateDelayRate: 0.03, trainingTime: "美南W 80.5-11.2 (抜群)", trainingGrade: "S", last3F_record: "33.2s", pci: 56.0, tacticalIntent: "中団好位で脚を溜め、坂下からC.デムーロが外に出して一気に突き抜ける本線シナリオ。", comment: "新馬戦の勝ち時計・内容ともに超抜。2歳王者への登竜門。" },
+          { num: 2, waku: 2, name: "グルーヴェンス", sexAge: "牡2", weight: 56.0, jockey: "横山武史", trainer: "鹿戸雄一", style: "senko", odds: "3.8倍 (2人気)", speed: 94, stamina: 90, spurt: 93, gate: 92, sire: "ロードカナロア", bms: "ハーツクライ", pedigreeFit: "A+ (完成度高いスピード)", formEval: "上昇", jockeyRank: "S", jockeyTactic: "武史好位抜け出し", gateHabit: "好発抜群", gateDelayRate: 0.02, trainingTime: "美南W 81.2-11.3", trainingGrade: "A", last3F_record: "33.6s", pci: 52.5, tacticalIntent: "好位3番手をキープして直線の坂を力強く登坂し抜け出す王道競馬。", comment: "前走のスピードは本物。東京1400mもぴったり合っている。" },
+          { num: 3, waku: 3, name: "ブルージェイ", sexAge: "牡2", weight: 56.0, jockey: "戸崎圭太", trainer: "田中博康", style: "sashi", odds: "5.5倍 (3人気)", speed: 92, stamina: 88, spurt: 94, gate: 88, sire: "キズナ", bms: "Galileo", pedigreeFit: "A (決め手鋭い)", formEval: "好調", jockeyRank: "S", jockeyTactic: "戸崎イン差し強襲", gateHabit: "普通", gateDelayRate: 0.05, trainingTime: "美南W 81.8-11.4", trainingGrade: "A", last3F_record: "33.5s", pci: 55.0, tacticalIntent: "インコースでロスなく立ち回り、直線の坂上で鋭く割って出る。", comment: "追い切りの反応鋭い。重賞でも好勝負必至。" },
+          { num: 4, waku: 4, name: "アテナブレイブ", sexAge: "牝2", weight: 55.0, jockey: "田辺裕信", trainer: "牧光二", style: "senko", odds: "11.0倍 (4人気)", speed: 91, stamina: 87, spurt: 90, gate: 90, sire: "ドレフォン", bms: "キングカメハメハ", pedigreeFit: "B+ (スピード先行)", formEval: "好調", jockeyRank: "A", jockeyTactic: "田辺積極先行粘り", gateHabit: "好発", gateDelayRate: 0.04, trainingTime: "美南W 82.2-11.6", trainingGrade: "B+", last3F_record: "34.0s", pci: 50.0, tacticalIntent: "軽量55kgと先行力を生かして坂を先頭集団で登り、粘り込みを図る。", comment: "先行力がある。牝馬のスピードを活かしたい。" }
+        ]
       },
       queen_elizabeth_2026: {
         id: "queen_elizabeth_2026",
-        name: "第51回 エリザベス女王杯 G1",
+        name: "第51回 エリザベス女王杯 G1 (次週11/15特別登録)",
         courseName: "京都競馬場",
         distance: 2200,
         trackType: "芝",
         trackCondition: "良",
+        cushionValue: 9.4,
+        trackBias: "inside",
         straight: 404,
         slope: "高低差 3.5m (3コーナー淀の坂)",
         bias: "3角淀の坂を上り、下り坂でスピードに乗せるロングスパート。平坦直線での末脚持続力勝負。",
@@ -1344,69 +893,7 @@
           { num: 3, waku: 3, name: "チェルヴィニア", sexAge: "牝4", weight: 56.0, jockey: "C.ルメール", trainer: "木村哲也", style: "senko", odds: "4.6倍 (3人気)", speed: 95, stamina: 93, spurt: 94, gate: 90, sire: "ハービンジャー", bms: "キングカメハメハ", pedigreeFit: "SSS (オークス馬・京都外回り最高適性)", formEval: "絶好調", jockeyRank: "S+", jockeyTactic: "ルメール神騎乗・下り坂絶妙仕掛け", gateHabit: "安定好発", gateDelayRate: 0.02, trainingTime: "栗東CW 81.2-11.3 (抜群)", trainingGrade: "S", last3F_record: "33.6s", pci: 53.5, tacticalIntent: "好位3〜4番手をガッチリキープ。淀の坂下りから抜群のタイミングで仕掛けて抜け出す本線シナリオ。", comment: "好位から器用に立ち回る。坂下りからの抜け出しを図る。" },
           { num: 4, waku: 4, name: "スタニングローズ", sexAge: "牝6", weight: 56.0, jockey: "C.デムーロ", trainer: "高野友和", style: "senko", odds: "8.5倍 (4人気)", speed: 92, stamina: 93, spurt: 90, gate: 92, sire: "キングカメハメハ", bms: "クロフネ", pedigreeFit: "A+ (エリ女勝ち馬の底力)", formEval: "好調キープ", jockeyRank: "S", jockeyTactic: "デムーロ剛腕早め先頭押し切り", gateHabit: "好発", gateDelayRate: 0.03, trainingTime: "栗東坂路 52.0-11.9", trainingGrade: "A", last3F_record: "34.2s", pci: 50.0, tacticalIntent: "淀の坂下りからC.デムーロが早めに捲って先頭に立ち、直線平坦をスタミナで粘り込む。", comment: "エリザベス女王杯連覇を目指す。前々で持ち味を活かす。" },
           { num: 5, waku: 5, name: "ホールネス", sexAge: "牝4", weight: 56.0, jockey: "坂井瑠星", trainer: "藤原英昭", style: "senko", odds: "14.2倍 (5人気)", speed: 91, stamina: 90, spurt: 91, gate: 90, sire: "ロードカナロア", bms: "Sadler's Wells", pedigreeFit: "A (パワー＆持久力)", formEval: "上昇", jockeyRank: "A+", jockeyTactic: "瑠星積極イン先行", gateHabit: "好発", gateDelayRate: 0.04, trainingTime: "栗東CW 82.0-11.5", trainingGrade: "A", last3F_record: "33.8s", pci: 52.0, tacticalIntent: "スタートを決めて内ラチ沿い2〜3番手に潜入。最短距離を回って直線の坂なし平坦で粘り込み激走！", comment: "調教の動き抜群。インからロスなく立ち回れば好勝負。" },
-          { num: 6, waku: 5, name: "シンティレーション", sexAge: "牝6", weight: 56.0, jockey: "T.マーカンド", trainer: "池上昌和", style: "sashi", odds: "18.5倍 (6人気)", speed: 90, stamina: 89, spurt: 93, gate: 86, sire: "ロードカナロア", bms: "アグネスタキオン", pedigreeFit: "A (府中牝馬S好走の末脚)", formEval: "充実期", jockeyRank: "A+", jockeyTactic: "マーカンド剛腕外差し", gateHabit: "普通", gateDelayRate: 0.10, trainingTime: "美南W 82.2-11.4", trainingGrade: "A", last3F_record: "33.4s", pci: 55.5, tacticalIntent: "中団外目で脚を溜め、マーカンドが直線で外に出して豪快に追い込む。", comment: "前走の末脚健在。京都の外回りならさらに差し脚が生きる。" },
-          { num: 7, waku: 6, name: "ラヴァンダ", sexAge: "牝4", weight: 56.0, jockey: "岩田康誠", trainer: "中村直也", style: "sashi", odds: "24.0倍 (7人気)", speed: 89, stamina: 89, spurt: 92, gate: 84, sire: "シルバーステート", bms: "ベーカバド", pedigreeFit: "B+ (内回り・パワー型)", formEval: "好調", jockeyRank: "A+", jockeyTactic: "康誠イン差し潜入", gateHabit: "普通", gateDelayRate: 0.12, trainingTime: "栗東CW 82.5-11.5", trainingGrade: "B", last3F_record: "33.9s", pci: 54.0, tacticalIntent: "岩田康誠の伝家の宝刀イン差し。直線で内が開くのを待って一撃を狙う。", comment: "調子は上向き。中団から手応え良く追走できれば。" },
-          { num: 8, waku: 6, name: "サリエラ", sexAge: "牝7", weight: 56.0, jockey: "武豊", trainer: "国枝栄", style: "oikomi", odds: "32.0倍 (8人気)", speed: 88, stamina: 94, spurt: 93, gate: 75, sire: "ディープインパクト", bms: "サロミナ", pedigreeFit: "A+ (長距離スタミナ＆切れ)", formEval: "変わり身", jockeyRank: "S", jockeyTactic: "豊マジック後方死んだふり", gateHabit: "発馬もっさり", gateDelayRate: 0.35, trainingTime: "美南W 82.0-11.4", trainingGrade: "A", last3F_record: "33.5s", pci: 58.5, tacticalIntent: "武豊が後方ポツンで完全脚温存。前がやり合って崩れた瞬間、大外から一気に飛んでくる！", comment: "距離が伸びて良さが出る。後方待機から外を回して勝負。" },
-          { num: 9, waku: 7, name: "コンクシェル", sexAge: "牝5", weight: 56.0, jockey: "佐々木大輔", trainer: "清水久詞", style: "nige", odds: "41.0倍 (9人気)", speed: 90, stamina: 88, spurt: 86, gate: 94, sire: "キズナ", bms: "Galileo", pedigreeFit: "A (単騎逃げ粘り血統)", formEval: "好調", jockeyRank: "A", jockeyTactic: "単騎マイペース逃げ", gateHabit: "好発抜群", gateDelayRate: 0.01, trainingTime: "栗東CW 81.8-11.6", trainingGrade: "B+", last3F_record: "34.5s", pci: 48.0, tacticalIntent: "ゲートダッシュから迷わずハナを主張。後続を引き連れずスローに落として直線の坂なし平坦で粘り込み！", comment: "自分のペースで単騎逃げができればしぶとい。" },
-          { num: 10, waku: 7, name: "ライラック", sexAge: "牝6", weight: 56.0, jockey: "石川裕紀人", trainer: "相沢郁", style: "oikomi", odds: "48.0倍 (10人気)", speed: 87, stamina: 92, spurt: 93, gate: 78, sire: "オルフェーヴル", bms: "キングカメハメハ", pedigreeFit: "SSS (エリ女2年連続馬券内巧者)", formEval: "メイチ仕上げ", jockeyRank: "A", jockeyTactic: "エリ女特化外差し強襲", gateHabit: "発馬不安", gateDelayRate: 0.30, trainingTime: "美南W 81.5-11.3 (絶好)", trainingGrade: "S", last3F_record: "33.6s", pci: 57.0, tacticalIntent: "過去2年連続でエリ女馬券内の京都芝2200mマイスター。下り坂から大外を捲って強襲する激走穴馬！", comment: "ここを目標に完璧な仕上がり。外差しが決まる馬場なら勝ち負け。" },
-          { num: 11, waku: 8, name: "ルージュリナージュ", sexAge: "牝6", weight: 56.0, jockey: "丸山元気", trainer: "宗像義夕", style: "oikomi", odds: "75.0倍 (11人気)", speed: 88, stamina: 87, spurt: 93, gate: 80, sire: "スピルバーグ", bms: "チチカステナンゴ", pedigreeFit: "B+ (一瞬の切れ味)", formEval: "平行線", jockeyRank: "B+", jockeyTactic: "大外一気", gateHabit: "普通", gateDelayRate: 0.15, trainingTime: "美南W 83.5-11.7", trainingGrade: "B", last3F_record: "33.4s", pci: 56.5, tacticalIntent: "後方でじっと息を潜め、直線だけでどこまで詰められるかの一発勝負。", comment: "終いは確実に脚を使う。展開が向けば。" },
-          { num: 12, waku: 8, name: "ハーパー", sexAge: "牝5", weight: 56.0, jockey: "武藤雅", trainer: "友道康栄", style: "senko", odds: "88.0倍 (12人気)", speed: 89, stamina: 91, spurt: 88, gate: 88, sire: "ハーツクライ", bms: "Jump Start", pedigreeFit: "A (京都適性あり・持続型)", formEval: "復調気配", jockeyRank: "B+", jockeyTactic: "先行粘り", gateHabit: "好発", gateDelayRate: 0.05, trainingTime: "栗東CW 82.8-11.6", trainingGrade: "B+", last3F_record: "34.4s", pci: 50.5, tacticalIntent: "好位追走からしぶとく脚を使う。早めに前を捕まえに行って粘り込む。", comment: "ブリンカー効果で集中力アップ。前々で運べれば。" }
-        ]
-      },
-      mile_cs_2026: {
-        id: "mile_cs_2026",
-        name: "第43回 マイルCS G1",
-        courseName: "京都競馬場",
-        distance: 1600,
-        trackType: "芝",
-        trackCondition: "良",
-        straight: 404,
-        slope: "高低差 3.5m (淀の坂下り)",
-        bias: "淀の坂下りから一気のトップスピード加速。瞬発力と切れ味勝負。",
-        horses: [
-          { num: 1, waku: 1, name: "ナミュール", sexAge: "牝6", weight: 56.0, jockey: "C.デムーロ", trainer: "高野友和", style: "sashi", odds: "3.2倍", speed: 96, stamina: 86, spurt: 98, gate: 80, trainingTime: "栗東坂路 51.4-11.7", trainingGrade: "S", last3F_record: "32.9s", pci: 58.0, comment: "京都外回りマイルは最高の適性。大外一気で連覇を狙う。", commentScore: 1.9 },
-          { num: 2, waku: 2, name: "ジャンタルマンタル", sexAge: "牡4", weight: 58.0, jockey: "川田将雅", trainer: "高野友和", style: "senko", odds: "3.5倍", speed: 96, stamina: 88, spurt: 95, gate: 94, trainingTime: "栗東CW 80.8-11.1", trainingGrade: "S", last3F_record: "33.4s", pci: 52.0, comment: "完成度抜群。好位2〜3番手から早め先頭で押し切る。", commentScore: 2.0 },
-          { num: 3, waku: 3, name: "ソウルラッシュ", sexAge: "牡8", weight: 58.0, jockey: "団野大成", trainer: "池江泰寿", style: "sashi", odds: "4.1倍", speed: 94, stamina: 90, spurt: 95, gate: 88, trainingTime: "栗東CW 81.0-11.2", trainingGrade: "A", last3F_record: "33.3s", pci: 54.0, comment: "ベテランだが元気いっぱい。直線力強く突き抜ける競馬を。", commentScore: 1.4 },
-          { num: 4, waku: 4, name: "セリフォス", sexAge: "牡7", weight: 58.0, jockey: "藤岡佑介", trainer: "中内田充正", style: "sashi", odds: "7.8倍", speed: 93, stamina: 86, spurt: 94, gate: 84, trainingTime: "栗東CW 81.8-11.3", trainingGrade: "B", last3F_record: "33.1s", pci: 56.5, comment: "直線の切れ味は健在。京都の平坦直線で浮上を狙う。", commentScore: 0.9 },
-          { num: 5, waku: 5, name: "エルトンバローズ", sexAge: "牡6", weight: 58.0, jockey: "西村淳也", trainer: "杉山晴紀", style: "senko", odds: "12.0倍", speed: 91, stamina: 88, spurt: 89, gate: 88, trainingTime: "栗東坂路 52.0-11.9", trainingGrade: "B", last3F_record: "33.8s", pci: 51.0, comment: "マイル戦なら立ち回りひとつ。内枠を引いてロスなく運びたい。", commentScore: 0.6 },
-          { num: 6, waku: 6, name: "ウインマーベル", sexAge: "牡7", weight: 58.0, jockey: "松山弘平", trainer: "深山雅史", style: "nige", odds: "16.5倍", speed: 94, stamina: 82, spurt: 86, gate: 96, trainingTime: "美南W 81.9-11.5", trainingGrade: "B", last3F_record: "34.3s", pci: 48.0, comment: "ハナを主張してペースを握る。坂下りの勢いで粘り込み。", commentScore: 0.8 }
-        ]
-      },
-      japan_cup_2026: {
-        id: "japan_cup_2026",
-        name: "第46回 ジャパンカップ G1",
-        courseName: "東京競馬場",
-        distance: 2400,
-        trackType: "芝",
-        trackCondition: "良",
-        straight: 525,
-        slope: "高低差 2.1m (長い直線)",
-        bias: "世界最高峰のスピード持続力と2400mのタフなスタミナの融合。",
-        horses: [
-          { num: 1, waku: 1, name: "クロワデュノール", sexAge: "牡4", weight: 58.0, jockey: "C.デムーロ", trainer: "斉藤崇史", style: "sashi", odds: "2.8倍", speed: 97, stamina: 96, spurt: 97, gate: 90, trainingTime: "栗東CW 80.2-11.0", trainingGrade: "S", last3F_record: "33.0s", pci: 56.0, comment: "東京2400mはベスト。中団から堂々と抜け出す競馬を。", commentScore: 2.0 },
-          { num: 2, waku: 2, name: "ドウデュース", sexAge: "牡5", weight: 58.0, jockey: "武豊", trainer: "友道康夫", style: "oikomi", odds: "3.5倍", speed: 96, stamina: 94, spurt: 99, gate: 82, trainingTime: "栗東CW 81.0-11.1", trainingGrade: "S", last3F_record: "32.6s", pci: 58.8, comment: "大外一気を決める態勢。直線の爆発力は現役最上位。", commentScore: 1.9 },
-          { num: 3, waku: 3, name: "シンエンペラー", sexAge: "牡4", weight: 58.0, jockey: "坂井瑠星", trainer: "矢作芳人", style: "sashi", odds: "5.5倍", speed: 94, stamina: 95, spurt: 93, gate: 88, trainingTime: "栗東CW 81.5-11.4", trainingGrade: "A", last3F_record: "33.5s", pci: 55.0, comment: "タフな流れなら勝ち負け。", commentScore: 1.5 },
-          { num: 4, waku: 4, name: "チェルヴィニア", sexAge: "牝4", weight: 56.0, jockey: "C.ルメール", trainer: "木村哲也", style: "senko", odds: "6.2倍", speed: 94, stamina: 93, spurt: 95, gate: 92, trainingTime: "美南W 81.8-11.3", trainingGrade: "A", last3F_record: "33.4s", pci: 54.0, comment: "オークス馬の意地。好位からソツなく立ち回る。", commentScore: 1.3 },
-          { num: 5, waku: 5, name: "ジャスティンパレス", sexAge: "牡6", weight: 58.0, jockey: "鮫島克駿", trainer: "杉山晴紀", style: "sashi", odds: "10.5倍", speed: 91, stamina: 97, spurt: 93, gate: 82, trainingTime: "栗東CW 82.5-11.5", trainingGrade: "B", last3F_record: "33.6s", pci: 56.0, comment: "スタミナは文句なし。東京2400mでのロングスパートに賭ける。", commentScore: 0.9 },
-          { num: 6, waku: 6, name: "ディープボンド", sexAge: "牡8", weight: 58.0, jockey: "幸英明", trainer: "大久保龍志", style: "senko", odds: "25.0倍", speed: 85, stamina: 98, spurt: 80, gate: 84, trainingTime: "栗東CW 83.0-11.7", trainingGrade: "B", last3F_record: "35.2s", pci: 49.0, comment: "消耗戦になれば浮上。", commentScore: 0.4 }
-        ]
-      },
-      arima_2026: {
-        id: "arima_2026",
-        name: "第71回 有馬記念 G1",
-        courseName: "中山競馬場",
-        distance: 2500,
-        trackType: "芝",
-        trackCondition: "良",
-        straight: 310,
-        slope: "高低差 2.2m (急坂2回)",
-        bias: "中山小回り・急坂2回通過。スタミナ・コーナリングと4角捲りが勝負所。",
-        horses: [
-          { num: 1, waku: 1, name: "クロワデュノール", sexAge: "牡4", weight: 58.0, jockey: "C.デムーロ", trainer: "斉藤崇史", style: "senko", odds: "2.5倍", speed: 96, stamina: 97, spurt: 95, gate: 92, trainingTime: "栗東CW 80.8-11.2", trainingGrade: "S", last3F_record: "34.2s", pci: 52.0, comment: "中山2500mも克服できるスタミナがある。秋の総決算へ。", commentScore: 2.0 },
-          { num: 2, waku: 2, name: "ドウデュース", sexAge: "牡5", weight: 58.0, jockey: "武豊", trainer: "友道康夫", style: "sashi", odds: "3.2倍", speed: 95, stamina: 95, spurt: 98, gate: 84, trainingTime: "栗東CW 81.2-11.2", trainingGrade: "S", last3F_record: "33.8s", pci: 55.0, comment: "有馬記念連覇を目指す。捲り気味にスパートをかけて押し切る。", commentScore: 1.9 },
-          { num: 3, waku: 3, name: "ジャスティンパレス", sexAge: "牡6", weight: 58.0, jockey: "鮫島克駿", trainer: "杉山晴紀", style: "oikomi", odds: "8.5倍", speed: 90, stamina: 98, spurt: 92, gate: 80, trainingTime: "栗東CW 82.5-11.6", trainingGrade: "A", last3F_record: "34.0s", pci: 57.0, comment: "スタミナ勝負なら負けない。3コーナーから長く良い脚を使う。", commentScore: 1.2 },
-          { num: 4, waku: 4, name: "ソールオリエンス", sexAge: "牡5", weight: 58.0, jockey: "横山武史", trainer: "手塚貴久", style: "oikomi", odds: "14.0倍", speed: 91, stamina: 92, spurt: 95, gate: 76, trainingTime: "美南W 82.0-11.4", trainingGrade: "B", last3F_record: "33.9s", pci: 58.5, comment: "皐月賞を勝った中山コース。重馬場になればさらに浮上。", commentScore: 0.8 },
-          { num: 5, waku: 5, name: "ディープボンド", sexAge: "牡8", weight: 58.0, jockey: "幸英明", trainer: "大久保龍志", style: "senko", odds: "28.0倍", speed: 84, stamina: 99, spurt: 80, gate: 84, trainingTime: "栗東CW 83.2-11.8", trainingGrade: "B", last3F_record: "35.5s", pci: 48.0, comment: "有馬記念は庭。前々で運んでスタミナの底力を見せる。", commentScore: 0.5 }
+          { num: 6, waku: 5, name: "シンティレーション", sexAge: "牝6", weight: 56.0, jockey: "T.マーカンド", trainer: "池上昌和", style: "sashi", odds: "18.5倍 (6人気)", speed: 90, stamina: 89, spurt: 93, gate: 86, sire: "ロードカナロア", bms: "アグネスタキオン", pedigreeFit: "A (府中牝馬S好走の末脚)", formEval: "充実期", jockeyRank: "A+", jockeyTactic: "マーカンド剛腕外差し", gateHabit: "普通", gateDelayRate: 0.10, trainingTime: "美南W 82.2-11.4", trainingGrade: "A", last3F_record: "33.4s", pci: 55.5, tacticalIntent: "中団外目で脚を溜め、マーカンドが直線で外に出して豪快に追い込む。", comment: "前走の末脚健在。京都の外回りならさらに差し脚が生きる。" }
         ]
       }
     };
@@ -1447,7 +934,7 @@
 
     // --- 状態管理 ---
     let state = {
-      currentRaceKey: "tenno_aki_2026",
+      currentRaceKey: "argentine_2026",
       selectedTrials: 1000,
       activeTab: "animation",
       headerCollapsed: false,
@@ -1463,7 +950,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       initScrollHeader();
       initEventListeners();
-      loadRace("tenno_aki_2026");
+      loadRace("queen_elizabeth_2026");
       runMonteCarloSimulation(1000);
       initCanvas();
       initBudgetBetting();
@@ -1575,11 +1062,10 @@
 
       // シミュレーションタブのレース詳細・高低差・スタミナバナーの更新
       const courseTurns = {
-        tenno_aki_2026: "左回り・Bコース",
-        queen_elizabeth_2026: "右回り・外回り",
-        mile_cs_2026: "右回り・外回り",
-        japan_cup_2026: "左回り・Cコース",
-        arima_2026: "右回り・内回り"
+        argentine_2026: "左回り・芝2500m",
+        miyako_s_2026: "右回り・ダート1800m",
+        keio_hai_2026: "左回り・芝1400m",
+        queen_elizabeth_2026: "右回り・外回り"
       };
       const turnStr = courseTurns[raceKey] || (race.courseName.includes("東京") ? "左回り" : "右回り");
       const elName = document.getElementById('simRaceFullName');
@@ -1599,13 +1085,43 @@
 
       const elStamina = document.getElementById('simStaminaImpact');
       if (elStamina) {
-        if (race.slope.includes("急坂") || race.courseName.includes("中山")) {
-          elStamina.textContent = "急坂を2度上るタフ戦。スタミナ95未満は強烈減速";
+        if (race.courseName.includes("福島")) {
+          elStamina.textContent = "小回り平坦。コーナリング機動力＆イン立ち回り必須";
+        } else if (race.trackType === "ダート") {
+          elStamina.textContent = "ワンターン501m直線。芝スタート＆ダート持続力必須";
         } else if (race.courseName.includes("京都")) {
           elStamina.textContent = "3角淀の坂上り下り。下り坂加速適性＆平坦持続力必須";
         } else {
-          elStamina.textContent = "525m直線の坂。スタミナ92未満は坂上りで失速";
+          elStamina.textContent = "直線坂。スタミナ92未満は坂上りで失速";
         }
+      }
+
+      // クッション値とトラックバイアスのレース初期化
+      const defaultCushion = race.cushionValue || 9.4;
+      const defaultBias = race.trackBias || "inside";
+      state.activeCushionValue = defaultCushion;
+      state.activeTrackBias = defaultBias;
+
+      const cSlider = document.getElementById('cushionInput');
+      if (cSlider) cSlider.value = defaultCushion;
+      const cDisp = document.getElementById('cushionValDisplay');
+      if (cDisp) {
+        let label = `${defaultCushion.toFixed(1)} (標準)`;
+        if (defaultCushion >= 10.0) label = `${defaultCushion.toFixed(1)} (硬め・高速)`;
+        else if (defaultCushion <= 8.5) label = `${defaultCushion.toFixed(1)} (軟らかめ・タフ)`;
+        cDisp.textContent = label;
+      }
+
+      document.querySelectorAll('.tb-btn').forEach(b => {
+        b.className = "tb-btn p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition";
+      });
+      const activeBtnId = defaultBias === 'inside' ? 'tbInsideBtn' : defaultBias === 'outside' ? 'tbOutsideBtn' : 'tbFlatBtn';
+      const activeBtn = document.getElementById(activeBtnId);
+      if (activeBtn) {
+        activeBtn.className = "tb-btn p-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-sm";
+      }
+      if (typeof updateTrackBiasBadge === "function") {
+        updateTrackBiasBadge();
       }
 
       // ★ 競馬の神インテリジェンス: 戦術起爆点 ＆ 陣営シナリオHUD更新 ★
@@ -1911,12 +1427,41 @@
             const greatRun = isNoriPotsun ? (Math.random() < 0.08 ? -0.65 : 0.0) : (Math.random() < 0.04 ? -0.45 : 0.0);
             const noise = randNormal(0, 0.55);
 
-            // ★ 近年G1実戦研究ファクター (経済コース利、目標プレッシャー、気性・折り合い難) ★
+            // ★ クッション値 ＆ トラックバイアス (内外有利不利) 演算エンジン ★
             const waku = getWaku(h.num, race.horses.length);
-            // ① 経済コース (インピタ最少走行) ボーナス：内枠好位の伏兵がロスなく回る (ネブラディスク・タスティエーラ型)
-            const railBonus = (waku <= 3 && (h.style === 'senko' || h.style === 'nige')) ? 0.16 : 0.0;
-            // 外枠先行の外回し距離ロス
-            const wideLoss = (waku >= 7 && (h.style === 'nige' || h.style === 'senko')) ? 0.20 : 0.0;
+            const cushion = state.activeCushionValue || (race.cushionValue || 9.4);
+            const tBias = state.activeTrackBias || (race.trackBias || "inside");
+
+            // ① クッション値演算: 
+            // 10.0以上(硬め・高速): スピード・瞬発力特化型が優位 (+0.15s), パワー型はスタミナ消耗
+            // 8.5以下(軟らかめ・タフ): パワー・重馬場適性馬が優位 (+0.20s), 切れ味型は末脚が鈍る (-0.18s)
+            let cushionBonus = 0.0;
+            if (cushion >= 10.0) {
+              if (h.spurt >= 94) cushionBonus += 0.15;
+              if (h.style === 'sashi' && !isLongStraight) cushionBonus -= 0.10;
+            } else if (cushion <= 8.5) {
+              if (h.stamina >= 92 || (h.pedigreeFit && h.pedigreeFit.includes('パワー'))) cushionBonus += 0.22;
+              else cushionBonus -= 0.16;
+            }
+
+            // ② トラックバイアス演算 (内外通り所の恩恵)
+            let biasAdj = 0.0;
+            if (tBias === 'inside') {
+              // イン前有利: 内枠(1〜3枠)先行が圧倒的恩恵 (+0.28s)、外枠差しは大外ぶん回しでロス (-0.22s)
+              if (waku <= 3 && (h.style === 'senko' || h.style === 'nige')) biasAdj += 0.28;
+              else if (waku >= 7 && (h.style === 'sashi' || h.style === 'oikomi')) biasAdj -= 0.22;
+            } else if (tBias === 'outside') {
+              // 外差し天国: 外枠(6〜8枠)の差し追込がスムーズ加速 (+0.30s)、内ラチ沿いは荒れて失速 (-0.25s)
+              if (waku >= 6 && (h.style === 'sashi' || h.style === 'oikomi')) biasAdj += 0.30;
+              else if (waku <= 2) biasAdj -= 0.22;
+            } else {
+              // フラット
+              if (waku <= 3 && (h.style === 'senko' || h.style === 'nige')) biasAdj += 0.12;
+            }
+
+            // 経済コース利
+            const railBonus = biasAdj;
+            const wideLoss = (waku >= 7 && h.style === 'nige' && tBias === 'inside') ? 0.20 : 0.0;
 
             // ② 人気先行馬のマーク集中・ハイペース消耗ペナルティ (クロワデュノール型)
             const isTargetedFav = (parseFloat(h.odds) <= 3.5 && (h.style === 'senko' || h.style === 'nige'));
@@ -1927,7 +1472,7 @@
             const temperamentPenalty = isTemperamentRisk ? 0.52 : 0.0;
 
             // 走破秒数算出
-            const totalBonus = abilityDiff + tAdj + cAdj + paceAdj + pedigreeBonus + formBonus + jockeySkillBonus + railBonus;
+            const totalBonus = abilityDiff + tAdj + cAdj + paceAdj + pedigreeBonus + formBonus + jockeySkillBonus + railBonus + cushionBonus;
             const raceTime = baseTime - totalBonus + slopePenalty + delay + traffic + greatRun + noise + wideLoss + targetPressure + temperamentPenalty;
 
             const spurtBase = (600.0 / (16.2 + (h.spurt - 90) * 0.02 + paceAdj * 0.3));
@@ -3219,6 +2764,48 @@
         html += `<option value="${h.num}" ${isSelected}>【${h.num}番】${h.name}${upsetTag} (${h.jockey} / ${h.odds})</option>`;
       });
       sel.innerHTML = html;
+    }
+
+    
+    // --- JRA公式クッション値 ＆ トラックバイアス管理 ---
+    window.onCushionChange = function(val) {
+      const v = parseFloat(val);
+      state.activeCushionValue = v;
+      let label = `${v.toFixed(1)} (標準)`;
+      if (v >= 10.5) label = `${v.toFixed(1)} (硬め・超高速)`;
+      else if (v >= 10.0) label = `${v.toFixed(1)} (やや硬め・高速)`;
+      else if (v <= 7.9) label = `${v.toFixed(1)} (軟らかめ・タフ)`;
+      else if (v <= 8.9) label = `${v.toFixed(1)} (やや軟らかめ)`;
+
+      const el = document.getElementById('cushionValDisplay');
+      if (el) el.textContent = label;
+      updateTrackBiasBadge();
+      runMonteCarloSimulation(state.selectedTrials);
+    };
+
+    window.setTrackBias = function(bias) {
+      state.activeTrackBias = bias;
+      document.querySelectorAll('.tb-btn').forEach(b => {
+        b.className = "tb-btn p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition";
+      });
+      const activeBtnId = bias === 'inside' ? 'tbInsideBtn' : bias === 'outside' ? 'tbOutsideBtn' : 'tbFlatBtn';
+      const activeBtn = document.getElementById(activeBtnId);
+      if (activeBtn) {
+        activeBtn.className = "tb-btn p-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition shadow-sm";
+      }
+      updateTrackBiasBadge();
+      const biasNames = { inside: "イン前有利", flat: "フラット", outside: "外差し天国" };
+      showToast(`馬場バイアスを「${biasNames[bias]}」に設定しました`);
+      runMonteCarloSimulation(state.selectedTrials);
+    };
+
+    function updateTrackBiasBadge() {
+      const el = document.getElementById('cushionDescBadge');
+      if (!el) return;
+      const cVal = state.activeCushionValue || 9.4;
+      const bVal = state.activeTrackBias || "inside";
+      const bNames = { inside: "イン前有利", flat: "フラット", outside: "外差し天国" };
+      el.textContent = `クッション値 ${cVal.toFixed(1)} ｜ ${bNames[bVal]}`;
     }
 
     function calculateAndRenderBets() {
