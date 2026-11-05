@@ -231,6 +231,22 @@
           </div>
         </div>
 
+        <!-- ★ 競馬の神インテリジェンス: 戦術起爆ポイント＆仕掛け予測HUD (ユーザー要望) ★ -->
+        <div id="tacticalIgnitionCard" class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-2 border-amber-500/40 rounded-xl p-2.5 sm:p-3 mb-2.5 shadow-xl flex flex-wrap items-center justify-between gap-2.5 text-xs">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-black text-[10px] font-mono border border-amber-500/40 flex items-center gap-1 shadow-sm">
+              <span>⚡</span> レース起爆点 (仕掛け所)
+            </span>
+            <span id="tacticalIgnitionPointText" class="font-black text-white text-xs sm:text-sm">残り400m (直線だらだら坂下)</span>
+            <span class="text-slate-500 hidden sm:inline">｜</span>
+            <span class="text-slate-300">起爆トリガー馬: <strong id="tacticalTriggerHorse" class="text-amber-400 font-black">17番 ダノンデサイル (戸崎)</strong></span>
+          </div>
+          <div class="text-[11px] text-slate-300 flex items-center gap-1.5 font-medium">
+            <span class="text-emerald-400 font-bold">【陣営シナリオ】</span>
+            <span id="tacticalScenarioInsight" class="truncate max-w-xs sm:max-w-md text-slate-200">坂下でワンテンポ我慢し、残り300mから外に出して一気にトップギアへ！先行勢を飲み込む</span>
+          </div>
+        </div>
+
         <!-- Canvasモニターコンテナ -->
         <div class="relative w-full rounded-xl overflow-hidden border border-emerald-900/40 shadow-inner bg-slate-950" style="height: 400px;">
           <canvas id="raceCanvas" class="w-full h-full block"></canvas>
@@ -480,6 +496,45 @@
           </p>
         </div>
 
+        <!-- ★ 競馬の神インテリジェンス: レース展開トリガー ＆ 陣営シナリオ解析 (ユーザー要望) ★ -->
+        <div id="godIntelligenceCard" class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950/40 border-2 border-amber-500/40 rounded-2xl p-3.5 sm:p-4 shadow-xl space-y-2.5 mb-3">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">👑</span>
+              <h3 class="text-xs sm:text-sm font-black text-amber-300">
+                競馬の神インテリジェンス（展開起爆トリガー ＆ 陣営戦術シナリオ）
+              </h3>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold font-mono">神の視点解析</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+            <div class="bg-slate-950/80 p-2.5 rounded-xl border border-amber-500/20 space-y-1">
+              <span class="text-[11px] font-black text-amber-400 flex items-center gap-1">
+                <span>⚡</span> レースが動く瞬間 (仕掛け所)
+              </span>
+              <p id="godIgnitionPointDetail" class="text-[11px] text-slate-300 leading-relaxed">
+                直線の坂下（残り400m地点）。ここで誰が先に仕掛けるかによって、先行勢のスタミナ枯渇と後方差し馬の進路クリア度が決定づけられる。
+              </p>
+            </div>
+            <div class="bg-slate-950/80 p-2.5 rounded-xl border border-indigo-500/20 space-y-1">
+              <span class="text-[11px] font-black text-indigo-400 flex items-center gap-1">
+                <span>🔥</span> 起爆剤となる馬 (トリガー)
+              </span>
+              <p id="godTriggerHorseDetail" class="text-[11px] text-slate-300 leading-relaxed">
+                外から一気にギアを上げる単穴馬（17番ダノンデサイル）。この馬の早仕掛けが全体を一気にハイラップ化させ、前崩れの波乱を生む。
+              </p>
+            </div>
+            <div class="bg-slate-950/80 p-2.5 rounded-xl border border-emerald-500/20 space-y-1">
+              <span class="text-[11px] font-black text-emerald-400 flex items-center gap-1">
+                <span>🧬</span> 血統・舞台適性の真実
+              </span>
+              <p id="godPedigreeInsightDetail" class="text-[11px] text-slate-300 leading-relaxed">
+                エピファネイア産駒の東京芝持続力SSS。瞬発力だけの切れ味勝負ではなく、だらだら坂を越えてからの「持続力勝負」で他馬を圧倒する。
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
           <div class="bg-slate-950/90 border-2 border-amber-400/80 rounded-2xl p-3.5 text-center shadow-lg shadow-amber-500/10">
             <span class="text-xl sm:text-2xl font-black text-amber-400 block">◎ 本命</span>
@@ -716,6 +771,11 @@
         straight: 525,
         slope: "高低差 2.1m (直線だらだら坂)",
         bias: "525mの直線勝負。極限の上がり3F瞬発力と高速巡航の持続力、そして開幕週の好位イン立ち回りが勝敗の鍵。",
+        tacticalPoint: "残り400m (直線だらだら坂下)",
+        triggerHorse: "17番 ダノンデサイル (戸崎圭太)",
+        triggerAction: "坂下まで脚を温存し、坂の登り始めから一気にスパート開始。先行勢のスタミナを削って大外一気に飲み込む！",
+        tacticalAdvantage: "道中インピタ最少走行の10番ネブラディスクが内からロスなく抜け出し粘り込み。",
+        pedigreeInsight: "エピファネイア産駒の東京芝持続力SSS。坂を上ってからの我慢比べで無類の強さを発揮。",
         horses: [
           {
                     "num": 1,
@@ -1272,14 +1332,25 @@
         trackCondition: "良",
         straight: 404,
         slope: "高低差 3.5m (3コーナー淀の坂)",
-        bias: "淀の坂の下りを利用したロングスパート。直線平坦での末脚持続力勝負。",
+        bias: "3角淀の坂を上り、下り坂でスピードに乗せるロングスパート。平坦直線での末脚持続力勝負。",
+        tacticalPoint: "残り800m〜650m (3〜4角淀の坂下り)",
+        triggerHorse: "3番 チェルヴィニア (ルメール) ＆ 1番 レガレイラ (岩田望)",
+        triggerAction: "淀の坂の頂上を越えて下り坂に差し掛かる残り800mで外からジワッと加速開始。隊列全体が一気にペースアップ！",
+        tacticalAdvantage: "下り坂で早仕掛けした先行勢が平坦直線で消耗。下り坂でスピードに乗った外差し持続力型が台頭。",
+        pedigreeInsight: "ハービンジャー・欧州ノーザンダンサー系のタフ外回り持続力SSS。淀の坂下りからのロングスパートに最適。",
         horses: [
-          { num: 1, waku: 1, name: "レガレイラ", sexAge: "牝5", weight: 56.0, jockey: "岩田望来", trainer: "木村哲也", style: "sashi", odds: "2.1倍", speed: 96, stamina: 94, spurt: 98, gate: 86, trainingTime: "美南W 81.0-11.2", trainingGrade: "S", last3F_record: "33.2s", pci: 57.0, comment: "京都外回り2200mは絶好の舞台。外から一気に突き抜ける。", commentScore: 1.9 },
-          { num: 2, waku: 2, name: "ステレンボッシュ", sexAge: "牝4", weight: 56.0, jockey: "戸崎圭太", trainer: "国枝栄", style: "sashi", odds: "3.8倍", speed: 94, stamina: 92, spurt: 95, gate: 88, trainingTime: "美南W 81.6-11.4", trainingGrade: "A", last3F_record: "33.5s", pci: 56.0, comment: "距離延長歓迎。折り合いをつけて長く良い脚を使わせたい。", commentScore: 1.4 },
-          { num: 3, waku: 3, name: "チェルヴィニア", sexAge: "牝4", weight: 56.0, jockey: "C.ルメール", trainer: "木村哲也", style: "senko", odds: "4.5倍", speed: 95, stamina: 93, spurt: 94, gate: 90, trainingTime: "栗東CW 81.2-11.3", trainingGrade: "A", last3F_record: "33.6s", pci: 53.5, comment: "好位から器用に立ち回る。坂下りからの抜け出しを図る。", commentScore: 1.5 },
-          { num: 4, waku: 4, name: "スタニングローズ", sexAge: "牝6", weight: 56.0, jockey: "C.デムーロ", trainer: "高野友和", style: "senko", odds: "8.2倍", speed: 91, stamina: 92, spurt: 89, gate: 92, trainingTime: "栗東坂路 52.0-11.9", trainingGrade: "A", last3F_record: "34.2s", pci: 50.0, comment: "エリザベス女王杯連覇を目指す。前々で持ち味を活かす。", commentScore: 1.2 },
-          { num: 5, waku: 5, name: "ラヴァンダ", sexAge: "牝4", weight: 56.0, jockey: "岩田康誠", trainer: "中村直也", style: "sashi", odds: "15.0倍", speed: 89, stamina: 89, spurt: 91, gate: 84, trainingTime: "栗東CW 82.5-11.5", trainingGrade: "B", last3F_record: "33.9s", pci: 54.0, comment: "調子は上向き。中団から手応え良く追走できれば。", commentScore: 0.5 },
-          { num: 6, waku: 6, name: "サリエラ", sexAge: "牝7", weight: 56.0, jockey: "武豊", trainer: "国枝栄", style: "oikomi", odds: "22.0倍", speed: 87, stamina: 93, spurt: 92, gate: 75, trainingTime: "美南W 83.0-11.6", trainingGrade: "B", last3F_record: "33.7s", pci: 58.0, comment: "距離が伸びて良さが出る。後方待機から外を回して勝負。", commentScore: 0.4 }
+          { num: 1, waku: 1, name: "レガレイラ", sexAge: "牝5", weight: 56.0, jockey: "岩田望来", trainer: "木村哲也", style: "sashi", odds: "2.3倍 (1人気)", speed: 96, stamina: 94, spurt: 98, gate: 86, sire: "スワーヴリチャード", bms: "ハービンジャー", pedigreeFit: "SSS (京都芝2200m外回り絶好)", formEval: "絶好調", jockeyRank: "A", jockeyTactic: "下り坂スムーズ進出・大外一気", gateHabit: "出遅れ癖 (45%)", gateDelayRate: 0.45, trainingTime: "美南W 81.0-11.2 (抜群)", trainingGrade: "S", last3F_record: "33.2s", pci: 57.0, tacticalIntent: "出遅れても焦らず後方待機。3〜4角の坂下りから外を回して一気にトップギアへ！", comment: "京都外回り2200mは絶好の舞台。外から一気に突き抜ける。" },
+          { num: 2, waku: 2, name: "ステレンボッシュ", sexAge: "牝4", weight: 56.0, jockey: "戸崎圭太", trainer: "国枝栄", style: "sashi", odds: "3.9倍 (2人気)", speed: 94, stamina: 92, spurt: 95, gate: 88, sire: "エピファネイア", bms: "ルーラーシップ", pedigreeFit: "A (持続力＆パワー融合)", formEval: "充実", jockeyRank: "S", jockeyTactic: "戸崎好位イン差し・ロスゼロ走行", gateHabit: "好発", gateDelayRate: 0.05, trainingTime: "美南W 81.6-11.4", trainingGrade: "A", last3F_record: "33.5s", pci: 56.0, tacticalIntent: "内枠好位インでじっと脚を溜め、直線で前が開いた瞬間鋭く抜け出す経済コース作戦。", comment: "距離延長歓迎。折り合いをつけて長く良い脚を使わせたい。" },
+          { num: 3, waku: 3, name: "チェルヴィニア", sexAge: "牝4", weight: 56.0, jockey: "C.ルメール", trainer: "木村哲也", style: "senko", odds: "4.6倍 (3人気)", speed: 95, stamina: 93, spurt: 94, gate: 90, sire: "ハービンジャー", bms: "キングカメハメハ", pedigreeFit: "SSS (オークス馬・京都外回り最高適性)", formEval: "絶好調", jockeyRank: "S+", jockeyTactic: "ルメール神騎乗・下り坂絶妙仕掛け", gateHabit: "安定好発", gateDelayRate: 0.02, trainingTime: "栗東CW 81.2-11.3 (抜群)", trainingGrade: "S", last3F_record: "33.6s", pci: 53.5, tacticalIntent: "好位3〜4番手をガッチリキープ。淀の坂下りから抜群のタイミングで仕掛けて抜け出す本線シナリオ。", comment: "好位から器用に立ち回る。坂下りからの抜け出しを図る。" },
+          { num: 4, waku: 4, name: "スタニングローズ", sexAge: "牝6", weight: 56.0, jockey: "C.デムーロ", trainer: "高野友和", style: "senko", odds: "8.5倍 (4人気)", speed: 92, stamina: 93, spurt: 90, gate: 92, sire: "キングカメハメハ", bms: "クロフネ", pedigreeFit: "A+ (エリ女勝ち馬の底力)", formEval: "好調キープ", jockeyRank: "S", jockeyTactic: "デムーロ剛腕早め先頭押し切り", gateHabit: "好発", gateDelayRate: 0.03, trainingTime: "栗東坂路 52.0-11.9", trainingGrade: "A", last3F_record: "34.2s", pci: 50.0, tacticalIntent: "淀の坂下りからC.デムーロが早めに捲って先頭に立ち、直線平坦をスタミナで粘り込む。", comment: "エリザベス女王杯連覇を目指す。前々で持ち味を活かす。" },
+          { num: 5, waku: 5, name: "ホールネス", sexAge: "牝4", weight: 56.0, jockey: "坂井瑠星", trainer: "藤原英昭", style: "senko", odds: "14.2倍 (5人気)", speed: 91, stamina: 90, spurt: 91, gate: 90, sire: "ロードカナロア", bms: "Sadler's Wells", pedigreeFit: "A (パワー＆持久力)", formEval: "上昇", jockeyRank: "A+", jockeyTactic: "瑠星積極イン先行", gateHabit: "好発", gateDelayRate: 0.04, trainingTime: "栗東CW 82.0-11.5", trainingGrade: "A", last3F_record: "33.8s", pci: 52.0, tacticalIntent: "スタートを決めて内ラチ沿い2〜3番手に潜入。最短距離を回って直線の坂なし平坦で粘り込み激走！", comment: "調教の動き抜群。インからロスなく立ち回れば好勝負。" },
+          { num: 6, waku: 5, name: "シンティレーション", sexAge: "牝6", weight: 56.0, jockey: "T.マーカンド", trainer: "池上昌和", style: "sashi", odds: "18.5倍 (6人気)", speed: 90, stamina: 89, spurt: 93, gate: 86, sire: "ロードカナロア", bms: "アグネスタキオン", pedigreeFit: "A (府中牝馬S好走の末脚)", formEval: "充実期", jockeyRank: "A+", jockeyTactic: "マーカンド剛腕外差し", gateHabit: "普通", gateDelayRate: 0.10, trainingTime: "美南W 82.2-11.4", trainingGrade: "A", last3F_record: "33.4s", pci: 55.5, tacticalIntent: "中団外目で脚を溜め、マーカンドが直線で外に出して豪快に追い込む。", comment: "前走の末脚健在。京都の外回りならさらに差し脚が生きる。" },
+          { num: 7, waku: 6, name: "ラヴァンダ", sexAge: "牝4", weight: 56.0, jockey: "岩田康誠", trainer: "中村直也", style: "sashi", odds: "24.0倍 (7人気)", speed: 89, stamina: 89, spurt: 92, gate: 84, sire: "シルバーステート", bms: "ベーカバド", pedigreeFit: "B+ (内回り・パワー型)", formEval: "好調", jockeyRank: "A+", jockeyTactic: "康誠イン差し潜入", gateHabit: "普通", gateDelayRate: 0.12, trainingTime: "栗東CW 82.5-11.5", trainingGrade: "B", last3F_record: "33.9s", pci: 54.0, tacticalIntent: "岩田康誠の伝家の宝刀イン差し。直線で内が開くのを待って一撃を狙う。", comment: "調子は上向き。中団から手応え良く追走できれば。" },
+          { num: 8, waku: 6, name: "サリエラ", sexAge: "牝7", weight: 56.0, jockey: "武豊", trainer: "国枝栄", style: "oikomi", odds: "32.0倍 (8人気)", speed: 88, stamina: 94, spurt: 93, gate: 75, sire: "ディープインパクト", bms: "サロミナ", pedigreeFit: "A+ (長距離スタミナ＆切れ)", formEval: "変わり身", jockeyRank: "S", jockeyTactic: "豊マジック後方死んだふり", gateHabit: "発馬もっさり", gateDelayRate: 0.35, trainingTime: "美南W 82.0-11.4", trainingGrade: "A", last3F_record: "33.5s", pci: 58.5, tacticalIntent: "武豊が後方ポツンで完全脚温存。前がやり合って崩れた瞬間、大外から一気に飛んでくる！", comment: "距離が伸びて良さが出る。後方待機から外を回して勝負。" },
+          { num: 9, waku: 7, name: "コンクシェル", sexAge: "牝5", weight: 56.0, jockey: "佐々木大輔", trainer: "清水久詞", style: "nige", odds: "41.0倍 (9人気)", speed: 90, stamina: 88, spurt: 86, gate: 94, sire: "キズナ", bms: "Galileo", pedigreeFit: "A (単騎逃げ粘り血統)", formEval: "好調", jockeyRank: "A", jockeyTactic: "単騎マイペース逃げ", gateHabit: "好発抜群", gateDelayRate: 0.01, trainingTime: "栗東CW 81.8-11.6", trainingGrade: "B+", last3F_record: "34.5s", pci: 48.0, tacticalIntent: "ゲートダッシュから迷わずハナを主張。後続を引き連れずスローに落として直線の坂なし平坦で粘り込み！", comment: "自分のペースで単騎逃げができればしぶとい。" },
+          { num: 10, waku: 7, name: "ライラック", sexAge: "牝6", weight: 56.0, jockey: "石川裕紀人", trainer: "相沢郁", style: "oikomi", odds: "48.0倍 (10人気)", speed: 87, stamina: 92, spurt: 93, gate: 78, sire: "オルフェーヴル", bms: "キングカメハメハ", pedigreeFit: "SSS (エリ女2年連続馬券内巧者)", formEval: "メイチ仕上げ", jockeyRank: "A", jockeyTactic: "エリ女特化外差し強襲", gateHabit: "発馬不安", gateDelayRate: 0.30, trainingTime: "美南W 81.5-11.3 (絶好)", trainingGrade: "S", last3F_record: "33.6s", pci: 57.0, tacticalIntent: "過去2年連続でエリ女馬券内の京都芝2200mマイスター。下り坂から大外を捲って強襲する激走穴馬！", comment: "ここを目標に完璧な仕上がり。外差しが決まる馬場なら勝ち負け。" },
+          { num: 11, waku: 8, name: "ルージュリナージュ", sexAge: "牝6", weight: 56.0, jockey: "丸山元気", trainer: "宗像義夕", style: "oikomi", odds: "75.0倍 (11人気)", speed: 88, stamina: 87, spurt: 93, gate: 80, sire: "スピルバーグ", bms: "チチカステナンゴ", pedigreeFit: "B+ (一瞬の切れ味)", formEval: "平行線", jockeyRank: "B+", jockeyTactic: "大外一気", gateHabit: "普通", gateDelayRate: 0.15, trainingTime: "美南W 83.5-11.7", trainingGrade: "B", last3F_record: "33.4s", pci: 56.5, tacticalIntent: "後方でじっと息を潜め、直線だけでどこまで詰められるかの一発勝負。", comment: "終いは確実に脚を使う。展開が向けば。" },
+          { num: 12, waku: 8, name: "ハーパー", sexAge: "牝5", weight: 56.0, jockey: "武藤雅", trainer: "友道康栄", style: "senko", odds: "88.0倍 (12人気)", speed: 89, stamina: 91, spurt: 88, gate: 88, sire: "ハーツクライ", bms: "Jump Start", pedigreeFit: "A (京都適性あり・持続型)", formEval: "復調気配", jockeyRank: "B+", jockeyTactic: "先行粘り", gateHabit: "好発", gateDelayRate: 0.05, trainingTime: "栗東CW 82.8-11.6", trainingGrade: "B+", last3F_record: "34.4s", pci: 50.5, tacticalIntent: "好位追走からしぶとく脚を使う。早めに前を捕まえに行って粘り込む。", comment: "ブリンカー効果で集中力アップ。前々で運べれば。" }
         ]
       },
       mile_cs_2026: {
@@ -1537,6 +1608,30 @@
         }
       }
 
+      // ★ 競馬の神インテリジェンス: 戦術起爆点 ＆ 陣営シナリオHUD更新 ★
+      const tacPoint = race.tacticalPoint || "残り400m (直線だらだら坂下)";
+      const tacHorse = race.triggerHorse || "単穴馬";
+      const tacAction = race.triggerAction || "ここから一気にロングスパート開始！";
+      const tacPedi = race.pedigreeInsight || "コース形態と血統構造の合致が真の適性を生む。";
+
+      const elTacPoint = document.getElementById('tacticalIgnitionPointText');
+      if (elTacPoint) elTacPoint.textContent = tacPoint;
+
+      const elTacHorse = document.getElementById('tacticalTriggerHorse');
+      if (elTacHorse) elTacHorse.textContent = tacHorse;
+
+      const elTacInsight = document.getElementById('tacticalScenarioInsight');
+      if (elTacInsight) elTacInsight.textContent = tacAction;
+
+      const elGodPoint = document.getElementById('godIgnitionPointDetail');
+      if (elGodPoint) elGodPoint.textContent = `${tacPoint}：${tacAction}`;
+
+      const elGodHorse = document.getElementById('godTriggerHorseDetail');
+      if (elGodHorse) elGodHorse.textContent = `${tacHorse}：この馬が動いた瞬間に全体のラップが跳ね上がりレースが一変する！`;
+
+      const elGodPedi = document.getElementById('godPedigreeInsightDetail');
+      if (elGodPedi) elGodPedi.textContent = tacPedi;
+
       renderRacecard(race);
       resetAnimation();
     }
@@ -1622,6 +1717,7 @@
                   <span class="text-[11px] text-slate-400 font-mono-num">${h.sexAge || ''} / ${h.weight || 58}kg</span>
                   <span class="px-2 py-0.5 rounded-full border text-[10px] font-extrabold ${styleBadges[h.style]}">${styleNames[h.style]}</span>
                   <span class="text-[11px] bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-bold">騎手: ${h.jockey || '未定'} [${h.jockeyRank || 'A'}]</span>
+                  ${h.tacticalIntent ? `<span class="text-[10px] bg-amber-500/15 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-bold">作戦: ${h.tacticalIntent.slice(0, 16)}...</span>` : ''}
                   <span class="text-[10px] ${h.gateHabit && h.gateHabit.includes('出遅れ') ? 'bg-rose-500/20 text-rose-300 border-rose-500/40' : h.gateHabit && h.gateHabit.includes('好発') ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-slate-800 text-slate-300 border-slate-700'} border px-2 py-0.5 rounded-full font-bold">発馬: ${h.gateHabit || '標準'}</span>
                 </div>
               </div>
@@ -2167,7 +2263,8 @@
         };
       });
 
-      state.finishedCount = 0; // ゴール通過頭数
+      state.finishedCount = 0;
+      state.hasTriggerCommentary = false; // ゴール通過頭数
       state.animTime = 0;
       document.getElementById('animElapsedTime').textContent = "0:00.0";
       document.getElementById('animDistRemaining').textContent = race.distance;
@@ -2476,6 +2573,14 @@
           }
         } else if (remaining > race.straight) {
           // 【フェーズ3: 3〜4コーナー仕掛け・進出（残り600m〜450m）】
+          // ★ 競馬の神: 戦術起爆点での実況アップデート ★
+          if (remainingLeaderDist <= 650 && remainingLeaderDist >= 550) {
+            const comEl = document.getElementById('animLiveCommentary');
+            if (comEl && !state.hasTriggerCommentary) {
+              state.hasTriggerCommentary = true;
+              comEl.innerHTML = `<span class="text-amber-400 font-black">⚡【レースが動いた！】</span> ${race.tacticalPoint || '勝負所'}！${race.triggerHorse || '有力馬'}がスパート開始！全体のペースが一気に加速！`;
+            }
+          }
           if (h.style === 'nige') {
             targetVelocity = baseSpeed * 1.01;
             h.stamina -= dt * 2.5;
