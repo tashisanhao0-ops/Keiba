@@ -459,10 +459,15 @@
             <span class="px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/30 text-rose-300">🔥 ハイ前崩れ: <strong id="cntHigh" class="text-rose-200">19.8%</strong></span>
             <span class="px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300">🐢 スロー前残り: <strong id="cntSlow" class="text-amber-200">20.0%</strong></span>
           </div>
-          <div class="flex items-center gap-2 text-slate-400 font-sans text-[10px]">
-            <span>⚠️ レガレイラ出遅れ: <strong id="cntRegaleiraDelay" class="text-rose-400 font-mono-num">45.2%</strong></span>
-            <span>｜</span>
-            <span>✨ ルメール神騎乗: <strong id="cntLemaireGod" class="text-emerald-400 font-mono-num">99.5%</strong></span>
+          <div class="flex flex-wrap items-center gap-2 text-slate-300 font-sans text-[11px] pt-1 border-t border-slate-800/80">
+            <div class="flex items-center gap-1.5 bg-slate-900/90 px-2.5 py-1 rounded-xl border border-rose-500/30">
+              <span class="text-rose-400 font-black">⚠️ 出遅れ注意馬:</span>
+              <span id="statGateDelays" class="text-rose-300 font-bold font-mono">算出中...</span>
+            </div>
+            <div class="flex items-center gap-1.5 bg-slate-900/90 px-2.5 py-1 rounded-xl border border-emerald-500/30">
+              <span class="text-emerald-400 font-black">✨ 騎手手腕発揮率:</span>
+              <span id="statJockeySkills" class="text-emerald-300 font-bold font-mono">算出中...</span>
+            </div>
           </div>
         </div>
 
@@ -1578,7 +1583,9 @@
           top3Rate: parseFloat(((s.top3 / trials) * 100).toFixed(1)),
           avgRank: (s.totalRank / trials).toFixed(1),
           avgTime: (s.totalTime / trials),
-          avgLast3F: (s.totalLast3F / trials).toFixed(1)
+          avgLast3F: (s.totalLast3F / trials).toFixed(1),
+          delayRate: parseFloat(((s.delayCount / trials) * 100).toFixed(1)),
+          godRideRate: parseFloat(((s.godRideCount / trials) * 100).toFixed(1))
         }));
 
         results.sort((a, b) => b.winRate - a.winRate);
@@ -1588,11 +1595,42 @@
         const elMid = document.getElementById('cntMiddle');
         const elHigh = document.getElementById('cntHigh');
         const elSlow = document.getElementById('cntSlow');
-        const elRDelay = document.getElementById('cntRegaleiraDelay');
         if (elMid) elMid.textContent = `${countMiddle.toLocaleString()}回 (${((countMiddle/trials)*100).toFixed(1)}%)`;
         if (elHigh) elHigh.textContent = `${countHigh.toLocaleString()}回 (${((countHigh/trials)*100).toFixed(1)}%)`;
         if (elSlow) elSlow.textContent = `${countSlow.toLocaleString()}回 (${((countSlow/trials)*100).toFixed(1)}%)`;
-        if (elRDelay) elRDelay.textContent = `${countRegaleiraDelay.toLocaleString()}回 (${((countRegaleiraDelay/trials)*100).toFixed(1)}%)`;
+
+        // ⚠️ 出遅れ注意馬リスト (出遅れ率12%以上の馬、または出遅れ率順)
+        const delayProne = results
+          .filter(r => parseFloat(r.delayRate) >= 12.0)
+          .sort((a, b) => parseFloat(b.delayRate) - parseFloat(a.delayRate));
+        const elDelayList = document.getElementById('statGateDelays');
+        if (elDelayList) {
+          if (delayProne.length > 0) {
+            elDelayList.textContent = delayProne.map(r => `${r.num}番 ${r.name} (${r.delayRate}%)`).join('、');
+          } else {
+            elDelayList.textContent = "全頭10%未満・発馬安定";
+          }
+        }
+
+        // ✨ 騎手手腕発揮率リスト (各騎手の手腕発揮率トップ3)
+        const jockeyStatsMap = {};
+        race.horses.forEach(h => {
+          const res = results.find(r => r.num === h.num);
+          if (res && (!jockeyStatsMap[h.jockey] || parseFloat(res.godRideRate) > parseFloat(jockeyStatsMap[h.jockey].rate))) {
+            jockeyStatsMap[h.jockey] = {
+              jockey: h.jockey,
+              rate: res.godRideRate,
+              rank: h.jockeyRank
+            };
+          }
+        });
+        const topJockeys = Object.values(jockeyStatsMap)
+          .sort((a, b) => parseFloat(b.rate) - parseFloat(a.rate))
+          .slice(0, 3);
+        const elJockeyList = document.getElementById('statJockeySkills');
+        if (elJockeyList) {
+          elJockeyList.textContent = topJockeys.map(j => `${j.jockey} (${j.rate}%)`).join('、');
+        }
 
         renderSimResults(results, trials, race, { countHigh, countSlow, countMiddle, countRegaleiraDelay });
         renderReport(results, race);
@@ -1713,7 +1751,13 @@
           <td class="py-3 px-3 text-center ${signCls}">${sign}</td>
           <td class="py-3 px-2 text-center"><span class="waku-${waku} px-2 py-0.5 rounded-lg text-[11px] font-black font-mono-num shadow-sm">${r.num}</span></td>
           <td class="py-3 px-2 font-bold text-slate-100">
-            ${r.name} ${upsetNums.includes(r.num) ? '<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] px-1.5 py-0.5 rounded-md font-black ml-1">💣 穴馬</span>' : ''} <span class="text-[11px] text-emerald-400 font-normal">(${r.jockey || ''})</span> <span class="text-[10px] text-slate-400 font-normal">[${styleNames[r.style]}]</span>
+            <div>
+              ${r.name} ${upsetNums.includes(r.num) ? '<span class="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] px-1.5 py-0.5 rounded-md font-black ml-1">💣 穴馬</span>' : ''} <span class="text-[11px] text-emerald-400 font-normal">(${r.jockey || ''})</span> <span class="text-[10px] text-slate-400 font-normal">[${styleNames[r.style]}]</span>
+            </div>
+            <div class="text-[9px] text-slate-400 flex items-center gap-2 mt-0.5 font-mono">
+              <span>出遅れ: <strong class="${parseFloat(r.delayRate) >= 15 ? 'text-rose-400 font-bold' : 'text-slate-300'}">${r.delayRate}%</strong></span>
+              <span>手腕発揮: <strong class="${parseFloat(r.godRideRate) >= 80 ? 'text-emerald-400 font-bold' : 'text-slate-300'}">${r.godRideRate}%</strong></span>
+            </div>
           </td>
           <td class="py-3 px-2 text-right text-slate-400 font-mono-num font-bold">${r.odds || '-'}</td>
           <td class="py-3 px-2 text-right font-black text-amber-400 text-sm">${r.winRate}%</td>
@@ -2523,7 +2567,7 @@
       }
 
       const patternNames = {
-        individual: "🏇 個性・発馬戦法：レガレイラの出遅れ癖やホウオウの抜群スタートなど、各馬固有の癖を完全反映！",
+        individual: "🏇 個性・発馬戦法：各馬の公式実戦データ（出遅れ率・ゲート特性）を忠実に反映！",
         middle: "⚖️ 王道ミドル：実力上位の先行・差し馬が順当に激突",
         high: "🔥 前崩れハイペース：逃げ争い激化で前全滅、差し追込が大外強襲！",
         slow: "🐢 前残りスロー：単騎逃げと好位インの伏兵が逃げ粘る開幕週展開！",
