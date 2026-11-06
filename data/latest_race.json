@@ -1,13 +1,13 @@
 {
   "id": "elizabeth_2026",
-  "name": "第174回 天皇賞(秋) G1",
-  "courseName": "東京競馬場",
-  "distance": 2000,
+  "name": "第51回 エリザベス女王杯 G1",
+  "courseName": "京都競馬場",
+  "distance": 2200,
   "trackType": "芝",
   "trackCondition": "良",
-  "straight": 525,
+  "straight": 404,
   "slope": "高低差 3.5m (淀の坂下り)",
   "bias": "外回り2200m。淀の坂下りからのロングスパートと直線平坦での末脚持続力勝負。",
-  "last_updated": "2026-11-01 23:22:55",
+  "last_updated": "2026-11-06 00:34:43",
   "horses": []
 }
