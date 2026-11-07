@@ -1036,6 +1036,7 @@
       loadRace("argentine_2026");
       checkAndSyncRemoteRaceData();
       runMonteCarloSimulation(1000);
+      calculateAndRenderBets();
       initBudgetBetting();
       initRealtimeOddsSync();
       // デフォルトでアニメーションタブを表示
@@ -1125,7 +1126,7 @@
           }
           drawTrack();
         }, 50);
-      } else if (tabId === 'report') {
+      } else if (tabId === 'report' || tabId === 'bet') {
         calculateAndRenderBets();
       }
     }
@@ -1412,6 +1413,7 @@
             style: h.style,
             odds: h.odds,
             jockey: h.jockey,
+            jockeyRank: h.jockeyRank || "A",
             trainingGrade: h.trainingGrade,
             comment: h.comment,
             wins: 0,
@@ -1419,7 +1421,9 @@
             top3: 0,
             totalRank: 0,
             totalTime: 0,
-            totalLast3F: 0
+            totalLast3F: 0,
+            delayCount: 0,
+            godRideCount: 0
           };
         });
 
@@ -1466,19 +1470,27 @@
             else if (h.formEval === "上昇" || h.formEval === "充実期" || h.formEval === "3歳屈指の器") formBonus = 0.12;
             else if (h.formEval === "好調キープ" || h.formEval === "重賞制覇の勢い") formBonus = 0.08;
 
-            // 騎手スキル・立ち回りボーナス
+            // 騎手スキル・立ち回りボーナス ＆ 騎手好走手腕判定
             let jockeySkillBonus = 0;
             let trafficAvoidRate = 0.05;
+            let isGoodRide = false;
             if (h.jockeyRank === "S+") {
               jockeySkillBonus = 0.20;
-              trafficAvoidRate = 0.005; // ルメール神騎乗 (詰まり率0.5%)
-              if (Math.random() < 0.995) countLemaireGod++;
+              trafficAvoidRate = 0.005;
+              isGoodRide = (Math.random() < 0.92);
             } else if (h.jockeyRank === "S") {
               jockeySkillBonus = 0.15;
               trafficAvoidRate = 0.02;
+              isGoodRide = (Math.random() < 0.85);
             } else if (h.jockeyRank === "A+" || h.jockeyRank === "A") {
               jockeySkillBonus = 0.08;
               trafficAvoidRate = 0.035;
+              isGoodRide = (Math.random() < 0.75);
+            } else {
+              isGoodRide = (Math.random() < 0.55);
+            }
+            if (isGoodRide) {
+              stats[h.num].godRideCount++;
             }
 
             // ペースシナリオによる有利不利
@@ -1504,11 +1516,13 @@
               slopePenalty = (90 - h.stamina) * 0.015;
             }
 
-            // ★ 出遅れ癖の完全連動 (レガレイラ45%、エルトン38%、クロワ2%)
-            const delayRisk = h.gateDelayRate || 0.15;
+            // 出遅れ判定 (各馬固有の gateDelayRate に基づいて個別集計)
+            const delayRisk = h.gateDelayRate || 0.04;
             const isDelayed = Math.random() < delayRisk;
-            if (h.num === 3 && isDelayed) countRegaleiraDelay++; // レガレイラ出遅れカウント
-            const delay = isDelayed ? (0.35 + Math.random() * 0.75) : 0.0;
+            if (isDelayed) {
+              stats[h.num].delayCount++;
+            }
+            const delay = isDelayed ? (0.35 + Math.random() * 0.70) : 0.0;
 
             // 前が壁・進路不利 (ルメールはほぼ回避)
             const traffic = Math.random() < trafficAvoidRate ? (0.3 + Math.random() * 0.6) : 0.0;
@@ -1642,8 +1656,9 @@
           elJockeyList.textContent = topJockeys.map(j => `${j.jockey} (${j.rate}%)`).join('、');
         }
 
-        renderSimResults(results, trials, race, { countHigh, countSlow, countMiddle, countRegaleiraDelay });
+        renderSimResults(results, trials, race, { countHigh, countSlow, countMiddle });
         renderReport(results, race);
+        calculateAndRenderBets(); // ★ シミュレーション結果＆最新オッズを買い目カートへ即座に完全反映 ★
 
         btnText.textContent = "シミュレーション実行";
         runBtn.classList.remove('opacity-75', 'cursor-not-allowed');
@@ -2703,13 +2718,14 @@
     // ※ オッズは展開によって変動するものではなく、ファンの投票シェアで一意に決まる固定値です。
     function getHorseShareMap() {
       const race = RACE_DATABASE[state.currentRaceKey];
+      if (!race || !race.horses) return {};
       const rawShares = {};
       let totalRaw = 0;
 
       race.horses.forEach(h => {
-        let numVal = 10.0;
+        let numVal = 20.0;
         if (h.odds) {
-          const match = h.odds.match(/([0-9]+\.?[0-9]*)/);
+          const match = String(h.odds).match(/([0-9]+\.?[0-9]*)/);
           if (match) numVal = parseFloat(match[1]);
         }
         const s = 0.80 / Math.max(1.1, numVal);
@@ -2719,7 +2735,7 @@
 
       const shares = {};
       race.horses.forEach(h => {
-        shares[h.num] = rawShares[h.num] / totalRaw;
+        shares[h.num] = rawShares[h.num] / Math.max(0.001, totalRaw);
       });
       return shares;
     }
@@ -2889,57 +2905,70 @@
 
     // netkeiba 引用オッズ取得関数
     function getNetkeibaOdds(type, a, b, c = null) {
-      if (type === "三連単" && c !== null) {
-        const key = `${a}-${b}-${c}`;
-        if (NETKEIBA_EXACT_ODDS.trifecta[key]) return NETKEIBA_EXACT_ODDS.trifecta[key];
-        // 引用データ外のフォールバック計算
+      if ((type === "3連単" || type === "三連単" || type === "trifecta") && c !== null) {
         return calcExactTrifectaOdds(a, b, c);
       }
-      if (type === "馬連") {
-        const key = a < b ? `${a}-${b}` : `${b}-${a}`;
-        if (NETKEIBA_EXACT_ODDS.umaren[key]) return NETKEIBA_EXACT_ODDS.umaren[key];
+      if (type === "馬連" || type === "umaren") {
         return calcExactUmarenOdds(a, b);
       }
-      if (type === "3連複" && c !== null) {
-        const sorted = [a, b, c].sort((x, y) => x - y);
-        const key = sorted.join('-');
-        if (NETKEIBA_EXACT_ODDS.sanrenpuku[key]) return NETKEIBA_EXACT_ODDS.sanrenpuku[key];
-        return Math.round((calcExactTrifectaOdds(a, b, c) / 5.5) * 10) / 10;
+      if ((type === "3連複" || type === "三連複" || type === "sanrenpuku") && c !== null) {
+        return calcExactSanrenpukuOdds(a, b, c);
       }
-      if (type === "ワイド") {
-        const key = a < b ? `${a}-${b}` : `${b}-${a}`;
-        if (NETKEIBA_EXACT_ODDS.wide[key]) return NETKEIBA_EXACT_ODDS.wide[key];
+      if (type === "ワイド" || type === "wide") {
         return calcExactWideOdds(a, b);
       }
       return 25.0;
     }
 
+    // ★ ハーヴィル・モデルに基づく3連単・3連複・馬連・ワイドのリアルタイム客観オッズ物理計算 ★
     function calcExactTrifectaOdds(a, b, c) {
       const shares = getHorseShareMap();
-      const sa = shares[a] || 0.05;
-      const sb = shares[b] || 0.05;
-      const sc = shares[c] || 0.05;
+      const sa = shares[a] || 0.03;
+      const sb = shares[b] || 0.03;
+      const sc = shares[c] || 0.03;
 
       const p = sa * (sb / Math.max(0.001, (1.0 - sa))) * (sc / Math.max(0.001, (1.0 - sa - sb)));
-      const rawOdds = 0.725 / Math.max(0.0001, p);
-      return Math.max(5.0, Math.round(rawOdds * 10) / 10);
+      const rawOdds = 0.725 / Math.max(0.00005, p);
+      return Math.max(4.2, Math.round(rawOdds * 10) / 10);
     }
 
-    // 馬連の客観想定オッズ算出 (固定値)
+    function calcExactSanrenpukuOdds(a, b, c) {
+      const shares = getHorseShareMap();
+      const sa = shares[a] || 0.03;
+      const sb = shares[b] || 0.03;
+      const sc = shares[c] || 0.03;
+
+      // 3連複は3頭の順列（全6通り）の確率合計
+      const p1 = sa * (sb / Math.max(0.001, (1.0 - sa))) * (sc / Math.max(0.001, (1.0 - sa - sb)));
+      const p2 = sa * (sc / Math.max(0.001, (1.0 - sa))) * (sb / Math.max(0.001, (1.0 - sa - sc)));
+      const p3 = sb * (sa / Math.max(0.001, (1.0 - sb))) * (sc / Math.max(0.001, (1.0 - sb - sa)));
+      const p4 = sb * (sc / Math.max(0.001, (1.0 - sb))) * (sa / Math.max(0.001, (1.0 - sb - sc)));
+      const p5 = sc * (sa / Math.max(0.001, (1.0 - sc))) * (sb / Math.max(0.001, (1.0 - sc - sa)));
+      const p6 = sc * (sb / Math.max(0.001, (1.0 - sc))) * (sa / Math.max(0.001, (1.0 - sc - sb)));
+      const totalP = p1 + p2 + p3 + p4 + p5 + p6;
+      const rawOdds = 0.75 / Math.max(0.0001, totalP);
+      return Math.max(2.5, Math.round(rawOdds * 10) / 10);
+    }
+
+    // 馬連の客観想定オッズ算出
     function calcExactUmarenOdds(a, b) {
       const shares = getHorseShareMap();
-      const sa = shares[a] || 0.05;
-      const sb = shares[b] || 0.05;
+      const sa = shares[a] || 0.04;
+      const sb = shares[b] || 0.04;
 
       const p = (sa * (sb / Math.max(0.001, (1.0 - sa)))) + (sb * (sa / Math.max(0.001, (1.0 - sb))));
       const rawOdds = 0.775 / Math.max(0.0001, p);
-      return Math.max(2.0, Math.round(rawOdds * 10) / 10);
+      return Math.max(1.8, Math.round(rawOdds * 10) / 10);
     }
 
-    // ワイドの客観想定オッズ算出 (固定値)
+    // ワイドの客観想定オッズ算出
     function calcExactWideOdds(a, b) {
-      const umaren = calcExactUmarenOdds(a, b);
-      return Math.max(1.4, Math.round((umaren * 0.32) * 10) / 10);
+      const shares = getHorseShareMap();
+      const sa = shares[a] || 0.04;
+      const sb = shares[b] || 0.04;
+      const p = Math.min(0.65, sa * sb * 4.2);
+      const rawOdds = 0.775 / Math.max(0.001, p);
+      return Math.max(1.3, Math.min(180.0, Math.round(rawOdds * 10) / 10));
     }
 
     
