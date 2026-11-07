@@ -979,6 +979,13 @@
       }, 2500);
     }
 
+    // --- 展開パターン ＆ 馬券設定 グローバル状態 (初期化巻き上げエラー解消) ---
+    let currentAnimPattern = "individual"; // "individual", "middle", "high", "slow", "upset"
+    let currentAnimActivePace = "middle"; // 実行中の実際のペース
+    let currentBetStyle = "trifecta";
+    let currentPaceScenario = "unified";
+    let canvas = null, ctx = null;
+
     // --- 状態管理 ---
     let state = {
       currentRaceKey: "argentine_2026",
@@ -986,6 +993,9 @@
       activeTab: "animation",
       headerCollapsed: false,
       monteResults: null,
+      simResults: null,
+      customAxis: "auto",
+      currentBudget: 3000,
       isAnimRunning: false,
       isAnimPaused: false,
       animTime: 0,
@@ -1022,10 +1032,10 @@
     window.addEventListener('DOMContentLoaded', () => {
       initScrollHeader();
       initEventListeners();
+      initCanvas();
       loadRace("argentine_2026");
       checkAndSyncRemoteRaceData();
       runMonteCarloSimulation(1000);
-      initCanvas();
       initBudgetBetting();
       initRealtimeOddsSync();
       // デフォルトでアニメーションタブを表示
@@ -1813,6 +1823,8 @@
     // --- 本当に過剰人気な馬のみを抽出する厳選判定ロジック (そのレースごとの条件で精査) ---
     function getTrulyOverbetHorse(race, results) {
       if (!race || !race.horses) return null;
+      if (!results || !Array.isArray(results) || results.length === 0) return null;
+      if (!results || !Array.isArray(results) || results.length === 0) return null;
 
       // 単勝4.5倍未満の人気馬を対象
       const topFavorites = race.horses.filter(h => {
@@ -1859,7 +1871,7 @@
         }
 
         // シミュレーションでの順位
-        const res = results.find(r => r.num === h.num);
+        const res = (results && Array.isArray(results)) ? results.find(r => r.num === h.num) : null;
         if (res && res.rank >= 4) {
           riskScore += 2.5;
           reasons.push(`AIシミュレーション4位以下に沈む頻度高`);
@@ -1964,7 +1976,6 @@
     }
 
     // --- 2Dレース展開アニメーション ＆ リアルタイムHUDロジック ---
-    let canvas, ctx;
     function initCanvas() {
       canvas = document.getElementById('raceCanvas');
       ctx = canvas.getContext('2d');
@@ -2549,12 +2560,7 @@
 
 
     // --- 予算別・自動資金配分ロジック (展開別シナリオ＆払戻金計算対応) ---
-    let currentBetStyle = "trifecta";
-    let currentPaceScenario = "unified";
-
-    // --- アニメーション展開パターン管理 ---
-    let currentAnimPattern = "individual"; // "individual", "middle", "high", "slow"
-    let currentAnimActivePace = "middle"; // 実行中の実際のペース
+    // (グローバル変数は上部で初期化済み)
 
     window.setAnimPattern = function(pattern) {
       currentAnimPattern = pattern;
