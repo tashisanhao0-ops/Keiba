@@ -505,6 +505,73 @@
         </div>
       </div>
 
+      <!-- 🏆 5,000回試行 3連単出現着順 TOP20 (的中確率ランキング) -->
+      <div id="top20TrifectaContainer" class="glass-panel rounded-2xl p-4 sm:p-5 space-y-3.5 border border-amber-500/30 shadow-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs font-mono shadow-md">
+                🏆 5,000回試行 集計
+              </span>
+              <h3 class="text-sm sm:text-base font-black text-white flex items-center gap-2">
+                3連単 出現着順 TOP20 (的中確率ランキング)
+              </h3>
+            </div>
+            <p class="text-xs text-slate-400">
+              5,000回の全試行で実際に出現した「1着 → 2着 → 3着」の着順組み合わせ上位20組。オッズ・出現回数・的中確率・100円購入時の想定払戻金・回収期待値を完全一覧化！
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="applyTop20ToBets()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 active:scale-95 text-slate-950 font-black px-3.5 py-2 rounded-xl text-xs shadow-xl transition flex items-center gap-1.5 cursor-pointer">
+              <span>🎯</span>
+              <span>この上位20組を買い目シートに一括適用 (計20点 / 2,000円)</span>
+              <span>→</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TOP20 サマリー指標バッジ (合計的中率・平均オッズ・最高払戻・期待値プラス) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono-num">
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 space-y-0.5">
+            <span class="text-[10px] text-slate-400 font-bold block">🎯 TOP20 合計的中率</span>
+            <span id="top20TotalProb" class="text-sm sm:text-base font-black text-amber-400">算出中...</span>
+          </div>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 space-y-0.5">
+            <span class="text-[10px] text-slate-400 font-bold block">💰 TOP20 平均想定オッズ</span>
+            <span id="top20AvgOdds" class="text-sm sm:text-base font-black text-white">算出中...</span>
+          </div>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 space-y-0.5">
+            <span class="text-[10px] text-slate-400 font-bold block">⚡ TOP20 最高払戻想定</span>
+            <span id="top20MaxPayout" class="text-sm sm:text-base font-black text-emerald-400">算出中...</span>
+          </div>
+          <div class="bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 space-y-0.5">
+            <span class="text-[10px] text-slate-400 font-bold block">🔥 期待値プラス組数</span>
+            <span id="top20PositiveEvCount" class="text-sm sm:text-base font-black text-rose-400">算出中...</span>
+          </div>
+        </div>
+
+        <!-- テーブル -->
+        <div class="overflow-x-auto rounded-xl border border-slate-800">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="bg-slate-950/90 border-b border-slate-800 text-slate-400 uppercase font-mono-num">
+                <th class="py-2.5 px-3 text-center w-12 font-bold">順位</th>
+                <th class="py-2.5 px-3 font-bold">3連単 着順組み合わせ (1着 → 2着 → 3着)</th>
+                <th class="py-2.5 px-3 text-right font-bold">出現回数</th>
+                <th class="py-2.5 px-3 text-right font-bold">的中確率</th>
+                <th class="py-2.5 px-3 text-right font-bold">3連単オッズ</th>
+                <th class="py-2.5 px-3 text-right font-bold text-amber-300">払戻想定 (100円)</th>
+                <th class="py-2.5 px-3 text-center font-bold">判定 / 妙味度</th>
+              </tr>
+            </thead>
+            <tbody id="top20TrifectaTableBody" class="divide-y divide-slate-800/50 font-mono-num">
+              <!-- 動的生成 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
     </section>
 
     <!-- TAB 3: 確定出走表・調教データ -->
@@ -739,6 +806,18 @@
               </p>
             </div>
           </div>
+        </div>
+
+                <!-- 買い方戦略切り替え (AIフォーメーション vs 5,000回シミュTOP20ベタ買い) -->
+        <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-950/80 p-2.5 rounded-xl border border-slate-800 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-300">🎯 買い方戦略:</span>
+            <div class="flex items-center gap-1.5">
+              <button id="modeAiFormationBtn" onclick="setBetFormationMode('formation')" class="px-3 py-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-xs transition shadow-sm">📋 AI最適フォーメーション (30点)</button>
+              <button id="modeTop20Btn" onclick="setBetFormationMode('top20')" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-xs transition">🏆 5,000回シミュTOP20ベタ買い (20点)</button>
+            </div>
+          </div>
+          <span id="strategyModeDesc" class="text-[11px] text-amber-400/90 font-mono">AIが本線・波乱を2枚のカードに最適配分</span>
         </div>
 
         <!-- netkeiba / IPAT風 購入カートエリア -->
@@ -2396,6 +2475,8 @@
       simResults: null,
       customAxis: "auto",
       currentBudget: 3000,
+      betFormationMode: "formation", // "formation" or "top20"
+      topTrifectaCombos: null,
       isAnimRunning: false,
       isAnimPaused: false,
       animTime: 0,
@@ -2836,6 +2917,7 @@
         let countHigh = 0;
         let countSlow = 0;
         let countMiddle = 0;
+        const trifectaCounts = {};
         let countRegaleiraDelay = 0;
         let countLemaireGod = 0;
 
@@ -2989,6 +3071,12 @@
 
           trialHorses.sort((a, b) => a.time - b.time);
 
+          // ★ 3連単 (1着-2着-3着) 着順組み合わせカウンター ★
+          if (trialHorses.length >= 3) {
+            const tKey = `${trialHorses[0].num}-${trialHorses[1].num}-${trialHorses[2].num}`;
+            trifectaCounts[tKey] = (trifectaCounts[tKey] || 0) + 1;
+          }
+
           trialHorses.forEach((th, rank) => {
             const st = stats[th.num];
             st.totalRank += (rank + 1);
@@ -3014,6 +3102,33 @@
 
         results.sort((a, b) => b.winRate - a.winRate);
         state.monteResults = results;
+
+        // ★ 5,000回試行 3連単出現着順 TOP20 (的中確率ランキング) 抽出 ★
+        const top20Trifectas = Object.entries(trifectaCounts)
+          .map(([key, count]) => {
+            const [r1, r2, r3] = key.split('-').map(n => parseInt(n, 10));
+            const h1 = race.horses.find(h => h.num === r1) || { num: r1, name: `${r1}番`, jockey: "" };
+            const h2 = race.horses.find(h => h.num === r2) || { num: r2, name: `${r2}番`, jockey: "" };
+            const h3 = race.horses.find(h => h.num === r3) || { num: r3, name: `${r3}番`, jockey: "" };
+            const odds = getNetkeibaOdds("3連単", r1, r2, r3);
+            const prob = parseFloat(((count / trials) * 100).toFixed(2));
+            const payout = Math.round(odds * 100);
+            const ev = (odds * (count / trials));
+            return {
+              key,
+              r1, r2, r3,
+              h1, h2, h3,
+              count,
+              prob,
+              odds,
+              payout,
+              ev
+            };
+          })
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 20);
+
+        state.topTrifectaCombos = top20Trifectas;
 
         // 展開カウンターDOM反映
         const elMid = document.getElementById('cntMiddle');
@@ -3067,6 +3182,135 @@
 
     
     // --- 【レースごとの精密精査】AIプロの取捨選択ガイド動的生成 ---
+    
+    // --- 🏆 5,000回試行 3連単出現着順 TOP20 (的中確率ランキング) 描画 ---
+    function renderTop20Trifectas(combos, trials, race) {
+      const tbody = document.getElementById('top20TrifectaTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+
+      if (!combos || combos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-slate-500">シミュレーション実行後に集計されます</td></tr>';
+        return;
+      }
+
+      const totalCount = combos.reduce((acc, c) => acc + c.count, 0);
+      const totalProb = combos.reduce((acc, c) => acc + c.prob, 0);
+      const avgOdds = combos.reduce((acc, c) => acc + c.odds, 0) / combos.length;
+      const maxPayout = Math.max(...combos.map(c => c.payout));
+      const positiveEvCount = combos.filter(c => c.ev >= 1.0).length;
+
+      const elProb = document.getElementById('top20TotalProb');
+      if (elProb) elProb.textContent = `${totalProb.toFixed(1)}% (${trials.toLocaleString()}回中 ${totalCount.toLocaleString()}回)`;
+      const elOdds = document.getElementById('top20AvgOdds');
+      if (elOdds) elOdds.textContent = `${avgOdds.toFixed(1)}倍`;
+      const elPayout = document.getElementById('top20MaxPayout');
+      if (elPayout) elPayout.textContent = `¥${maxPayout.toLocaleString()}`;
+      const elEv = document.getElementById('top20PositiveEvCount');
+      if (elEv) elEv.textContent = `${positiveEvCount}組 (黒字期待)`;
+
+      const rankBadges = ["🥇 1位", "🥈 2位", "🥉 3位"];
+
+      combos.forEach((item, idx) => {
+        const rankText = idx < 3 ? rankBadges[idx] : `${idx + 1}位`;
+        const rankCls = idx === 0 ? "text-amber-400 font-black" : idx === 1 ? "text-slate-300 font-black" : idx === 2 ? "text-amber-600 font-black" : "text-slate-400 font-bold";
+        
+        let tagHtml = "";
+        if (item.ev >= 1.0) {
+          tagHtml = `<span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[10px] font-black">🔥 期待値プラス (EV ${(item.ev * 100).toFixed(0)}%)</span>`;
+        } else if (item.odds >= 100.0) {
+          tagHtml = `<span class="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] font-bold">⚡ 万馬券直撃</span>`;
+        } else if (idx < 3) {
+          tagHtml = `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-bold">🎯 最有力本線</span>`;
+        } else {
+          tagHtml = `<span class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 text-[10px] font-medium">実力上位</span>`;
+        }
+
+        const makeHorseCell = (num, horse) => {
+          const w = getWaku(num, race.horses.length);
+          return `
+            <div class="inline-flex items-center gap-1.5 bg-slate-900/80 px-2 py-1 rounded-lg border border-slate-800">
+              <span class="waku-${w} w-5 h-5 rounded flex items-center justify-center font-black text-[11px] font-mono-num shadow-sm">${num}</span>
+              <span class="font-bold text-white text-xs">${horse.name || `${num}番`}</span>
+              <span class="text-[10px] text-emerald-400 font-normal">(${horse.jockey || ''})</span>
+            </div>
+          `;
+        };
+
+        const tr = document.createElement('tr');
+        tr.className = idx === 0 ? "bg-amber-500/10 hover:bg-amber-500/15 transition border-l-2 border-l-amber-400" : "hover:bg-slate-900/60 transition";
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-center ${rankCls} text-xs font-mono-num">${rankText}</td>
+          <td class="py-2.5 px-3">
+            <div class="flex items-center gap-1 sm:gap-2 flex-wrap">
+              ${makeHorseCell(item.r1, item.h1)}
+              <span class="text-amber-400 font-bold text-xs">→</span>
+              ${makeHorseCell(item.r2, item.h2)}
+              <span class="text-amber-400 font-bold text-xs">→</span>
+              ${makeHorseCell(item.r3, item.h3)}
+            </div>
+          </td>
+          <td class="py-2.5 px-3 text-right font-bold text-slate-200">
+            ${item.count}回 <span class="text-[10px] text-slate-500">/${trials.toLocaleString()}</span>
+          </td>
+          <td class="py-2.5 px-3 text-right">
+            <div class="flex items-center justify-end gap-1.5">
+              <span class="font-black text-amber-400 text-xs">${item.prob.toFixed(2)}%</span>
+              <div class="w-12 bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-800 hidden sm:block">
+                <div class="bg-amber-400 h-full rounded-full" style="width: ${Math.min(100, item.prob * 20)}%"></div>
+              </div>
+            </div>
+          </td>
+          <td class="py-2.5 px-3 text-right font-bold text-emerald-400 font-mono-num text-xs">
+            ${item.odds.toFixed(1)}倍
+          </td>
+          <td class="py-2.5 px-3 text-right font-black text-amber-300 font-mono-num text-xs">
+            ¥${item.payout.toLocaleString()}
+          </td>
+          <td class="py-2.5 px-3 text-center">
+            ${tagHtml}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // --- 🎯 5,000回試行 TOP20 を買い目シートへ一括適用 ---
+    window.applyTop20ToBets = function() {
+      state.betFormationMode = 'top20';
+      currentBetStyle = 'trifecta';
+      switchTab('betting');
+      updateBetModeButtons();
+      calculateAndRenderBets();
+      showToast("🎯 5,000回試行 3連単上位20組（計20点 / 2,000円）を購入カートに反映しました！");
+    };
+
+    window.setBetFormationMode = function(mode) {
+      state.betFormationMode = mode;
+      updateBetModeButtons();
+      calculateAndRenderBets();
+      if (mode === 'top20') {
+        showToast("🏆 5,000回シミュ 3連単TOP20ベタ買いモードに切り替えました");
+      } else {
+        showToast("📋 AI最適フォーメーションモードに切り替えました");
+      }
+    };
+
+    function updateBetModeButtons() {
+      const btnFormation = document.getElementById('modeAiFormationBtn');
+      const btnTop20 = document.getElementById('modeTop20Btn');
+      const desc = document.getElementById('strategyModeDesc');
+      if (state.betFormationMode === 'top20') {
+        if (btnFormation) btnFormation.className = "px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-xs transition";
+        if (btnTop20) btnTop20.className = "px-3 py-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-xs transition shadow-sm";
+        if (desc) desc.textContent = "5,000回試行で実際に出現した的中確率TOP20組をベタ買い (計20点)";
+      } else {
+        if (btnFormation) btnFormation.className = "px-3 py-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-xs transition shadow-sm";
+        if (btnTop20) btnTop20.className = "px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white font-medium text-xs transition";
+        if (desc) desc.textContent = "AIが本線・波乱を2枚のカードに最適配分";
+      }
+    }
+
     function updateSelectionGuide(race, results) {
       if (!race || !results || results.length < 2) return;
       const budget = state.currentBudget || 3000;
@@ -3226,6 +3470,7 @@
       const biasLabel = trackBiasKey === "inside" ? "イン前有利" : trackBiasKey === "outside" ? "外差し天国" : "フラット";
 
       updateSelectionGuide(race, results);
+      if (state.topTrifectaCombos) renderTop20Trifectas(state.topTrifectaCombos, trials, race);
       document.getElementById('simInsightText').innerHTML = `
         <p>・ <strong>${trials.toLocaleString()}回のシミュレーション試行（コース：${race.courseName} ${race.trackType}${race.distance}m・${race.slope}）</strong></p>
         <p>・ JRA公式クッション値 <span class="text-amber-300 font-bold font-mono">${cushionVal.toFixed(1)}</span> ＆ トラックバイアス「<span class="text-amber-300 font-bold">${biasLabel}</span>」をリアルタイム反映。</p>
@@ -4004,18 +4249,25 @@
       // 予算入力
       const input = document.getElementById('betBudgetInput');
       if (input) {
-        input.addEventListener('input', () => {
+        const onBudgetUpdate = (e) => {
+          state.cardMultipliers = {}; // 新予算に合わせてカード倍率を自動最適化
+          state.currentBudget = parseInt(e.target.value, 10) || 3000;
           calculateAndRenderBets();
-        });
+        };
+        input.addEventListener('input', onBudgetUpdate);
+        input.addEventListener('change', onBudgetUpdate);
       }
       const applyBtn = document.getElementById('applyBudgetBtn');
       if (applyBtn) {
         applyBtn.addEventListener('click', () => {
+          state.cardMultipliers = {};
+          if (input) state.currentBudget = parseInt(input.value, 10) || 3000;
           calculateAndRenderBets();
+          showToast(`💰 予算を ${state.currentBudget.toLocaleString()}円 に設定し再計算しました`);
         });
       }
 
-      // クイックボタン
+      // クイックボタン (1,000円 / 2,000円 / 3,000円 / 5,000円)
       document.querySelectorAll('.quick-budget-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.quick-budget-btn').forEach(b => {
@@ -4023,8 +4275,11 @@
           });
           btn.className = "quick-budget-btn px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-mono-num font-black";
           const amount = parseInt(btn.getAttribute('data-amount'), 10);
-          input.value = amount;
+          if (input) input.value = amount;
+          state.currentBudget = amount;
+          state.cardMultipliers = {}; // 新予算に合わせて倍率自動最適化
           calculateAndRenderBets();
+          showToast(`💰 予算 ${amount.toLocaleString()}円 で最適化しました`);
         });
       });
 
@@ -4483,7 +4738,7 @@
 
       // ★ ユーザー入力予算を確実に取得 (デフォルト3000円) ★
       const budgetInput = document.getElementById('betBudgetInput');
-      const budget = Math.max(500, parseInt(budgetInput ? budgetInput.value : 3000, 10) || 3000);
+      const budget = Math.max(500, state.currentBudget || (budgetInput ? parseInt(budgetInput.value, 10) : 3000) || 3000);
 
       // 券種に応じたカードタイトルとラベル
       const styleLabels = {
@@ -4537,6 +4792,29 @@
       // ユーザーの入力予算（例：1000円、2000円、3000円、5000円）に合わせて、
       // 予算内にピッタリ収まるようフォーメーションの買い目点数と倍率を動的配分！
       let cardConfigs = [];
+
+      if (state.betFormationMode === 'top20' && state.topTrifectaCombos && state.topTrifectaCombos.length > 0) {
+        // --- 🏆 5,000回シミュ 3連単上位20組ベタ買いモード ---
+        const m = (state.cardMultipliers && state.cardMultipliers["card_top20"] !== undefined)
+          ? state.cardMultipliers["card_top20"]
+          : 1;
+        cardConfigs.push({
+          id: "card_top20",
+          title: "Card 1: 5,000回試行 3連単出現TOP20ベタ買い",
+          type: "3連単",
+          isTop20Direct: true,
+          multiplier: m,
+          expanded: state.cardExpanded ? !!state.cardExpanded["card_top20"] : true,
+          combos: state.topTrifectaCombos.map(item => ({
+            r1: item.r1,
+            r2: item.r2,
+            r3: item.r3,
+            odds: item.odds,
+            prob: item.prob,
+            count: item.count
+          }))
+        });
+      } else
 
       if (currentBetStyle === "sanrenpuku") {
         // --- 3連複モード ---
@@ -4639,20 +4917,20 @@
             thirdRow: [axis1.num, h2.num, h3.num, u1, u2]
           });
         } else if (budget <= 3500) {
-          // 予算3,000円: 本線12点 (1,200円) + 波乱18点 (1,800円) = ピッタリ3,000円！
+          // 予算3,000円: Card 1 (11点 1,100円) + Card 2 (19点 1,900円) = 30点 ピッタリ3,000円！ (netkeiba公式画面完全合致)
           cardConfigs.push({
             id: "card_1", title: "Card 1: フォーメーション (王道本線)", type: "3連単",
             multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_1"] : false,
             firstRow: [axis1.num],
             secondRow: [h2.num, h3.num, u1],
-            thirdRow: [h2.num, h3.num, u1, h4 ? h4.num : u2, h5 ? h5.num : u2]
+            thirdRow: [u2, h2.num, h4 ? h4.num : u1, h5 ? h5.num : u2]
           });
           cardConfigs.push({
             id: "card_2", title: "Card 2: フォーメーション (高配当・波乱穴目)", type: "3連単",
             multiplier: 1, expanded: state.cardExpanded ? !!state.cardExpanded["card_2"] : false,
-            firstRow: [h2.num, u1],
-            secondRow: [axis1.num, h2.num, u1, h3.num],
-            thirdRow: [axis1.num, h2.num, h3.num, u1, u2, h4 ? h4.num : u2]
+            firstRow: [h2.num, u2],
+            secondRow: [axis1.num, h2.num, u2],
+            thirdRow: [u1, axis1.num, h2.num, h3.num, h4 ? h4.num : u1, h5 ? h5.num : u2]
           });
         } else {
           // 予算5,000円〜高額予算
@@ -4690,9 +4968,13 @@
           card.thirdRow = Array.from(new Set(card.thirdRow)).filter(n => n && race.horses.some(h => h.num === n)).sort((a,b) => a - b);
         }
 
-        // 全組み合わせの計算 (券種：3連単 / 3連複 / 馬連 / ワイド)
-        const combos = [];
+        // 全組み合わせの計算 (券種：3連単 / 3連複 / 馬連 / ワイド / TOP20ベタ買い)
+        let combos = [];
         const seenKeys = new Set();
+
+        if (card.isTop20Direct) {
+          combos = card.combos.map(cb => ({ ...cb }));
+        } else
 
         if (card.isPair) {
           // 馬連 / ワイド
@@ -4741,7 +5023,9 @@
         }
 
         const points = combos.length;
-        const multiplier = card.multiplier || 1;
+        const multiplier = (state.cardMultipliers && state.cardMultipliers[card.id] !== undefined)
+          ? state.cardMultipliers[card.id]
+          : (card.multiplier || 1);
         const cardAmount = points * multiplier * 100;
         grandTotalPoints += points;
         grandTotalAmount += cardAmount;
@@ -4791,6 +5075,38 @@
           <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 items-center">
             <!-- 左カラム：着順行 ＆ 倍率レンジ -->
             <div class="sm:col-span-7 space-y-2">
+              ${card.isTop20Direct ? `
+                <div class="space-y-1.5">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-black text-xs border border-amber-500/30">🏆 5,000回統計直結</span>
+                    <span class="text-xs text-white font-bold">的中確率 上位20通り一括購入</span>
+                  </div>
+                  <div class="text-[11px] text-slate-300 space-y-1 bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">上位3組プレビュー:</span>
+                      <span class="text-amber-400 font-mono text-[10px]">下部ボタンで全20組展開可</span>
+                    </div>
+                    ${combos.slice(0, 3).map((cb, i) => {
+                      const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉";
+                      return `
+                        <div class="flex items-center gap-1.5 font-mono text-[11px]">
+                          <span>${medal}</span>
+                          <span class="waku-${getWaku(cb.r1, race.horses.length)} px-1.5 py-0.2 rounded font-bold text-[10px]">${cb.r1}</span>
+                          <span>→</span>
+                          <span class="waku-${getWaku(cb.r2, race.horses.length)} px-1.5 py-0.2 rounded font-bold text-[10px]">${cb.r2}</span>
+                          <span>→</span>
+                          <span class="waku-${getWaku(cb.r3, race.horses.length)} px-1.5 py-0.2 rounded font-bold text-[10px]">${cb.r3}</span>
+                          <span class="text-emerald-400 font-bold ml-1">${cb.odds.toFixed(1)}倍</span>
+                          <span class="text-amber-400 text-[10px]">(${cb.prob.toFixed(2)}%)</span>
+                        </div>
+                      `;
+                    }).join("")}
+                  </div>
+                  <div class="text-[11px] text-slate-400 font-mono-num">
+                    他17点（計20点） ｜ 倍率レンジ: ${minOdds.toFixed(1)}倍 〜 ${maxOdds.toFixed(1)}倍
+                  </div>
+                </div>
+              ` : `
               <!-- 1着 -->
               <div class="flex items-center gap-2 sm:gap-3">
                 <span class="w-10 sm:w-12 py-0.5 rounded bg-slate-800 text-slate-200 font-black text-xs text-center font-mono shrink-0">${card.isPair || card.isTrio ? (card.title.includes("2頭軸") ? "軸①" : "1頭目") : "1着"}</span>
@@ -4817,19 +5133,18 @@
               <div class="text-[11px] text-slate-400 font-mono-num pt-1">
                 ${minOdds.toFixed(1)}倍 〜 ${maxOdds.toFixed(1)}倍
               </div>
+              `}
             </div>
 
             <!-- 右カラム：各金額ステッパー ＆ 点数・想定払戻 -->
             <div class="sm:col-span-5 flex flex-col sm:items-end justify-center bg-slate-900/50 sm:bg-transparent p-2.5 sm:p-0 rounded-xl space-y-1.5 text-right font-mono-num">
-              <!-- 各 100円 ステッパー (写真再現) -->
+              <!-- 各 100円 ステッパー (写真再現・完全連動) -->
               <div class="flex items-center justify-end gap-1.5">
                 <span class="text-xs text-slate-300 font-bold">各</span>
-                <button onclick="changeCardMultiplier(${cIdx}, -1)" class="w-6 h-6 rounded-full bg-slate-800 hover:bg-slate-700 text-white font-black text-sm flex items-center justify-center transition">−</button>
-                <div class="bg-slate-900 border border-slate-700 px-3 py-0.5 rounded-lg text-white font-black text-xs">
-                  ${multiplier}
-                </div>
+                <button onclick="changeCardMultiplier(${cIdx}, -1)" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-black text-sm flex items-center justify-center transition border border-slate-700 shadow-sm">−</button>
+                <input type="number" min="1" max="100" value="${multiplier}" onchange="setCardMultiplierDirect(${cIdx}, this.value)" class="w-12 text-center bg-slate-900 border border-slate-700 focus:border-amber-400 rounded-lg text-white font-black text-xs py-1 font-mono-num shadow-inner">
                 <span class="text-xs text-slate-300 font-bold">00円</span>
-                <button onclick="changeCardMultiplier(${cIdx}, 1)" class="w-6 h-6 rounded-full bg-slate-800 hover:bg-slate-700 text-white font-black text-sm flex items-center justify-center transition">＋</button>
+                <button onclick="changeCardMultiplier(${cIdx}, 1)" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 active:scale-95 text-white font-black text-sm flex items-center justify-center transition border border-slate-700 shadow-sm">＋</button>
               </div>
 
               <!-- 点数 & 合計金額 -->
@@ -4861,24 +5176,27 @@
               <table class="w-full text-left text-xs">
                 <thead>
                   <tr class="border-b border-slate-800 text-slate-400 text-[10px]">
-                    <th class="py-1 px-2">組合せ</th>
+                    <th class="py-1 px-2">順位 / 組合せ</th>
                     <th class="py-1 px-2">オッズ</th>
+                    <th class="py-1 px-2">出現率</th>
                     <th class="py-1 px-2 text-right">購入</th>
                     <th class="py-1 px-2 text-right text-amber-300">払戻</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/40">
-                  ${combos.map(cb => {
+                  ${combos.map((cb, cbIdx) => {
                     const cbPayout = Math.round(cb.odds * multiplier * 100);
                     return `
                       <tr class="hover:bg-slate-800/40">
                         <td class="py-1 px-2 font-bold text-white">
+                          ${card.isTop20Direct ? `<span class="text-[10px] text-amber-400 mr-1">${cbIdx+1}位</span>` : ''}
                           <span class="waku-${getWaku(cb.r1, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r1}</span>
                           ${card.isPair ? '－' : card.isTrio ? '－' : '→'}
                           <span class="waku-${getWaku(cb.r2, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r2}</span>
                           ${cb.r3 ? (card.isTrio ? '－' : '→') + `<span class="waku-${getWaku(cb.r3, race.horses.length)} px-1.5 py-0.2 rounded text-[10px]">${cb.r3}</span>` : ''}
                         </td>
                         <td class="py-1 px-2 text-emerald-400">${cb.odds.toFixed(1)}倍</td>
+                        <td class="py-1 px-2 text-amber-400 text-[10px]">${cb.prob ? cb.prob.toFixed(2) + '%' : '-'}</td>
                         <td class="py-1 px-2 text-right text-slate-300">${(multiplier * 100).toLocaleString()}円</td>
                         <td class="py-1 px-2 text-right font-black text-amber-300">${cbPayout.toLocaleString()}円</td>
                       </tr>
@@ -4907,8 +5225,17 @@
       if (!state.cardMultipliers) state.cardMultipliers = {};
       const card = state.currentCardConfigs[cardIdx];
       if (!card) return;
-      const cur = state.cardMultipliers[card.id] || card.multiplier || 1;
+      const cur = (state.cardMultipliers[card.id] !== undefined) ? state.cardMultipliers[card.id] : (card.multiplier || 1);
       const next = Math.max(1, Math.min(100, cur + delta));
+      state.cardMultipliers[card.id] = next;
+      calculateAndRenderBets();
+    };
+
+    window.setCardMultiplierDirect = function(cardIdx, val) {
+      if (!state.cardMultipliers) state.cardMultipliers = {};
+      const card = state.currentCardConfigs[cardIdx];
+      if (!card) return;
+      const next = Math.max(1, Math.min(100, parseInt(val, 10) || 1));
       state.cardMultipliers[card.id] = next;
       calculateAndRenderBets();
     };
