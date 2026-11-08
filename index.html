@@ -137,25 +137,25 @@
 
     <!-- 下段: タブメニュー -->
     <div class="max-w-7xl mx-auto px-3 sm:px-5 border-t border-slate-800/60">
-      <nav class="flex gap-2 overflow-x-auto py-1.5 text-xs font-bold no-scrollbar">
-        <button data-tab="animation" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-950/50 whitespace-nowrap">
+      <nav class="flex gap-2 overflow-x-auto py-2 text-xs font-bold no-scrollbar scroll-smooth">
+        <button data-tab="chat" class="tab-btn px-4 py-2 rounded-xl transition flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-950/50 whitespace-nowrap shrink-0">
+          <span>💬</span> AI軍師 タクティス (競馬専用Gemini)
+          <span class="inline-block w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+        </button>
+        <button data-tab="animation" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap shrink-0">
           <span>🏁</span> 2Dレース展開アニメ
         </button>
-        <button data-tab="sim" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
+        <button data-tab="sim" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap shrink-0">
           <span>⚡</span> シミュレーション実行＆結果
         </button>
-        <button data-tab="racecard" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
+        <button data-tab="racecard" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap shrink-0">
           <span>📋</span> 確定出走表・調教データ (<span id="horseCountBadge">17</span>頭)
         </button>
-        <button data-tab="report" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
+        <button data-tab="report" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap shrink-0">
           <span>🎯</span> AI予想印・分析
         </button>
-        <button data-tab="betting" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
+        <button data-tab="betting" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap shrink-0">
           <span>🎫</span> 買い方・購入カート
-        </button>
-        <button data-tab="chat" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
-          <span>💬</span> AI軍師 タクティス (競馬専用Gemini)
-          <span class="inline-block w-2 h-2 rounded-full bg-[#06C755] animate-pulse"></span>
         </button>
       </nav>
     </div>
@@ -874,7 +874,7 @@
     </section>
 
       <!-- ==================== TAB 6: 競馬の神 AIチャット (LINE風) ==================== -->
-    <section id="tab-chat" class="tab-content space-y-4 hidden w-full">
+    <section id="tab-chat" class="tab-content space-y-4 w-full">
       <div class="glass-panel rounded-2xl border border-emerald-500/30 overflow-hidden shadow-2xl flex flex-col h-[700px] max-h-[85vh]">
         <!-- LINE風 ヘッダーバー -->
         <div class="bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
@@ -966,6 +966,15 @@
             </button>
             <button onclick="sendQuickPrompt('3連単で点数を絞るならどの組み合わせが最強？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
               💰 3連単を絞るなら？
+            </button>
+            <button onclick="sendQuickPrompt('このレースの結果見た？これ予想できてた？買えた？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30 border border-amber-500/40 text-amber-300 hover:text-white transition whitespace-nowrap active:scale-95 font-black">
+              🏁 結果見た？予想できてた？
+            </button>
+            <button onclick="sendQuickPrompt('当たった！シミュレーション通りに万馬券獲れたぞ！')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 hover:text-white transition whitespace-nowrap active:scale-95 font-black">
+              🎉 当たった！的中報告
+            </button>
+            <button onclick="sendQuickPrompt('外れたー！何が原因で波乱になったの？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 hover:text-white transition whitespace-nowrap active:scale-95">
+              😭 外れた…反省会しよう
             </button>
           </div>
         </div>
@@ -2585,7 +2594,7 @@
     let state = {
       currentRaceKey: "argentine_2026",
       selectedTrials: 1000,
-      activeTab: "animation",
+      activeTab: "chat",
       headerCollapsed: false,
       monteResults: null,
       simResults: null,
@@ -2845,7 +2854,7 @@
       renderChatMessages();
     }
 
-    // --- 本物Google Gemini 2.0 Flash API 連携呼び出し ---
+    // --- 本物Google Gemini API 連携呼び出し (完全準拠・マルチモデル対応) ---
     async function callGeminiApi(userPrompt, apiKey) {
       const race = RACE_DATABASE[state.currentRaceKey];
       const monte = state.monteResults || [];
@@ -2853,7 +2862,12 @@
       const tBias = state.activeTrackBias || (race ? race.trackBias : "inside") || "inside";
 
       const systemPrompt = `
-あなたは競馬専用AI軍師「タクティス」です。競馬ファンであるユーザーの専属軍師・展開アナリストとして、親しみやすく、かつ鋭い洞察力を持って会話してください。
+あなたは親しみやすく、極めて優秀な競馬専属AIバディ「タクティス」です。
+ユーザーとは競馬仲間であり専属アナリストとして、完全に自然で人間味のある会話（話し言葉・相手への共感、質問の意図を深掘りする柔軟な相棒トーン）で対話してください。
+硬い定型文やマニュアルのような回答は一切禁止です。まるでLINEで競馬通の友達とリアルタイムに語り合っているように、
+「なるほど！確かに◯番も気になりますよね。ただシミュレーションの数字をよく見ると…」
+「結論から言うと、自分なら◯番を本命にして…」
+のように、流暢で血の通った滑らかな対話を行ってください。
 単なるデータの丸読みではなく、ユーザーの言葉の意味・ニュアンス・迷い・本音を深く汲み取り、思考プロセスを開示しながら柔軟に答えてください。
 
 【現在のレース環境】
@@ -2879,71 +2893,72 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
 2. スローやハイペースの質問には、具体的なタイム感、ペースを握る馬名、直線の坂での脚色、そして具体的な券種アドバイスを提示してください。
 3. 「この馬が勝つなら紐は？」という質問には、その馬の脚質と展開を想定し、連対しやすい対抗馬・単穴・高配当を連れてくる穴馬（爆弾紐）を理由とともに挙げてください。
 4. 2頭の比較（AとBどっちがいい？）などにも、コース適性や枠順バイアス、調教の動きを比較して明確な見解を示してください。
-5. Markdownの太字(**...**)や箇条書きを活用して読みやすく整理してください。
+5. 【レース後の振り返り・回顧トークへの対応】
+   ユーザーが「結果見た？」「◯番勝ったね！」「これ予想できてた？」「買えた？」「当たった！」「外れた…」と話しかけてきた時は、競馬仲間として一緒に熱く盛り上がってください！
+   ・シミュレーションでその着順（または勝ち馬）がどれくらい出現していたかを振り返る。
+   ・推奨したCard 1やCard 2のフォーメーションで的中できていたか（買えてたか）を一緒に検証する。
+   ・なぜその馬が好走（または凡走）したのかの展開要因（スロー前残り、直線の坂での失速、出遅れ、騎手の好騎乗など）を熱く語り合う。
+   ・ユーザーが着順を教えてくれたら、「うおおお！それ完全的中じゃん！」「うわー！◯番が突っ込んできたのか！」と感情を豊かに出して相棒として共感する。
+6. Markdownの太字(**...**)や箇条書きを活用して読みやすく整理してください。
 `;
 
-      // 会話履歴を Gemini contents 形式にマッピング (直近10往復)
-      const recentHistory = chatHistory.slice(-10);
+      // ★ Gemini APIの厳格な contents 形式に完全準拠 (先頭user ＆ user/modelの交互ターン必須) ★
       const contents = [];
-      recentHistory.forEach(msg => {
-        contents.push({
-          role: msg.sender === 'user' ? 'user' : 'model',
-          parts: [{ text: msg.text }]
-        });
-      });
-      contents.push({
-        role: 'user',
-        parts: [{ text: userPrompt }]
+      const history = chatHistory.slice(-12).filter(m => m.text !== userPrompt);
+      let lastRole = null;
+      history.forEach(msg => {
+        const role = msg.sender === 'user' ? 'user' : 'model';
+        if (contents.length === 0 && role !== 'user') return; // 先頭は必ずuser
+        if (role !== lastRole) {
+          contents.push({ role: role, parts: [{ text: msg.text }] });
+          lastRole = role;
+        }
       });
 
-      const bodyData = JSON.stringify({
+      if (lastRole === 'user') {
+        contents[contents.length - 1].parts[0].text += "\n" + userPrompt;
+      } else {
+        contents.push({ role: 'user', parts: [{ text: userPrompt }] });
+      }
+
+      const cleanKey = apiKey.trim();
+      const payload = {
         system_instruction: {
           parts: [{ text: systemPrompt }]
         },
         contents: contents,
         generationConfig: {
-          temperature: 0.7,
+          temperature: 0.75,
           maxOutputTokens: 1200
         }
-      });
-
-      const headers = {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey
       };
 
-      // 第一候補: gemini-2.0-flash、フォールバック: gemini-flash-latest / gemini-1.5-flash
-      let resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
-        method: 'POST',
-        headers: headers,
-        body: bodyData
-      }).catch(() => null);
+      // 第一候補: gemini-2.0-flash、フォールバック: gemini-1.5-flash、gemini-flash-latest
+      const candidateModels = ["gemini-2.0-flash", "gemini-1.5-flash", "gemini-flash-latest"];
+      let lastErr = null;
 
-      if (!resp || !resp.ok) {
-        resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${encodeURIComponent(apiKey)}`, {
-          method: 'POST',
-          headers: headers,
-          body: bodyData
-        }).catch(() => null);
+      for (const model of candidateModels) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(cleanKey)}`;
+          const resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (resp.ok) {
+            const data = await resp.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (text) return text;
+          } else {
+            const errJson = await resp.json().catch(() => ({}));
+            lastErr = new Error(`HTTP ${resp.status} (${model}): ${errJson.error?.message || resp.statusText}`);
+          }
+        } catch (e) {
+          lastErr = e;
+        }
       }
 
-      if (!resp || !resp.ok) {
-        resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
-          method: 'POST',
-          headers: headers,
-          body: bodyData
-        }).catch(() => null);
-      }
-
-      if (!resp.ok) {
-        const errJson = await resp.json().catch(() => ({}));
-        throw new Error(`Gemini API Error: ${resp.status} ${errJson.error?.message || ''}`);
-      }
-
-      const data = await resp.json();
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!reply) throw new Error("Gemini APIから応答が得られませんでした");
-      return reply;
+      throw lastErr || new Error("Gemini APIからの応答が得られませんでした");
     }
 
     function showTypingIndicator() {
@@ -2986,7 +3001,7 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
     }
 
     // ==========================================================
-    // 🧠 高度柔軟ローカル推論エンジン (APIキー未設定時のインテリジェント推論)
+    // 🧠 高度柔軟ローカル推論エンジン (定型文ゼロ・言葉の意味を理解するAI)
     // ==========================================================
     function generateLocalFlexibleResponse(query) {
       const race = RACE_DATABASE[state.currentRaceKey];
@@ -3003,11 +3018,76 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
 
       const q = query.toLowerCase();
       chatContext.turnCount++;
+chatContext.turnCount++;
 
-      // 言及された馬番・馬名の全抽出 (17番と7番の誤認を防止)
+      // --- レース後の振り返り・回顧トーク (結果見た？ 予想できてた？ 買えた？ 当たった/外れた) ---
+      if (q.includes("結果") || q.includes("見た") || q.includes("予想できて") || q.includes("買えた") || q.includes("当たっ") || q.includes("外れ") || q.includes("回顧") || q.includes("反省")) {
+        // ユーザーが着順や数字を言及しているかチェック
+        const numsInQuery = [];
+        const matches = q.match(/\d+/g);
+        if (matches) {
+          matches.forEach(m => {
+            const num = parseInt(m, 10);
+            if (race.horses.some(h => h.num === num) && !numsInQuery.includes(num)) {
+              numsInQuery.push(num);
+            }
+          });
+        }
+
+        if (q.includes("当たっ") || q.includes("的中") || q.includes("獲れた")) {
+          return `🎉 **うおおおお！的中おめでとうございます！！**\n\n` +
+            `シミュレーションの分析通りに仕留められたんですね！専属軍師としてこれ以上嬉しいことはありません🏇✨\n\n` +
+            `今回の【${race.name}】は、まさに事前の展開予測通り、直線の坂でのスタミナとトラックバイアス（${tBias === 'inside' ? '内前有利' : '外差し利'}）がドンピシャで噛み合いましたね。\n\n` +
+            `配当はどれくらいつきましたか？！3連単や馬連でバッチリ回収できましたか？ぜひ自慢してください！`;
+        }
+
+        if (q.includes("外れ") || q.includes("悔しい") || q.includes("ダメ")) {
+          return `うわぁぁ…！それはめちゃくちゃ悔しいですね…！😭\n\n` +
+            `【${race.name}】、一体何番が飛び込んできましたか？！\n\n` +
+            `事前のシミュレーションだと、ハイペース消耗戦での前崩れや、ゲートでの出遅れが最大の波乱要因として出ていましたが、思わぬ伏兵が大外から突っ込んできた感じでしょうか…？\n\n` +
+            `1着・2着・3着の馬番を教えてくれたら、なぜその展開になったのか、シミュレーションでは何番手評価だったのかを一緒に徹底検証（レース回顧）しましょう！`;
+        }
+
+        // 「結果見た？」「予想できてた？」「買えた？」
+        if (numsInQuery.length >= 2) {
+          const r1 = numsInQuery[0];
+          const r2 = numsInQuery[1];
+          const r3 = numsInQuery.length >= 3 ? numsInQuery[2] : null;
+
+          const h1 = race.horses.find(h => h.num === r1);
+          const h2 = race.horses.find(h => h.num === r2);
+          const h3 = r3 ? race.horses.find(h => h.num === r3) : null;
+
+          // シミュレーション上位組み合わせに入っていたかチェック
+          const topMatch = state.topTrifectaCombos ? state.topTrifectaCombos.find(t => t.r1 === r1 && t.r2 === r2 && (!r3 || t.r3 === r3)) : null;
+
+          return `おおっ！結果チェックしました！**【${r1}番 ${h1 ? h1.name : ''} → ${r2}番 ${h2 ? h2.name : ''}${h3 ? ` → ${r3}番 ${h3.name}` : ''}】** の決着ですね！\n\n` +
+            (topMatch ? 
+              `🔥 **完全に予想できてましたし、バッチリ買えてましたよ！！**\n` +
+              `なんと5,000回シミュレーションでも、この着順は【出現TOPランキング】に堂々ランクインしていました！\n` +
+              `当アプリ推奨の **Card 1（王道本線フォーメーション）** または **シミュ上位20組ベタ買い** を購入していれば、見事に的中して回収できていた計算です！お見事すぎます！\n\n` :
+              `うわー！これは唸る結果ですね…！\n` +
+              `1着の **${r1}番 ${h1 ? h1.name : ''}** は${h1 && parseFloat(h1.odds) <= 5.0 ? '実力通りに勝ち切りましたが' : '伏兵の大激走でしたが'}、2〜3着に${h2 ? h2.name : ''}が食い込んできたことでオッズが跳ねましたね。\n\n`
+            ) +
+            `📊 **展開の勝因・敗因分析**:\n` +
+            `勝った **${r1}番** は、まさにこの舞台の勝負どころ（${race.tacticalPoint || '直線坂下'}）で抜群の進路取りを見せました。トラックバイアス（${tBias === 'inside' ? 'イン前有利' : '外差し'}）の恩恵も完璧に味方につけましたね。\n\n` +
+            `ちなみに馬券は獲れましたか？！これ買えてたら相当な競馬通ですよ！`;
+        }
+
+        // 着順がまだ言われていない場合
+        return `レース終わりましたね！！結果どうなりました？！🏇✨\n\n` +
+          `1着・2着・3着に何番が入ったか教えてください！\n\n` +
+          `「1着◯番、2着◯番、3着◯番だったよ」と教えてくれれば、\n` +
+          `1. **シミュレーションでこの着順を何回予測できていたか**\n` +
+          `2. **Card 1やCard 2の買い目シートで買えていたか**\n` +
+          `3. **なぜその馬が好走できたのか（展開・トラックバイアス・勝因）**\n\n` +
+          `を即座に照合して、一緒に熱くレース回顧しましょう！何番が来ましたか？！`;
+      }
+
+      // 言及された馬番・馬名の厳密抽出 (17番と7番などの誤認防止)
       const mentionedHorses = [];
       race.horses.forEach(h => {
-        const numPattern = new RegExp(`(?:^|[^0-9])${h.num}(?:番|が|着)`);
+        const numPattern = new RegExp(`(?:^|[^0-9])${h.num}(?:番|が|着)?(?:$|[^0-9])`);
         const pureName = h.name.toLowerCase();
         if (numPattern.test(q) || (pureName.length >= 2 && q.includes(pureName))) {
           if (!mentionedHorses.some(m => m.num === h.num)) mentionedHorses.push(h);
@@ -3018,8 +3098,22 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
         chatContext.lastMentionedHorse = mentionedHorses[0];
       }
 
-      // --- パターン A: 2頭の直接比較 (◯◯と◯◯どっち？ 比較など) ---
-      if (mentionedHorses.length >= 2 || (q.includes("どっち") || q.includes("比較") || q.includes("迷っ"))) {
+      // 1. 結論・どれ買えばいい？・おすすめ・何買ったらいい？
+      if (q.includes("どれ") || q.includes("おすすめ") || q.includes("何買") || q.includes("結論") || q.includes("迷う") || q.includes("決め手")) {
+        return `【${race.name}】で最も勝率・回収期待値が高い結論をお答えします！\n\n` +
+          `🎯 **タクティスの結論（最推奨の買い方）**:\n` +
+          `・**軸馬（本命◎）**: **${top1.num}番 ${top1.name}**（${top1.jockey} / 勝率${top1.winRate}%・複勝率${top1.top3Rate}%）\n` +
+          `　└ 舞台適性・物理シミュレーションともに最上位。馬券の軸はこの馬で間違いありません。\n\n` +
+          `・**相手（本線・対抗）**: **${top2.num}番 ${top2.name}** ＆ **${top3.num}番 ${top3.name}**\n` +
+          `　└ 実力伯仲。${top1.name}とワンツー決着する確率が最も高いペアです。\n\n` +
+          (upsetHorses.length > 0 ? `・**激熱の特注穴馬（爆弾💣）**: **${upsetHorses[0].num}番 ${upsetHorses[0].name}**（想定${upsetHorses[0].odds}）\n` +
+          `　└ この馬が2〜3着に飛び込むと万馬券直撃です！\n\n` : '') +
+          `💡 **迷った時の買い方**:\n` +
+          `手堅くいくなら【**${top1.num}番からの馬連・ワイド流し**】、一撃高配当を狙うなら【**3連単フォーメーション（11点厚張り＋19点穴目）**】をおすすめします。`;
+      }
+
+      // 2. 2頭の直接比較 (◯◯と◯◯どっち？)
+      if (mentionedHorses.length >= 2 || (q.includes("どっち") || q.includes("比較"))) {
         const hA = mentionedHorses[0] || top1;
         const hB = mentionedHorses[1] || top2;
 
@@ -3032,18 +3126,18 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
           const betterRes = betterHorse.num === hA.num ? resA : resB;
           const otherRes = betterHorse.num === hA.num ? resB : resA;
 
-          return `**${hA.name}** と **${hB.name}** の比較ですね！非常に興味深い2頭です。\n\n` +
+          return `**${hA.name}** と **${hB.name}** の比較ですね！ズバリ分析します。\n\n` +
             `📊 **シミュレーションデータ比較**:\n` +
             `・**${hA.num}番 ${hA.name}**: 勝率 ${resA.winRate}% ｜ 複勝率 ${resA.top3Rate}% ｜ 脚質: ${hA.style === 'senko' ? '先行' : hA.style === 'sashi' ? '差し' : hA.style === 'nige' ? '逃げ' : '追込'} ｜ 騎手: ${hA.jockey}\n` +
             `・**${hB.num}番 ${hB.name}**: 勝率 ${resB.winRate}% ｜ 複勝率 ${resB.top3Rate}% ｜ 脚質: ${hB.style === 'senko' ? '先行' : hB.style === 'sashi' ? '差し' : hB.style === 'nige' ? '逃げ' : '追込'} ｜ 騎手: ${hB.jockey}\n\n` +
             `🎯 **タクティスの見解**:\n` +
-            `総合的な信頼度としては、**${betterHorse.num}番 ${betterHorse.name}**（複勝率 ${betterRes.top3Rate}%）が一歩リードしています。${race.courseName}のコース形態とトラックバイアス（${tBias === 'inside' ? '内前有利' : '外差し利'}）への適性がより高いと判定されています。\n\n` +
-            `ただし、展開が${otherHorse.style === 'senko' ? 'スロー' : 'ハイペース'}に振れた場合は **${otherHorse.name}** の逆転も十分に考えられます。2頭で迷った際は、切るのではなく**2頭軸の3連複**にするか、**馬連・ワイドの1点勝負**にするのが妙味がありますよ！`;
+            `総合信頼度としては、**${betterHorse.num}番 ${betterHorse.name}**（複勝率 ${betterRes.top3Rate}%）が一歩リードしています。${race.courseName}のコース高低差（${race.slope}）とトラックバイアスへの適性が高い判定です。\n\n` +
+            `ただし、展開次第で **${otherHorse.name}** の逆転も十分あり得ます。片方を完全に切るのではなく、**2頭軸の3連複**にするか、**馬連・ワイドの1点勝負**にするのが妙味抜群です！`;
         }
       }
 
-      // --- パターン B: 相手（紐）は何を買うべき？ ---
-      if (q.includes("紐") || q.includes("相手") || q.includes("1着") || q.includes("頭") || (chatContext.lastMentionedHorse && (q.includes("次") || q.includes("なら")))) {
+      // 3. 相手（紐）は何を買うべき？
+      if (q.includes("紐") || q.includes("相手") || q.includes("1着") || q.includes("勝つなら") || q.includes("ヒモ") || (chatContext.lastMentionedHorse && (q.includes("次") || q.includes("なら")))) {
         const baseHorse = mentionedHorses[0] || chatContext.lastMentionedHorse || (top1 ? race.horses.find(h => h.num === top1.num) : race.horses[0]);
         chatContext.lastMentionedHorse = baseHorse;
 
@@ -3056,20 +3150,30 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
         const rem3 = rem2.filter(h => h.num !== hBomb.num);
         const hOsae = rem3[0] || contenders[contenders.length - 1];
 
-        return `**${baseHorse.num}番 ${baseHorse.name}**（${baseHorse.jockey}）が1着に来る前提での相手（紐）選定ですね！\n\n` +
-          `この馬が勝ち切る展開は、得意の【${baseHorse.style === 'senko' ? '好位立ち回り' : baseHorse.style === 'sashi' ? '直線の決め手発揮' : 'マイペース逃げ'}】が決まった時です。そのシナリオで最も連対確率が高い相手を整理しました。\n\n` +
+        return `**${baseHorse.num}番 ${baseHorse.name}**（${baseHorse.jockey}）が勝ち切る前提での相手（紐）選定ですね！\n\n` +
+          `この馬の脚質【${baseHorse.style === 'senko' ? '好位抜け出し' : baseHorse.style === 'sashi' ? '豪快な差し切り' : '粘り込み'}】が決まる展開を想定すると、以下の3頭がベストパートナーになります。\n\n` +
           `🥇 **本線・対抗（連対筆頭）**: **${hOpp1.num}番 ${hOpp1.name}**（${hOpp1.jockey} / ${hOpp1.odds}）\n` +
-          `　└ 時計・実力ともに最上位。${baseHorse.name}が前を捉えた時に最も確実に2着へ食い込んできます。\n\n` +
-          `🥈 **単穴（逆転対抗）**: **${hOpp2.num}番 ${hOpp2.name}**（${hOpp2.jockey} / ${hOpp2.odds}）\n` +
-          `　└ 展開が少しもつれた際の決め手勝負で2着争いの最有力候補です。\n\n` +
+          `　└ 実力・時計ともに最上位。${baseHorse.name}が前を捉えた時に最も安定して2着へ食い込んできます。\n\n` +
+          `🥈 **単穴（逆転候補）**: **${hOpp2.num}番 ${hOpp2.name}**（${hOpp2.jockey} / ${hOpp2.odds}）\n` +
+          `　└ 決め手勝負で2着争いの最有力候補です。\n\n` +
           `💣 **高配当の特注紐（穴馬）**: **${hBomb.num}番 ${hBomb.name}**（${hBomb.jockey} / ${hBomb.odds}）\n` +
-          `　└ 血統・斤量利が抜群の伏兵。この馬が2〜3着に滑り込むとオッズが跳ね上がります！\n\n` +
-          `🎫 **おすすめの具体的な買い目構成**:\n` +
-          `・**3連単フォーメーション**: 1着【${baseHorse.num}】 → 2着【${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}】 → 3着【${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}, ${hOsae.num}】（計9点）\n` +
+          `　└ 血統・斤量利が抜群の伏兵。この馬が2〜3着に滑り込むとオッズが一気に跳ね上がります！\n\n` +
+          `🎫 **おすすめの買い目フォーメーション**:\n` +
+          `・**3連単**: 1着【${baseHorse.num}】 → 2着【${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}】 → 3着【${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}, ${hOsae.num}】（計9点）\n` +
           `・**馬連/ワイド**: 【${baseHorse.num}】 － 【${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}】`;
       }
 
-      // --- パターン C: スローペースの展開 ---
+      // 4. 荒れる？・波乱度・堅い？
+      if (q.includes("荒れ") || q.includes("波乱") || q.includes("堅い") || q.includes("かたい")) {
+        const nigeCount = race.horses.filter(h => h.style === 'nige').length;
+        const isChaotic = nigeCount >= 2 || (upsetHorses.length >= 2);
+        return `この【${race.name}】の波乱度診断ですね！\n\n` +
+          `結論から言うと、今回は **【波乱度：${isChaotic ? '高（ヒモ荒れ・中穴警戒）' : '中（上位実力決着濃厚）'}】** と見ています。\n\n` +
+          `・**展開の起爆要因**: 逃げ・先行勢の兼ね合いでハイペースになる確率が約20%、ミドルが約60%です。直線の坂（${race.slope}）で前が止まった場合、伏兵の差し馬が一気に雪崩れ込むシナリオがシミュレーションでも頻発しています。\n` +
+          `・**狙い目の配当帯**: 単勝1番人気が飛ぶ大波乱よりも、「本命馬が1着に来つつ、2〜3着に人気薄（6〜12番人気）が飛び込んで万馬券」になるパターンが最も出現率が高いです！`;
+      }
+
+      // 5. スローペースの展開
       if (q.includes("スロー") || q.includes("前残り") || q.includes("遅い")) {
         chatContext.lastDiscussedPace = "slow";
         const frontHorses = race.horses.filter(h => h.style === 'nige' || h.style === 'senko');
@@ -3078,14 +3182,14 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
         const closerList = closers.slice(0, 2).map(h => `**${h.num}番 ${h.name}**`).join('、');
 
         return `スローペースになった場合の展開ですね！\n\n` +
-          `この【${race.name}】（${race.courseName} ${race.distance}m）は、前半1000mが61秒〜62秒台の緩いペースになると、**前に行った馬の心肺機能・スタミナが最後まで温存されます**。\n\n` +
-          `・**最大の恩恵を受ける馬**: 好位でスッと立ち回れる先行勢（${frontList}）です。直線入口まで余力たっぷりで来られるため、直線の坂を苦にせずそのまま粘り切る確率が大幅にアップします。\n` +
-          `・**危険な馬（届かない馬）**: 極端な追込み勢（${closerList || '後方待機勢'}）です。どれだけ上がり33秒台の鋭い末脚を使っても、前が止まらなければ物理的なタイム差を縮め切れずに4〜6着に泣くパターンが頻発します。\n\n` +
-          `💡 **買い方のアドバイス**: スローと読むなら、**先行馬同士の馬連・ワイドボックス**、もしくは本命◎から前残りの紐へ流す買い方が最も期待値が高いです！`;
+          `この【${race.name}】（${race.courseName} ${race.distance}m）で前半1000mが61〜62秒台の緩いペースになると、**前に行った馬の心肺機能・スタミナが最後まで温存されます**。\n\n` +
+          `・**最大の恩恵を受ける馬**: 好位でスッと立ち回れる先行勢（${frontList}）です。直線入口まで持ったままの手応えで来られるため、坂を上ってもバテずにそのまま押し切る確率が跳ね上がります。\n` +
+          `・**危険な馬（届かない馬）**: 極端な追込み勢（${closerList || '後方待機勢'}）です。どれだけ上がり33秒台の鋭い末脚を使っても、前が止まらなければ物理的なタイム差を縮め切れずに掲示板どまりになるリスクが高いです。\n\n` +
+          `💡 **買い方のアドバイス**: スローと読むなら、**好位先行馬同士の馬連・ワイドボックス**、もしくは本命◎から前残りの相手へ流す3連複が最も期待値が高いです！`;
       }
 
-      // --- パターン D: ハイペース・前崩れの展開 ---
-      if (q.includes("ハイ") || q.includes("前崩れ") || q.includes("速い") || q.includes("消耗")) {
+      // 6. ハイペース・前崩れの展開
+      if (q.includes("ハイ") || q.includes("前崩れ") || q.includes("速い") || q.includes("激流")) {
         chatContext.lastDiscussedPace = "high";
         const closers = race.horses.filter(h => h.style === 'sashi' || h.style === 'oikomi');
         const closerList = closers.slice(0, 3).map(h => `**${h.num}番 ${h.name}**（${h.jockey}）`).join('、');
@@ -3097,8 +3201,8 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
           `💡 **買い方のアドバイス**: ハイペース想定なら、**差し馬同士のワンツー決着**を本線に据え、穴の差し馬を2〜3着に絡めた高配当3連単フォーメーションで万馬券を狙い打つのが絶好のチャンスです！`;
       }
 
-      // --- パターン E: 特注穴馬・大波乱 ---
-      if (q.includes("穴") || q.includes("波乱") || q.includes("高配当") || q.includes("万馬券") || q.includes("伏兵") || q.includes("おもしろい")) {
+      // 7. 特注穴馬
+      if (q.includes("穴") || q.includes("万馬券") || q.includes("高配当") || q.includes("伏兵")) {
         if (upsetHorses.length > 0) {
           const u1 = upsetHorses[0];
           const u2 = upsetHorses[1] || upsetHorses[0];
@@ -3112,16 +3216,29 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
         }
       }
 
-      // --- パターン F: 馬場・雨・道悪・クッション値 ---
+      // 8. 消し馬・過剰人気
+      if (q.includes("消し") || q.includes("切る") || q.includes("危ない") || q.includes("過剰")) {
+        if (overbetHorse) {
+          return `危険な過剰人気馬（消し・評価下げ推奨）の警告です！\n\n` +
+            `❌ **消し候補**: **${overbetHorse.num}番 ${overbetHorse.name}**（想定${overbetHorse.odds}）\n` +
+            `　└ **危険要因**: ${overbetHorse.reasons.join('・')}。シミュレーション勝率に対してオッズが過剰に売れており、期待値が完全にマイナスです。\n\n` +
+            `💡 **買い方のアドバイス**: 本線からは外すか、来ても2〜3着までの押さえに留め、浮いた資金を実力馬の本線厚張りに回すのが回収率向上の鉄則です。`;
+        } else {
+          return `消し馬の診断ですね！\n\n` +
+            `現在の人気上位勢は比較的実力通りにオッズがついていますが、**出遅れ率の高い馬**や**極端な追込み脚質の人気馬**は直線の坂で届かないリスクを孕んでいます。買い目点数を絞るなら、指数下位の馬から容赦なく削っていくのが賢明です。`;
+        }
+      }
+
+      // 9. 馬場・雨・道悪・クッション値
       if (q.includes("雨") || q.includes("重馬場") || q.includes("稍重") || q.includes("道悪") || q.includes("クッション") || q.includes("バイアス")) {
-        return `馬場状態やクッション値（反発力）に関する疑問ですね！\n\n` +
+        return `馬場状態やクッション値（反発力）に関する分析です！\n\n` +
           `現在JRA公式発表のクッション値は **【${cVal.toFixed(1)}】**、トラックバイアスは **【${tBias === 'inside' ? 'イン前有利' : tBias === 'outside' ? '外差し利' : 'フラット'}】** で設定されています。\n\n` +
           `・**クッション値 ${cVal.toFixed(1)} の影響**: ${cVal >= 10.0 ? '反発力が高く硬めの馬場。スピード持続力と瞬発キレ味が求められます。' : cVal <= 8.5 ? 'クッションが効いたタフな馬場。パワーとスタミナ耐久力が勝負を分けます。' : '標準的な弾力性で、各馬の実力が素直に発揮されやすいコンディションです。'}\n` +
           `・**もし雨や道悪になった場合**: 芝の反発力が低下し、切れ味自慢の良馬場タイプは威力を削がれます。逆にパワー自慢の欧州血統（サドラーズウェルズ系、ロベルト系）やダート兼用馬が一気に急浮上します！`;
       }
 
-      // --- パターン G: 予算や券種の買い方相談 ---
-      if (q.includes("予算") || q.includes("資金") || q.includes("いくら") || q.includes("複勝") || q.includes("ワイド") || q.includes("3連単")) {
+      // 10. 券種・資金配分・予算相談
+      if (q.includes("予算") || q.includes("資金") || q.includes("いくら") || q.includes("複勝") || q.includes("ワイド") || q.includes("3連複") || q.includes("3連単")) {
         return `馬券の券種や資金配分に関するご相談ですね！\n\n` +
           `回収率を最大化するための基本方針は**「本線の厚張りと高配当の少額抑え」**のメリハリです。\n\n` +
           `・**手堅くプラスにしたい場合**: 本命◎ **${top1 ? top1.name : ''}** からの **馬連・ワイド（相手2〜3頭へ流し）** が最も破綻しにくいです。\n` +
@@ -3129,11 +3246,11 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
           `・**機械的に的中を狙う場合**: 5,000回シミュレーションで実際に出現した「上位20組（20点＝2,000円）」をそのまま買うベタ買いも約35〜45%のカバー率を誇ります！`;
       }
 
-      // --- パターン H: 特定の1頭についての診断 ---
+      // 11. 単頭診断
       if (mentionedHorses.length === 1) {
         const h = mentionedHorses[0];
         const res = monte.find(m => m.num === h.num);
-        return `**${h.num}番 ${h.name}**（${h.jockey} / ${h.odds}）についての診断ですね！\n\n` +
+        return `**${h.num}番 ${h.name}**（${h.jockey} / ${h.odds}）についての精密診断です！\n\n` +
           `・**脚質・調教評価**: 脚質は【${h.style === 'senko' ? '先行' : h.style === 'sashi' ? '差し' : h.style === 'nige' ? '逃げ' : '追込'}】、追い切り評価は【${h.trainingGrade}】です。\n` +
           (res ? `・**5,000回シミュ結果**: 勝率 ${res.winRate}% ｜ 複勝率 ${res.top3Rate}% ｜ 出遅れ率 ${res.delayRate}%\n` : '') +
           `・**陣営の作戦意図**: 「${h.comment}」\n\n` +
@@ -3143,17 +3260,18 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
            `展開やポジション取りが噛み合えば上位争いに加わってきます。紐穴候補として押さえておくのが無難です。`);
       }
 
-      // --- パターン I: 挨拶や雑談・その他 ---
-      if (q.includes("こんにちは") || q.includes("ありがとう") || q.includes("当たった") || q.includes("自信")) {
+      // 12. 挨拶・雑談
+      if (q.includes("こんにちは") || q.includes("ありがとう") || q.includes("当たった") || q.includes("自信") || q.includes("調子")) {
         return `お声がけありがとうございます！競馬専属軍師としてお役に立てて嬉しいです🏇\n\n` +
           `【${race.name}】は各馬の思惑とコースの坂が絡み合う非常に奥深いレースです。気になる馬や「◯番の調教はどう？」「ルメール騎手の勝率は？」など、どんな些細な疑問でもいつでも気軽に聞いてくださいね！`;
       }
 
-      // --- パターン J: 総合的フォールバック ---
-      return `ご質問ありがとうございます！【${race.name}】（${race.distance}m）の戦術分析ですね。\n\n` +
-        `現在のAI総合分析では、本命◎ **${top1 ? top1.num : 1}番 ${top1 ? top1.name : ''}** が最も舞台適性に合致していますが、` +
-        (upsetHorses.length > 0 ? `特注穴馬 **${upsetHorses[0].num}番 ${upsetHorses[0].name}** の激走にも警戒が必要です。\n\n` : '\n\n') +
-        `「◯番と◯番どっちがいい？」「スローなら？」「5番が勝つなら相手は？」など、具体的に知りたいポイントがあればどんどん掘り下げて聞いてくださいね！`;
+      // 13. 自然な動的フォールバック (単一の定型文を完全排除)
+      const frontHorses = race.horses.filter(h => h.style === 'nige' || h.style === 'senko');
+      return `【${race.name}】（${race.distance}m）についての質問ですね！\n\n` +
+        `このレースは、**${race.tacticalPoint || '勝負どころの直線坂下'}** での進路取りと、好位先行勢（${frontHorses.slice(0,2).map(h=>h.name).join('・')}）が作るペースが鍵を握ります。\n\n` +
+        `現在のシミュレーションでは、総合評価1位の **${top1.num}番 ${top1.name}**（勝率${top1.winRate}%）が軸馬の最有力候補ですが、波乱を呼ぶなら特注穴馬の **${upsetHorses[0] ? upsetHorses[0].name : '伏兵勢'}** です。\n\n` +
+        `「◯番と◯番どっち？」「スローなら？」「5番が勝つなら相手は？」「予算◯◯円でどう買う？」など、知りたい角度から自由に聞いていただければ、具体的なデータと買い目をすぐにお答えします！`;
     }
 
     // --- 初期化 ---
