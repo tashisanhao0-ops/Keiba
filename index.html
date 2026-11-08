@@ -888,7 +888,7 @@
             <div>
               <div class="flex items-center gap-1.5 flex-wrap">
                 <h2 class="text-sm sm:text-base font-black text-white">タクティス (競馬専用Gemini / 専属軍師)</h2>
-                <span id="geminiModeBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30 font-mono">⚡ ローカル推論</span>
+                <span id="geminiModeBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30 font-mono">🟢 Gemini 2.0 覚醒中</span>
               </div>
               <p id="chatRaceContextSubtitle" class="text-[11px] text-slate-400 truncate max-w-xs sm:max-w-md">
                 対象レース: アルゼンチン共和国杯 G2 ｜ 全頭データ・5,000回シミュ完全学習済
@@ -2702,6 +2702,72 @@
     }
 
     // チャット初期化
+        // --- レース切り替え時のチャット文脈・挨拶自動更新 ---
+    function getRaceWelcomeGreeting(race) {
+      const isDirt = race.trackType.includes("ダート");
+      const is2yo = race.name.includes("2歳");
+      const isHanshin = race.courseName.includes("京都") || race.courseName.includes("阪神");
+
+      if (race.id === 'miyako_s_2026' || race.id === 'miyako_2026') {
+        return `【第16回 みやこステークス G3 (京都 ダ1800m)】の戦術分析に切り替えたよ！🏇\n\n` +
+          `京都ダート1800mは直線の坂がなく平坦なぶん、前半から先行争いが激化しやすいタフな舞台。ロードクロンヌ（横山和生）やテスティモーネ（幸英明）など、ダートのパワーとスタミナを兼ね備えた実力馬が揃っているぞ。\n\n` +
+          `『ダートの展開はどうなる？』『この馬が頭なら相手は何？』など、みやこSのことなら何でも聞いてくれ！`;
+      }
+
+      if (race.id === 'keio_hai_2026' || race.id === 'keio_2026') {
+        return `【第62回 京王杯2歳ステークス G2 (東京 芝1400m)】の戦術分析に切り替えたよ！🏇\n\n` +
+          `東京芝1400mの2歳スピード重賞。ルメール騎乗のブルージェイやフレイコン、グルーヴェンスなど、若駒の完成度と直線の瞬発力勝負が鍵を握る。\n\n` +
+          `『2歳の力関係はどう？』『スローならどの馬が残る？』など、京王杯2歳Sの狙い目を何でも聞いてくれ！`;
+      }
+
+      if (race.id === 'queen_elizabeth_2026') {
+        return `【第51回 エリザベス女王杯 G1 (京都 芝2200m)】の特別分析に切り替えたよ！🏇\n\n` +
+          `京都外回り2200m、3コーナー淀の坂下りからのロングスパートが問われる秋の女王決定戦。秋華賞や府中牝馬S組の力関係、京都外回りの適性を徹底分析するぞ。\n\n` +
+          `女王杯の有力馬や展開予想、何でも気軽に聞いてくれ！`;
+      }
+
+      return `【${race.name}】（${race.courseName} ${race.trackType}${race.distance}m）の戦術分析に切り替えたよ！🏇\n\n` +
+        `出走全馬のデータ、物理バイアス、5,000回シミュレーション結果をすべてこのレース専用にセットしたぞ。\n` +
+        `『スローならどうなる？』『この馬が勝つなら相手は？』など、このレースの狙い目を何でも聞いてくれ！`;
+    }
+
+    function onRaceSwitchedInChat(newRaceKey, prevRaceKey) {
+      const race = RACE_DATABASE[newRaceKey];
+      if (!race) return;
+
+      const subtitle = document.getElementById('chatRaceContextSubtitle');
+      if (subtitle) {
+        subtitle.textContent = `対象レース: ${race.name} ｜ 全頭データ・5,000回シミュ完全学習済`;
+      }
+
+      updateGeminiStatusBadge();
+
+      // 初回またはレースが実際に切り替わった場合
+      if (!chatContext.lastActiveRaceKey || chatContext.lastActiveRaceKey !== newRaceKey) {
+        chatContext.lastActiveRaceKey = newRaceKey;
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+        if (chatHistory.length > 0) {
+          // システム切り替え区切りメッセージ
+          chatHistory.push({
+            sender: "system",
+            time: timeStr,
+            text: `🔄 対象レースを【${race.name}】に切り替えました`
+          });
+        }
+
+        // タクティスからのレース専用挨拶
+        chatHistory.push({
+          sender: "ai",
+          time: timeStr,
+          text: getRaceWelcomeGreeting(race)
+        });
+
+        renderChatMessages();
+      }
+    }
+
     function initAiChat() {
       const container = document.getElementById('chatMessagesContainer');
       if (!container) return;
@@ -2746,7 +2812,14 @@
 
       chatHistory.forEach((msg) => {
         const msgEl = document.createElement('div');
-        if (msg.sender === "user") {
+        if (msg.sender === "system") {
+          msgEl.className = "text-center my-2.5";
+          msgEl.innerHTML = `
+            <span class="bg-amber-500/15 text-amber-300 text-[11px] px-3.5 py-1 rounded-full font-bold border border-amber-500/30 font-mono shadow-sm">
+              ${escapeHtml(msg.text)}
+            </span>
+          `;
+        } else if (msg.sender === "user") {
           msgEl.className = "flex items-end justify-end gap-1.5";
           msgEl.innerHTML = `
             <div class="text-[10px] text-slate-400 font-mono leading-none flex flex-col items-end gap-0.5 shrink-0">
@@ -3431,7 +3504,13 @@ chatContext.turnCount++;
     function loadRace(raceKey) {
       const race = RACE_DATABASE[raceKey];
       if (!race) return;
+      const prevRaceKey = state.currentRaceKey;
       state.currentRaceKey = raceKey;
+      if (typeof onRaceSwitchedInChat === 'function') {
+        onRaceSwitchedInChat(raceKey, prevRaceKey);
+      } else if (typeof initAiChat === 'function') {
+        initAiChat();
+      }
       populateAxisSelect(race);
 
       document.getElementById('raceSelect').value = raceKey;
