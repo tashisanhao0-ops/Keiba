@@ -153,6 +153,10 @@
         <button data-tab="betting" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
           <span>🎫</span> 買い方・購入カート
         </button>
+        <button data-tab="chat" class="tab-btn px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white border border-slate-800/80 whitespace-nowrap">
+          <span>💬</span> AI軍師 タクティス
+          <span class="inline-block w-2 h-2 rounded-full bg-[#06C755] animate-pulse"></span>
+        </button>
       </nav>
     </div>
   </header>
@@ -232,7 +236,7 @@
           </div>
         </div>
 
-        <!-- ★ 競馬の神インテリジェンス: 戦術起爆ポイント＆仕掛け予測HUD (ユーザー要望) ★ -->
+        <!-- ★ タクティス・インテリジェンス: 戦術起爆ポイント＆仕掛け予測HUD (ユーザー要望) ★ -->
         <div id="tacticalIgnitionCard" class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-2 border-amber-500/40 rounded-xl p-2.5 sm:p-3 mb-2.5 shadow-xl flex flex-wrap items-center justify-between gap-2.5 text-xs">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-black text-[10px] font-mono border border-amber-500/40 flex items-center gap-1 shadow-sm">
@@ -607,13 +611,13 @@
           </p>
         </div>
 
-        <!-- ★ 競馬の神インテリジェンス: レース展開トリガー ＆ 陣営シナリオ解析 (ユーザー要望) ★ -->
+        <!-- ★ タクティス・インテリジェンス: レース展開トリガー ＆ 陣営シナリオ解析 (ユーザー要望) ★ -->
         <div id="godIntelligenceCard" class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950/40 border-2 border-amber-500/40 rounded-2xl p-3.5 sm:p-4 shadow-xl space-y-2.5 mb-3">
           <div class="flex items-center justify-between border-b border-slate-800 pb-2">
             <div class="flex items-center gap-2">
               <span class="text-lg">👑</span>
               <h3 class="text-xs sm:text-sm font-black text-amber-300">
-                競馬の神インテリジェンス（展開起爆トリガー ＆ 陣営戦術シナリオ）
+                タクティス・インテリジェンス（展開起爆トリガー ＆ 陣営戦術シナリオ）
               </h3>
             </div>
             <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold font-mono">神の視点解析</span>
@@ -869,7 +873,92 @@
       </div>
     </section>
 
+      <!-- ==================== TAB 6: 競馬の神 AIチャット (LINE風) ==================== -->
+    <section id="tab-chat" class="tab-content space-y-4 hidden w-full">
+      <div class="glass-panel rounded-2xl border border-emerald-500/30 overflow-hidden shadow-2xl flex flex-col h-[700px] max-h-[85vh]">
+        <!-- LINE風 ヘッダーバー -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-emerald-500 flex items-center justify-center text-xl shadow-md border-2 border-amber-300">
+                🏇
+              </div>
+              <span class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-950"></span>
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <h2 class="text-sm sm:text-base font-black text-white">タクティス (AI専属軍師 / 展開アナリスト)</h2>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30 font-mono">公式AI</span>
+              </div>
+              <p id="chatRaceContextSubtitle" class="text-[11px] text-slate-400 truncate max-w-xs sm:max-w-md">
+                対象レース: アルゼンチン共和国杯 G2 ｜ 全頭データ・5,000回シミュ完全学習済
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="clearChatHistory()" class="text-slate-400 hover:text-white text-xs px-2.5 py-1.5 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition flex items-center gap-1">
+              <span>🗑️</span>
+              <span class="hidden sm:inline">履歴クリア</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- LINE風 チャットメッセージ領域 -->
+        <div id="chatMessagesContainer" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 bg-[#111922] custom-scrollbar">
+          <!-- メッセージが動的に挿入される -->
+        </div>
+
+        <!-- LINE風 クイック返信ピル (タップで即座に質問) -->
+        <div class="bg-slate-950/90 border-t border-slate-800/80 px-3 py-2">
+          <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 text-xs font-bold">
+            <span class="text-[10px] text-amber-400 font-black shrink-0 flex items-center gap-1">
+              <span>💡</span> おすすめ質問:
+            </span>
+            <button onclick="sendQuickPrompt('スローペースやったら展開はどうなる？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
+              🐢 スローペースなら？
+            </button>
+            <button onclick="sendQuickPrompt('ハイペース前崩れならどの馬が台頭する？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
+              🔥 ハイペース前崩れなら？
+            </button>
+            <button onclick="sendQuickPrompt('本命の馬が1着に来るなら、紐（相手）は何を買うのがいい？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
+              🎯 本命が勝つなら紐は？
+            </button>
+            <button onclick="sendQuickPrompt('一番激熱な特注穴馬とおすすめの買い方を教えて！')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
+              💣 一番激熱な穴馬は？
+            </button>
+            <button onclick="sendQuickPrompt('過剰人気で切るべき危険な馬（消し馬）はいる？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
+              ❌ 危ない過剰人気馬は？
+            </button>
+            <button onclick="sendQuickPrompt('クッション値やトラックバイアスはどの馬に有利に働く？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
+              ⚖️ クッション値・バイアスは？
+            </button>
+            <button onclick="sendQuickPrompt('3連単で点数を絞るならどの組み合わせが最強？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
+              💰 3連単を絞るなら？
+            </button>
+          </div>
+        </div>
+
+        <!-- LINE風 入力エリア -->
+        <div class="bg-slate-950 p-3 border-t border-slate-800 flex items-center gap-2">
+          <div class="relative flex-1">
+            <input type="text" id="chatInputText" onkeydown="handleChatKeyDown(event)" placeholder="タクティスに直接質問... (例: スローなら？ 5番が勝つなら相手は？) (例: スローなら？ 5番が勝つなら相手は？)" class="w-full bg-slate-900 border border-slate-700 focus:border-[#06C755] focus:ring-1 focus:ring-[#06C755] text-white rounded-xl py-2.5 px-3.5 text-xs sm:text-sm focus:outline-none transition">
+          </div>
+          <button id="chatSendBtn" onclick="handleSendChat()" class="bg-[#06C755] hover:bg-[#05b34c] text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 transition active:scale-95 shrink-0 shadow-lg shadow-emerald-950/40 cursor-pointer">
+            <span>送信</span>
+            <span>✈️</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
   </main>
+
+  <!-- フローティング相談ボタン (どのタブからでも競馬の神を呼び出し) -->
+  <button onclick="openChatFromFloating()" class="fixed bottom-20 right-4 sm:right-6 z-40 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2 cursor-pointer transition-all duration-300 active:scale-95 border-2 border-emerald-300 hover:shadow-emerald-500/30 group">
+    <span class="text-lg group-hover:scale-125 transition-transform">🏇</span>
+    <span class="text-xs font-bold tracking-tight">タクティスに聞く</span>
+    <span class="w-2 h-2 rounded-full bg-slate-950 animate-ping"></span>
+  </button>
 
   
 
@@ -2484,6 +2573,352 @@
       horsesAnimState: []
     };
 
+    
+    // ==========================================================
+    // 💬 AI軍師 タクティス (LINE風) コントローラー＆推論エンジン
+    // ==========================================================
+    let chatHistory = [];
+
+    // チャット初期化
+    function initAiChat() {
+      const container = document.getElementById('chatMessagesContainer');
+      if (!container) return;
+
+      const race = RACE_DATABASE[state.currentRaceKey];
+      const raceName = race ? race.name : "今週の重賞";
+      const subtitle = document.getElementById('chatRaceContextSubtitle');
+      if (subtitle) {
+        subtitle.textContent = `対象レース: ${raceName} ｜ 全頭データ・5,000回シミュ完全学習済`;
+      }
+
+      if (chatHistory.length === 0) {
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        chatHistory.push({
+          sender: "ai",
+          time: timeStr,
+          text: `こんにちは！専属AI軍師のタクティスです🏇\n現在【${raceName}】の出走全馬の能力値、血統適性、JRA公式クッション値、そして5,000回のシミュレーション結果まですべて完全に把握しています。\n\n『スローペースなら展開はどうなる？』『この馬が1着に来るなら紐（相手）は何がいい？』など、統計数字だけでは見えない展開の機微や狙い目、何でも気軽に聞いてくださいね！`
+        });
+      }
+
+      renderChatMessages();
+    }
+
+    // チャットメッセージ描画
+    function renderChatMessages() {
+      const container = document.getElementById('chatMessagesContainer');
+      if (!container) return;
+
+      container.innerHTML = `
+        <div class="text-center my-2">
+          <span class="bg-slate-900/90 text-slate-400 text-[10px] px-3 py-1 rounded-full font-mono border border-slate-800">
+            2026年11月8日(日) タクティス リアルタイム相談室
+          </span>
+        </div>
+      `;
+
+      chatHistory.forEach((msg) => {
+        const msgEl = document.createElement('div');
+        if (msg.sender === "user") {
+          msgEl.className = "flex items-end justify-end gap-1.5";
+          msgEl.innerHTML = `
+            <div class="text-[10px] text-slate-400 font-mono leading-none flex flex-col items-end gap-0.5 shrink-0">
+              <span class="text-emerald-400 text-[9px] font-bold">既読</span>
+              <span>${msg.time}</span>
+            </div>
+            <div class="bg-[#06C755] text-slate-950 font-bold rounded-2xl rounded-tr-xs px-3.5 py-2.5 shadow-md max-w-[85%] sm:max-w-[70%] text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
+              ${escapeHtml(msg.text)}
+            </div>
+          `;
+        } else {
+          msgEl.className = "flex items-start gap-2.5 max-w-[92%] sm:max-w-[82%]";
+          msgEl.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-emerald-500 flex items-center justify-center text-sm shadow border border-amber-300 shrink-0 mt-0.5">
+              🏇
+            </div>
+            <div class="space-y-1">
+              <div class="flex items-center gap-1.5 text-[11px]">
+                <span class="font-black text-amber-300">タクティス</span>
+                <span class="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-emerald-400 font-mono font-bold">専属軍師</span>
+              </div>
+              <div class="flex items-end gap-1.5">
+                <div class="bg-slate-800 text-slate-100 rounded-2xl rounded-tl-xs p-3.5 shadow-md border border-slate-700/80 text-xs sm:text-sm leading-relaxed space-y-2">
+                  ${formatAiChatResponse(msg.text)}
+                </div>
+                <span class="text-[10px] text-slate-400 font-mono leading-none shrink-0 mb-1">${msg.time}</span>
+              </div>
+            </div>
+          `;
+        }
+        container.appendChild(msgEl);
+      });
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // HTMLエスケープ
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[m];
+      });
+    }
+
+    // AIテキストの装飾整形 (バッジ、太字、リスト)
+    function formatAiChatResponse(text) {
+      if (!text) return '';
+      let formatted = text
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-300 font-black">$1</strong>')
+        .replace(/【(.*?)】/g, '<span class="inline-block px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-black text-xs border border-amber-500/30 my-0.5">$1</span>');
+      return formatted;
+    }
+
+    // キーダウン送信 (Enterキー)
+    function handleChatKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSendChat();
+      }
+    }
+
+    // クイック質問送信
+    function sendQuickPrompt(promptText) {
+      const input = document.getElementById('chatInputText');
+      if (input) input.value = promptText;
+      handleSendChat();
+    }
+
+    // フローティングボタンからチャットを開く
+    function openChatFromFloating() {
+      switchTab('chat');
+      const input = document.getElementById('chatInputText');
+      if (input) input.focus();
+    }
+
+    // メッセージ送信処理
+    function handleSendChat() {
+      const input = document.getElementById('chatInputText');
+      if (!input) return;
+      const text = input.value.trim();
+      if (!text) return;
+
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      // ユーザーメッセージ追加
+      chatHistory.push({
+        sender: "user",
+        time: timeStr,
+        text: text
+      });
+      input.value = "";
+      renderChatMessages();
+
+      // タイピングインジケーター表示
+      showTypingIndicator();
+
+      // 400ms後にAI回答を生成・描画
+      setTimeout(() => {
+        hideTypingIndicator();
+        const aiResponse = generateOracleResponse(text);
+        const replyTime = new Date();
+        const replyTimeStr = `${String(replyTime.getHours()).padStart(2, '0')}:${String(replyTime.getMinutes()).padStart(2, '0')}`;
+
+        chatHistory.push({
+          sender: "ai",
+          time: replyTimeStr,
+          text: aiResponse
+        });
+        renderChatMessages();
+      }, 450);
+    }
+
+    // タイピングインジケーター制御
+    function showTypingIndicator() {
+      const container = document.getElementById('chatMessagesContainer');
+      if (!container) return;
+      let ind = document.getElementById('aiTypingIndicator');
+      if (!ind) {
+        ind = document.createElement('div');
+        ind.id = 'aiTypingIndicator';
+        ind.className = "flex items-start gap-2.5 max-w-[80%]";
+        ind.innerHTML = `
+          <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-emerald-500 flex items-center justify-center text-sm shadow border border-amber-300 shrink-0">
+            🏇
+          </div>
+          <div class="bg-slate-800 text-slate-300 rounded-2xl rounded-tl-xs px-4 py-2.5 shadow border border-slate-700/80 flex items-center gap-2">
+            <div class="flex gap-1 items-center">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-bounce"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style="animation-delay: 0.15s"></span>
+              <span class="w-1.5 h-1.5 rounded-full bg-teal-400 animate-bounce" style="animation-delay: 0.3s"></span>
+            </div>
+            <span class="text-[11px] text-slate-400 font-mono">タクティスが展開を精査中...</span>
+          </div>
+        `;
+        container.appendChild(ind);
+      }
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function hideTypingIndicator() {
+      const ind = document.getElementById('aiTypingIndicator');
+      if (ind) ind.remove();
+    }
+
+    // チャット履歴クリア
+    function clearChatHistory() {
+      chatHistory = [];
+      initAiChat();
+      showToast("💬 チャット履歴をクリアしました");
+    }
+
+    // ==========================================================
+    // 🧠 タクティス 知能エンジン (戦術・展開・相手・穴馬推論)
+    // ==========================================================
+    function generateOracleResponse(query) {
+      const race = RACE_DATABASE[state.currentRaceKey];
+      if (!race) return "レース情報が見つかりません。上のセレクターからレースを選択してください。";
+
+      const monte = state.monteResults || [];
+      const top1 = monte[0] || (race.horses && race.horses[0]);
+      const top2 = monte[1] || (race.horses && race.horses[1]);
+      const top3 = monte[2] || (race.horses && race.horses[2]);
+      const upsetHorses = getSelectedUpsetHorses(race);
+      const overbetHorse = getTrulyOverbetHorse(race, monte);
+      const cVal = state.activeCushionValue || (race.cushionValue || 9.4);
+      const tBias = state.activeTrackBias || (race.trackBias || "inside");
+
+      const q = query.toLowerCase();
+
+      // 馬番・馬名の抽出
+      let targetHorse = null;
+      for (const h of race.horses) {
+        if (q.includes(`${h.num}番`) || q.includes(h.name.toLowerCase()) || q.includes(`${h.num}が`) || q.includes(`${h.num}着`)) {
+          targetHorse = h;
+          break;
+        }
+      }
+
+      // --- ① スローペースに関する質問 ---
+      if (q.includes("スロー") || q.includes("前残り") || q.includes("遅い展開")) {
+        const frontHorses = race.horses.filter(h => h.style === 'nige' || h.style === 'senko');
+        const frontNames = frontHorses.slice(0, 3).map(h => `**${h.num}番 ${h.name}**（${h.jockey}）`).join('、');
+        const closers = race.horses.filter(h => h.style === 'oikomi');
+        const closerNames = closers.slice(0, 2).map(h => `${h.num}番 ${h.name}`).join('、');
+
+        return `【スローペース時の戦術分析】\n\n` +
+          `この【${race.name}】（${race.courseName} ${race.distance}m）でスローペースになれば、**前に行った馬のスタミナが最後まで全く削られん**。\n\n` +
+          `・**最大の恩恵を受ける馬**: 好位でスッと立ち回れる先行勢（${frontNames}）です！直線入口まで持ったままで来られるため、坂を上ってもバテずにそのまま押し切る確率が跳ね上がります。\n` +
+          `・**危険な馬（届かない馬）**: 極端な追込み勢（${closerNames || '後方待機勢'}）です。どれだけ上がり33秒台の鬼脚を使っても、前が止まらなければ物理的に物理的タイム差を詰め切れずに掲示板どまりになるリスクが高いです。\n\n` +
+          `💡 **タクティスの買い方指南**: スローと読むなら、**好位先行馬同士の馬連・ワイドボックス**、もしくは本命◎から前残りの相手へ流す3連複が最も期待値が高いです。`;
+      }
+
+      // --- ② ハイペース・前崩れに関する質問 ---
+      if (q.includes("ハイ") || q.includes("前崩れ") || q.includes("乱ペース") || q.includes("速い展開")) {
+        const closers = race.horses.filter(h => h.style === 'sashi' || h.style === 'oikomi');
+        const strongClosers = closers.slice(0, 3).map(h => `**${h.num}番 ${h.name}**（${h.jockey}）`).join('、');
+        const leaders = race.horses.filter(h => h.style === 'nige');
+
+        return `【ハイペース・前崩れ時の戦術分析】\n\n` +
+          `もしハナ争いが激化して前半1000mが59秒前後の激流になった場合、**直線坂下で前は全滅・大消耗戦**になるぞ！\n\n` +
+          `・**一気に台頭する馬**: 直線まで息を入れて外へ持ち出す持続力差し馬（${strongClosers}）です！バテた先行馬をゴール前で豪快に差し切るシーンが期待できます。\n` +
+          `・**沈没リスクの馬**: 逃げ・番手でマークを受ける先行人気馬です。ハイペースで早めに突かれれば、直線半ばで脚が上がってしまうリスクがあります。\n\n` +
+          `💡 **タクティスの買い方指南**: ハイペース想定なら、**差し馬同士のワンツー決着**を本線に据え、先行総崩れを想定した高配当3連単フォーメーションで万馬券を狙い打つのがおすすめです！`;
+      }
+
+      // --- ③ 紐（相手）は何を買えばいい？ ---
+      if (q.includes("紐") || q.includes("相手") || q.includes("1着") || q.includes("頭") || targetHorse) {
+        const baseHorse = targetHorse || (top1 ? race.horses.find(h => h.num === top1.num) : race.horses[0]);
+        const contenders = race.horses.filter(h => h.num !== baseHorse.num);
+        
+        // 相手馬選定 (完全重複ゼロで厳選)
+        const hOpp1 = contenders.find(h => top2 && h.num === top2.num) || contenders[0];
+        const remAfter1 = contenders.filter(h => h.num !== hOpp1.num);
+        const hOpp2 = remAfter1.find(h => top3 && h.num === top3.num) || remAfter1[0];
+        const remAfter2 = remAfter1.filter(h => h.num !== hOpp2.num);
+        const hBomb = upsetHorses.find(u => remAfter2.some(h => h.num === u.num)) || remAfter2[0];
+        const remAfterBomb = remAfter2.filter(h => h.num !== hBomb.num);
+        const hOsae = remAfterBomb[0] || contenders[contenders.length - 1];
+
+        return `【**${baseHorse.num}番 ${baseHorse.name}** が1着に来る場合の相手（紐）戦術分析】\n\n` +
+          `この馬が勝利する展開は、自らの得意パターン（${baseHorse.style === 'senko' ? '好位抜け出し' : baseHorse.style === 'sashi' ? '豪快な差し切り' : '力強い立ち回り'}）に持ち込めた時じゃ。その時、一緒に好走しやすい相手（紐）はこちらです。\n\n` +
+          `🥇 **筆頭相手（対抗・本線）**: **${hOpp1.num}番 ${hOpp1.name}**（${hOpp1.jockey} / ${hOpp1.odds}${String(hOpp1.odds).includes('倍') ? '' : '倍'}）\n` +
+          `　└ 実力・舞台適性ともに最上位。${baseHorse.name}が前を捉えた時に最も安定して連対してきます。\n\n` +
+          `🥈 **単穴・逆転相手**: **${hOpp2.num}番 ${hOpp2.name}**（${hOpp2.jockey} / ${hOpp2.odds}${String(hOpp2.odds).includes('倍') ? '' : '倍'}）\n` +
+          `　└ 決め手勝負でも引けを取りません。2着争いの最有力候補です。\n\n` +
+          `💣 **高配当爆弾（特注紐）**: **${hBomb.num}番 ${hBomb.name}**（${hBomb.jockey} / ${hBomb.odds}${String(hBomb.odds).includes('倍') ? '' : '倍'}）\n` +
+          `　└ 血統・斤量利が抜群の伏兵。この馬が2〜3着に滑り込めば配当が一気に跳ね上がります！\n\n` +
+          `🎫 **タクティス推奨の買い目構成**:\n` +
+          `・**3連単**: 1着【${baseHorse.num}】 → 2着【${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}】 → 3着【${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}, ${hOsae.num}】（計9点）\n` +
+          `・**馬連/ワイド**: 【${baseHorse.num}】 － 【${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}】（各厚張り）`;
+      }
+
+      // --- ④ 特注穴馬・大波乱に関する質問 ---
+      if (q.includes("穴") || q.includes("大波乱") || q.includes("高配当") || q.includes("万馬券") || q.includes("伏兵")) {
+        if (upsetHorses.length > 0) {
+          const u1 = upsetHorses[0];
+          const u2 = upsetHorses[1] || upsetHorses[0];
+          return `【激熱の特注穴馬・伏兵分析】\n\n` +
+            `単勝オッズでは伏兵扱いされていますが、この舞台で最も不気味な特注穴馬はこちらです。\n\n` +
+            `💣 **最注目穴馬**: **${u1.num}番 ${u1.name}**（${u1.jockey} / 想定${u1.odds}${String(u1.odds).includes('倍') ? '' : '倍'}）\n` +
+            `　└ **激走理由**: ${u1.pedigreeFit || '血統・舞台適性がコース形態にドンピシャ'}。JRA公式トラックバイアス（${tBias === 'inside' ? '内ラチ沿い経済コース利' : '外差し利'}）を最大限に活かせるポジションを取れます。\n\n` +
+            (upsetHorses.length > 1 ? `💣 **第2の刺客**: **${u2.num}番 ${u2.name}**（${u2.jockey} / 想定${u2.odds}${String(u2.odds).includes('倍') ? '' : '倍'}）\n` +
+            `　└ 展開がもつれた時の末脚爆発力は上位人気に引けを取りません。\n\n` : '') +
+            `💡 **タクティスの買い方指南**: 穴馬の単勝だけでなく、**本命◎とのワイド1点**、もしくは**3連複の3列目**に忍ばせておくのが最も回収率を高められます。`;
+        }
+      }
+
+      // --- ⑤ 過剰人気・消し馬に関する質問 ---
+      if (q.includes("過剰") || q.includes("消し") || q.includes("切る") || q.includes("危ない") || q.includes("人気薄")) {
+        if (overbetHorse) {
+          return `【危険な過剰人気馬（消し・評価下げ）の警告】\n\n` +
+            `ファン人気は先行していますが、データとシミュレーションの精査で信頼度が低い馬がいます。\n\n` +
+            `❌ **消し・評価下げ推奨**: **${overbetHorse.num}番 ${overbetHorse.name}**（想定${overbetHorse.odds}${String(overbetHorse.odds).includes('倍') ? '' : '倍'}）\n` +
+            `　└ **危険要因**: ${overbetHorse.reasons.join('・')}。シミュレーション勝率に対してオッズが過剰に売れており、期待値がマイナスに落ち込んでいます。\n\n` +
+            `💡 **タクティスの買い方指南**: 本線からは外すか、来ても2〜3着までの押さえに留め、浮いた資金を【実力馬の本線厚張り】に回すのが回収率向上の鉄則です。`;
+        } else {
+          return `【消し馬の診断レポート】\n\n` +
+            `現在の人気上位勢は比較的実力通りにオッズがついておるが、**出遅れ率の高い馬**や**極端な追込み脚質の人気馬**は直線の坂で届かないリスクを孕んでおる。買い目点数を絞るなら、指数下位の馬から容赦なく削っていくのじゃ！`;
+        }
+      }
+
+      // --- ⑥ クッション値・トラックバイアスに関する質問 ---
+      if (q.includes("クッション") || q.includes("バイアス") || q.includes("馬場") || q.includes("芝")) {
+        const biasText = tBias === 'inside' ? 'イン前有利（内をロスなく立ち回った馬が圧倒的有利）' :
+                         tBias === 'outside' ? '外差し天国（外枠からスムーズに加速した差し馬が優勢）' : 'フラット（内外の有利不利が少なく純粋な実力勝負）';
+        return `【馬場物理・トラックバイアス分析】\n\n` +
+          `JRA公式発表の最新数値に基づき、以下の物理パラメータをシミュレータにリアルタイム連動させています。\n\n` +
+          `・**クッション値**: 【${cVal.toFixed(1)}】（${cVal >= 10.0 ? '硬め・高速決着' : cVal <= 8.5 ? 'タフ・スタミナ消耗戦' : '標準的な弾力性'}）\n` +
+          `　└ 反発力が${cVal >= 10.0 ? '高いため、スピード持続力とキレ味が要求される' : '適度なため、坂を上りきる底力とタフさが勝負を分ける'}ぞ。\n` +
+          `・**トラックバイアス**: 【${biasText}】\n\n` +
+          `💡 **タクティスの買い方指南**: トラックバイアスに逆らってロスを被る馬は割り引き、馬場の恩恵をダイレクトに受ける枠順・脚質の馬をフォーメーションの中心に据えるのがベストです。`;
+      }
+
+      // --- ⑦ 3連単絞り方・買い目戦略 ---
+      if (q.includes("3連単") || q.includes("三連単") || q.includes("絞る") || q.includes("資金") || q.includes("買い方")) {
+        return `【3連単の資金配分・点数圧縮戦略】\n\n` +
+          `3連単は全通り買うと点数が膨らみすぎてトリガミ（当たってもマイナス）になる。勝つための秘訣は【**メリハリ配分**】です。\n\n` +
+          `1. **Card 1 (王道本線フォーメーション)**: 1着【◎】 → 2着【◯, ▲, 💣】 → 3着【◯, ▲, 💣, △】（11点）に各200〜500円厚張りして元本回収と利益を確保！\n` +
+          `2. **Card 2 (波乱・穴目カバー)**: 1着【◯, 💣】からのヒモ荒れ（19点）を各100円で万馬券直撃を狙う！\n` +
+          `3. **シミュTOP20ベタ買い**: 5,000回試行で実際に出現した上位20組（20点＝2,000円）だけを機械的に買うのも的中率約35〜45%で非常に効果的です！`;
+      }
+
+      // --- ⑧ 自由質問・総合回答 ---
+      return `【タクティスからの戦術アドバイス】\n\n` +
+        `とても鋭い着眼点ですね！【${race.name}】（${race.distance}m）は、**${race.tacticalPoint || '勝負どころの直線坂下'}** での進路取りが勝敗を分ける重要なポイントです。\n\n` +
+        `現在のAI総合評価では、本命◎ **${top1 ? top1.num : 1}番 ${top1 ? top1.name : ''}** が最も舞台適性に合致しておるが、` +
+        (upsetHorses.length > 0 ? `特注穴馬 **${upsetHorses[0].num}番 ${upsetHorses[0].name}** の激走にも警戒が必要です。\n\n` : '\n\n') +
+        `もし気になる馬や『◯番が来たら？』『スローなら？』など具体的な疑問があれば、何でも気軽に聞いてくださいね！`;
+    }
+
     // --- 初期化 ---
     
     // --- JRA公式枠順確定データ自動同期機能 (金曜確定時に全頭自動配備) ---
@@ -2697,7 +3132,7 @@
         updateTrackBiasBadge();
       }
 
-      // ★ 競馬の神インテリジェンス: 戦術起爆点 ＆ 陣営シナリオHUD更新 ★
+      // ★ タクティス・インテリジェンス: 戦術起爆点 ＆ 陣営シナリオHUD更新 ★
       const tacPoint = race.tacticalPoint || "残り400m (直線だらだら坂下)";
       const tacHorse = race.triggerHorse || "単穴馬";
       const tacAction = race.triggerAction || "ここから一気にロングスパート開始！";
@@ -4019,7 +4454,7 @@
           }
         } else if (remaining > race.straight) {
           // 【フェーズ3: 3〜4コーナー仕掛け・進出（残り600m〜450m）】
-          // ★ 競馬の神: 戦術起爆点での実況アップデート ★
+          // ★ タクティス: 戦術起爆点での実況アップデート ★
           if (remainingLeaderDist <= 650 && remainingLeaderDist >= 550) {
             const comEl = document.getElementById('animLiveCommentary');
             if (comEl && !state.hasTriggerCommentary) {
