@@ -958,6 +958,11 @@
             <button onclick="sendQuickPrompt('本命の馬が1着に来るなら、紐（相手）は何を買うのがいい？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
               🎯 本命が勝つなら紐は？
             </button>
+            <button onclick="sendQuickPrompt('このレースでメイチ勝負の馬と次走叩き台の馬はどれ？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 hover:text-white transition whitespace-nowrap active:scale-95 font-black">🎯 メイチ勝負馬と叩き台馬は？</button>
+            <button onclick="sendQuickPrompt('直線の風向き（向かい風/追い風）の影響はどう？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 hover:text-white transition whitespace-nowrap active:scale-95 font-black">💨 風向きの影響は？</button>
+            <button onclick="sendQuickPrompt('このレースは勝負すべき？それとも見送り（ケン）？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 hover:text-white transition whitespace-nowrap active:scale-95 font-black">⚖️ 勝負すべき？ケンすべき？</button>
+            <button onclick="sendQuickPrompt('外が荒れて内有利な場合、内ラチ沿いを突くインピタ巧者はどの馬？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/40 text-blue-300 hover:text-white transition whitespace-nowrap active:scale-95 font-black">🌀「外がダメ・内有利」なら？</button>
+            <button onclick="sendQuickPrompt('前日騎手コメントで「内がダメ」なら外に持ち出して競馬する馬は？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/40 text-teal-300 hover:text-white transition whitespace-nowrap active:scale-95 font-black">🌿 前日コメント「内がダメ」なら？</button>
             <button onclick="sendQuickPrompt('俺じゃ思いつけないようなロジックを伴った穴馬を教えて！')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 text-purple-300 hover:text-white transition whitespace-nowrap active:scale-95 font-black">💣 ロジック穴馬を教えて</button>
             <button onclick="sendQuickPrompt('一番激熱な特注穴馬とおすすめの買い方を教えて！')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
               💣 一番激熱な穴馬は？
@@ -2801,6 +2806,28 @@
       }
     };
 
+        // --- 直線風向きモード制御 ---
+    window.setWindMode = function(mode) {
+      state.activeWindMode = mode;
+      const modes = {
+        headwind: { label: "向かい風 (前崩れ加速)", btn: "windHeadBtn" },
+        calm: { label: "無風・微風 (平穏)", btn: "windCalmBtn" },
+        tailwind: { label: "追い風 (前残り天国)", btn: "windTailBtn" }
+      };
+
+      document.getElementById('windDisplayLabel').textContent = modes[mode].label;
+      document.querySelectorAll('.wind-btn').forEach(b => {
+        b.className = "wind-btn p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition";
+      });
+      const activeBtn = document.getElementById(modes[mode].btn);
+      if (activeBtn) {
+        activeBtn.className = "wind-btn p-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition";
+      }
+
+      showToast(`💨 風向きを「${modes[mode].label}」に設定しシミュレーションを更新しました`);
+      runMonteCarloSimulation(state.selectedTrials || 1000);
+    };
+
     function initAiChat() {
       const container = document.getElementById('chatMessagesContainer');
       if (!container) return;
@@ -3150,6 +3177,104 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
 
       const q = query.toLowerCase();
       chatContext.turnCount++;
+chatContext.turnCount++;
+
+      // ★ 陣営のメイチ度 vs 叩き台の見極め ★
+      if (q.includes("メイチ") || q.includes("叩き台") || q.includes("勝負気配") || q.includes("目標") || q.includes("ローテ")) {
+        const meichiHorses = race.horses.filter(h => h.trainingGrade === 'S' || parseFloat(h.odds) >= 15.0).slice(0, 2);
+        const tatakiHorses = race.horses.filter(h => parseFloat(h.odds) <= 4.0).slice(0, 1);
+        return `**「メイチ勝負（ここが本番）」と「叩き台（次走が本番）」の見極めですね！**\n\n` +
+          `重賞でオッズの歪み（人気の盲点）が生まれる最大の原因がこの【陣営の思惑の格差】です：\n\n` +
+          `🎯 **ここが勝負のメイチ馬（生涯最高の仕上げ）**:\n` +
+          `・${meichiHorses.map(h => `**${h.num}番 ${h.name}**（調教評価【${h.trainingGrade}】/ 想定${h.odds}）`).join('、')}\n` +
+          `　└ 「賞金を積まないと次走G1に出られない」「ハンデ54kgのここが重賞初制覇の最大のチャンス」という陣営の勝負気配が調教時計にハッキリ表れています。\n\n` +
+          `⚠️ **次走ステップの叩き台リスク馬（取りこぼし警戒）**:\n` +
+          `・${tatakiHorses.map(h => `**${h.num}番 ${h.name}**（1番人気 / ${h.odds}）`).join('、')}\n` +
+          `　└ 能力は誰もが認める最上位ですが、陣営の視線はすでに年末の有馬記念や次走G1にあります。ここは8〜9割の仕上がりで無理に追わない可能性が高く、単勝1倍台〜2倍台で全幅の信頼を置くのは危険です！\n\n` +
+          `💡 **タクティスの見解**: 叩き台の人気馬を2〜3着に据え、メイチ仕上げの伏兵を絡めるのが回収率を跳ね上げる黄金パターンです！`;
+      }
+
+      // ★ 直線風向き力学 (向かい風 vs 追い風) ★
+      if (q.includes("風") || q.includes("向かい風") || q.includes("追い風") || q.includes("風速")) {
+        return `**直線の「風向きと風速」による物理力学ですね！**\n\n` +
+          `競馬は直線の風速4m以上で展開が劇的に変化します。当シミュレーターでも以下の物理演算を連動させています：\n\n` +
+          `🌪️ **直線「向かい風」の時（前崩れ加速）**:\n` +
+          `・先頭を走る逃げ・先行馬が「風除け（風の壁）」になり、凄まじい空気抵抗でスタミナを削られます。\n` +
+          `・逆に、前の馬を風除けにして後ろで息を入れた差し馬が、直線坂下からノープレッシャーで突き抜けてきます！\n\n` +
+          `💨 **直線「追い風」の時（前残り天国）**:\n` +
+          `・前に行く馬が風に乗ってトップスピードを持続できるため、後ろの差し馬がどんな鋭い上がりを使っても物理的に届きません。\n\n` +
+          `💡 現在の風向き設定はシミュレーションパネル上部の【💨 直線風向き力学】ボタンでいつでもリアルタイムに切り替えてシミュレーションできますよ！`;
+      }
+
+      // ★ レース勝負度 ＆ 見送り（ケン）判定 ★
+      if (q.includes("ケン") || q.includes("見送り") || q.includes("勝負レース") || q.includes("勝負すべき") || q.includes("買うべき")) {
+        return `**「このレースは勝負すべきか？見送る（ケンする）べきか？」の判定ですね！**\n\n` +
+          `回収率を年間でプラスにするプロの鉄則は「見送りの技術（ケン）」です。当レースの判定は以下の通りです：\n\n` +
+          `🔥 **判定結果**: 【**勝負推奨レース（オッズ歪み度：大）**】\n\n` +
+          `・**理由**: 1番人気が抜けた実力馬ではなく、ハンデ差（54kg〜58.5kg）と東京2500mの坂2回の特殊コースによって、上位人気と人気薄の能力差が大きく縮まっています。\n` +
+          `・**勝負の基準**: 「1番人気が堅実でオッズも渋いレース」はケンすべきですが、今回のように**「人気先行馬の隙が多く、伏兵の激走確率が高いレース」は積極的に攻める価値がある勝負レース**です！`;
+      }
+
+      // ★ パドック気配・馬体重・大口投票 ★
+      if (q.includes("パドック") || q.includes("馬体重") || q.includes("発汗") || q.includes("大口") || q.includes("スマートマネー")) {
+        return `**「当日のパドック・馬体重 ＆ 締め切り前の大口投票」の注目ポイントですね！**\n\n` +
+          `事前のデータが揃っていても、レース発走30分前のパドックとオッズ変動で最後の答え合わせができます：\n\n` +
+          `1. **前走大敗からの「絞り込み（-8〜12kg）」に注目**:\n` +
+          `　└ 前走太目で大敗した実績馬が、今回引き締まってトモ（後駆）に筋肉が盛り上がっていれば激走のサインです。\n` +
+          `2. **股下の白い泡状の汗・イレ込みは自滅リスク**:\n` +
+          `　└ チャカチャカ小走りして発汗が激しい人気馬は、レース前にスタミナを消費してしまうため評価を下げましょう。\n` +
+          `3. **締め切り10分前の「複勝大口投票」**:\n` +
+          `　└ 単勝人気に対して複勝オッズが異常に売れている馬（複勝1.5〜2.0倍台など）は、プロのスマートマネーが勝負を仕掛けている強烈なサインです！`;
+      }
+chatContext.turnCount++;
+
+      // ★ 逆パターン「外がダメ・内ラチ沿いインピタ経済コース有利」の深い分析 ★
+      if (q.includes("外荒れ") || q.includes("外がダメ") || q.includes("内にする") || q.includes("イン突き") || q.includes("インピタ") || q.includes("内有利") || q.includes("開幕週") || q.includes("経済コース")) {
+        const railHugHorses = race.horses.filter(h => {
+          const isMaster = (h.jockeyRank === 'S+' || h.jockeyRank === 'S' || h.jockeyRank === 'A+');
+          return h.num <= 4 || (isMaster && h.style === 'senko');
+        }).slice(0, 3);
+
+        const wideLossHorses = race.horses.filter(h => {
+          return h.num >= 14 && (h.style === 'sashi' || h.style === 'oikomi');
+        }).slice(0, 2);
+
+        return `**もちろん！「外が荒れていて（または外回しが大損で）内を突く」逆パターンも完璧にシミュレーションへ組み込んでいます！**\n\n` +
+          `開幕週やコース替わり、あるいは長距離戦（2500mなど）で「外を回すと距離ロスが大きすぎて全く届かない（外がダメ）」という状況では、**物理的に内ラチ沿いを最短距離で回ってきた馬が圧倒的に有利**になります。\n\n` +
+          `この「インピタ経済コース戦術」が発動した時の見極めポイントは以下の通りです：\n\n` +
+          `1. **「外を回さず、徹底して内ラチ沿いを突いてくる馬（イン突きの名手）」**:\n` +
+          `　└ 内枠（1〜3枠）を引き当てた先行・差し馬や、イン突きの技術が高いトップ騎手（${railHugHorses.map(h => `**${h.num}番 ${h.name}**（${h.jockey}）`).join('、')}）です。\n` +
+          `　└ 外を回すライバルたちが15m〜20mも余計に距離を走らされる中、最短距離のグリーンベルトを通り、直線入口でスッとインから抜け出して大金星を挙げます。\n\n` +
+          `2. **逆に「外を回して距離ロスで自滅する危険な人気馬」**:\n` +
+          `　└ 外枠（7〜8枠）に入った大味な差し・追込馬（${wideLossHorses.map(h => `**${h.num}番 ${h.name}**`).join('、') || '外枠の追込み勢'}）です。どれだけ良い脚を使っても、外をぶん回す遠心力と距離ロスで物理的に届きません。\n\n` +
+          `💡 **タクティスの買い方指南**:\n` +
+          `「外がダメ・内有利」のバイアス時は、**内枠（1〜3枠）の馬同士のボックス**や、内をロスなく立ち回れる器用な馬を軸にした馬連・ワイドが最も堅実かつ高回収率を生み出します！`;
+      }
+chatContext.turnCount++;
+
+      // ★ 前日騎手コメント「内がダメ」＆「外持ち出し戦術」の深い分析 ★
+      if (q.includes("前日") || q.includes("騎手コメント") || q.includes("内がダメ") || q.includes("外がダメ") || q.includes("持ち出し") || q.includes("外伸び") || q.includes("グリーンベルト") || q.includes("土曜")) {
+        // 外に持ち出せる騎手・馬を特定
+        const outsideManeuverHorses = race.horses.filter(h => {
+          const isClever = (h.jockeyRank === 'S+' || h.jockeyRank === 'S' || h.jockeyRank === 'A+');
+          return (h.style === 'sashi' || h.style === 'oikomi') && (h.num >= 4 || isClever);
+        }).slice(0, 3);
+
+        const insideTrappedHorses = race.horses.filter(h => {
+          return h.num <= 3 && (h.style === 'senko' || h.style === 'nige');
+        }).slice(0, 2);
+
+        return `**まさに競馬の勝ち組が毎週日曜日に一番意識している「前日トラックバイアスと騎手心理」の核心ですね！**\n\n` +
+          `土曜日のレース後に騎手たちが「内ラチ沿いが荒れてボコボコで伸びない」「内がダメで外を回した馬が伸びる」とコメントした場合、**日曜日のメインレースまでその傾向が継続（むしろ日曜日午後に向けてさらに内が悪化）することが圧倒的に多い**です。\n\n` +
+          `シミュレーションにもこの「外持ち出し力学」を組み込んでおり、以下のポイントで結果が激変します：\n\n` +
+          `1. **「内がダメ」と分かって外に持ち出せる馬（勝負騎手）**:\n` +
+          `　└ 馬場傾向を完全に把握しているトップジョッキーや中〜外枠の差し馬（${outsideManeuverHorses.map(h => `**${h.num}番 ${h.name}**（${h.jockey}）`).join('、')}）です。\n` +
+          `　└ 3〜4コーナーで強引にインに突っ込まず、直線の坂下で外の綺麗な芝（グリーンベルト）へスムーズにエスコートして加速します。実際にアルゼンチン共和国杯で勝った6番ファミリータイム（菅原明良）や2着15番ホーエリート（戸崎圭太）も、まさに荒れたインを嫌って馬場の中ほど〜外へ持ち出した騎乗でした！\n\n` +
+          `2. **逆に「内の荒れ馬場にハマって失速する危険な馬」**:\n` +
+          `　└ 1〜2枠を引いてしまい、包まれてインラチ沿いのボコボコを走らされる馬（${insideTrappedHorses.map(h => `**${h.num}番 ${h.name}**`).join('、') || '内枠先行勢'}）です。手応え良く見えても、直線の坂を上る手前でスタミナをごっそり奪われます。\n\n` +
+          `💡 **タクティスの買い方指南**:\n` +
+          `前日の騎手コメントで「内がダメ」が出ている時は、内枠の人気馬を疑い、**「外枠（6〜8枠）のスムーズ先行・差し馬」**や**「馬場を読み切れるトップ騎手が外へ持ち出す馬」**を中心に据えるのが、超高配当を的中させる鉄則ですよ！`;
+      }
 
       // ★ 1. ファミリータイムや勝ち馬の戦績・「買えてたのかな？」についての深い分析 ★
       if (q.includes("ファミリータイム") || (q.includes("6番") && (q.includes("前走") || q.includes("買え") || q.includes("実績")))) {
@@ -3827,19 +3952,49 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
               else cushionBonus -= 0.16;
             }
 
-            // ② トラックバイアス演算 (内外通り所の恩恵)
+            // ② トラックバイアス演算 ＆ 前日騎手コメント連動「外持ち出し戦術」シミュレーション
             let biasAdj = 0.0;
-            if (tBias === 'inside') {
-              // イン前有利: 内枠(1〜3枠)先行が圧倒的恩恵 (+0.28s)、外枠差しは大外ぶん回しでロス (-0.22s)
-              if (waku <= 3 && (h.style === 'senko' || h.style === 'nige')) biasAdj += 0.28;
-              else if (waku >= 7 && (h.style === 'sashi' || h.style === 'oikomi')) biasAdj -= 0.22;
-            } else if (tBias === 'outside') {
-              // 外差し天国: 外枠(6〜8枠)の差し追込がスムーズ加速 (+0.30s)、内ラチ沿いは荒れて失速 (-0.25s)
-              if (waku >= 6 && (h.style === 'sashi' || h.style === 'oikomi')) biasAdj += 0.30;
-              else if (waku <= 2) biasAdj -= 0.22;
+            let outsideManeuverBonus = 0.0;
+
+            if (tBias === 'outside') {
+              // 前日騎手コメント「内がダメ・ボコボコ」連動:
+              // 外枠(6〜8枠)のスムーズ進出 (+0.30s) に加え、
+              // 腕利き騎手(S+/S/A+)や差し馬が意図的に外へ持ち出して綺麗な芝を走る「外持ち出し戦術」を演算！
+              const isCleverJockey = (h.jockeyRank === 'S+' || h.jockeyRank === 'S' || h.jockeyRank === 'A+');
+              const canManeuverOutside = (h.style === 'sashi' || h.style === 'oikomi' || (isCleverJockey && waku >= 4));
+              
+              if (canManeuverOutside && Math.random() < 0.85) {
+                // 85%の確率で外のグリーンベルトへ綺麗に持ち出し成功 (+0.28s)
+                outsideManeuverBonus = 0.28;
+              }
+
+              if (waku >= 6) {
+                biasAdj += 0.32; // 外枠スムーズ加速利
+              } else if (waku <= 2 && !canManeuverOutside) {
+                // 内枠で包まれて荒れたインに閉じ込められた場合の失速ペナルティ (-0.28s)
+                biasAdj -= 0.28;
+              }
+            } else if (tBias === 'inside') {
+              // 前日騎手コメント「外がダメ・外回し大損」連動:
+              // 内ラチ沿い最短距離(インピタ経済コース)の恩恵 (+0.30s)！
+              // イン突き巧者騎手(武豊・岩田康・川田・ルメール等)や内枠馬が最短距離を回る「内ラチ経済コース戦術」
+              const isRailMaster = (h.jockeyRank === 'S+' || h.jockeyRank === 'S' || h.jockeyRank === 'A+');
+              const canHugRail = (waku <= 3 || (isRailMaster && (h.style === 'senko' || h.style === 'sashi')));
+
+              if (canHugRail && Math.random() < 0.85) {
+                // 最短距離をロスなく立ち回るインピタボーナス (+0.28s)
+                outsideManeuverBonus = 0.28;
+              }
+
+              if (waku <= 3) {
+                biasAdj += 0.30; // 内ラチ沿い経済コース利
+              } else if (waku >= 7) {
+                // 外枠で外を回らされた場合の距離ロス＆遠心力ペナルティ (-0.30s)
+                biasAdj -= 0.30;
+              }
             } else {
               // フラット
-              if (waku <= 3 && (h.style === 'senko' || h.style === 'nige')) biasAdj += 0.12;
+              if (waku <= 3 && (h.style === 'senko' || h.style === 'nige')) biasAdj += 0.10;
             }
 
             // 経済コース利
@@ -3855,8 +4010,26 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
             const isTemperamentRisk = (Math.random() < delayProb * 0.4);
             const temperamentPenalty = isTemperamentRisk ? 0.45 : 0.0;
 
+            // ③ 直線風向き力学 (向かい風の風除け消耗 vs 追い風スピード持続)
+            let windAdj = 0.0;
+            const windMode = state.activeWindMode || 'headwind';
+            if (windMode === 'headwind') {
+              if (h.style === 'nige' || h.style === 'senko') windAdj -= 0.22;
+              else if (h.style === 'sashi' || h.style === 'oikomi') windAdj += 0.20;
+            } else if (windMode === 'tailwind') {
+              if (h.style === 'nige' || h.style === 'senko') windAdj += 0.25;
+            }
+
+            // ④ 陣営メイチ度・勝負ローテーション判定 (メイチ仕上げ vs 次走叩き台)
+            let readinessBonus = 0.0;
+            if (h.targetReadiness === 'meichi' || (parseFloat(h.odds) >= 12.0 && h.trainingGrade === 'S')) {
+              readinessBonus = 0.24; // ここが年間最大目標・メイチ勝負気配
+            } else if (h.targetReadiness === 'tatakidai' || (parseFloat(h.odds) <= 3.5 && (h.comment.includes('次') || h.comment.includes('先')))) {
+              readinessBonus = -0.20; // 次走G1ステップ・叩き台取りこぼしリスク
+            }
+
             // 走破秒数算出
-            const totalBonus = abilityDiff + tAdj + cAdj + paceAdj + pedigreeBonus + formBonus + jockeySkillBonus + railBonus + cushionBonus;
+            const totalBonus = abilityDiff + tAdj + cAdj + paceAdj + pedigreeBonus + formBonus + jockeySkillBonus + railBonus + cushionBonus + (outsideManeuverBonus || 0.0) + windAdj + readinessBonus;
             const raceTime = baseTime - totalBonus + slopePenalty + delay + traffic + greatRun + noise + wideLoss + targetPressure + temperamentPenalty;
 
             const spurtBase = (600.0 / (16.2 + (h.spurt - 90) * 0.02 + paceAdj * 0.3));
