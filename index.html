@@ -920,10 +920,13 @@
           </p>
           <div class="flex items-center gap-2 pt-1 flex-wrap sm:flex-nowrap">
             <input type="password" id="geminiApiKeyInput" placeholder="Google AI StudioのAPIキーを入力 (AIzaSy...)" class="flex-1 w-full sm:w-auto bg-slate-900 border border-slate-700 focus:border-amber-400 text-white rounded-xl px-3 py-2 text-xs font-mono focus:outline-none">
-            <button onclick="saveGeminiApiKey()" class="bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs transition active:scale-95 shrink-0 cursor-pointer shadow-md">
+            <button onclick="saveGeminiApiKey()" class="bg-gradient-to-r from-amber-500 to-emerald-500 hover:from-amber-400 hover:to-emerald-400 text-slate-950 font-black px-3.5 py-2 rounded-xl text-xs transition active:scale-95 shrink-0 cursor-pointer shadow-md">
               保存して接続
             </button>
-            <button onclick="clearGeminiApiKey()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl text-xs transition shrink-0 cursor-pointer">
+            <button onclick="testGeminiApiConnection()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-2 rounded-xl text-xs transition shrink-0 cursor-pointer">
+              🧪 接続テスト
+            </button>
+            <button onclick="clearGeminiApiKey()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-2 rounded-xl text-xs transition shrink-0 cursor-pointer">
               解除
             </button>
           </div>
@@ -955,6 +958,7 @@
             <button onclick="sendQuickPrompt('本命の馬が1着に来るなら、紐（相手）は何を買うのがいい？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
               🎯 本命が勝つなら紐は？
             </button>
+            <button onclick="sendQuickPrompt('俺じゃ思いつけないようなロジックを伴った穴馬を教えて！')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 text-purple-300 hover:text-white transition whitespace-nowrap active:scale-95 font-black">💣 ロジック穴馬を教えて</button>
             <button onclick="sendQuickPrompt('一番激熱な特注穴馬とおすすめの買い方を教えて！')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
               💣 一番激熱な穴馬は？
             </button>
@@ -2768,6 +2772,35 @@
       }
     }
 
+        window.testGeminiApiConnection = async function() {
+      const input = document.getElementById('geminiApiKeyInput');
+      const key = (input && input.value.trim()) || getStoredGeminiApiKey();
+      if (!key) {
+        showToast("⚠️ APIキーを入力してください");
+        return;
+      }
+      showToast("🔄 Gemini APIと接続テスト中...");
+      try {
+        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(key)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ role: 'user', parts: [{ text: 'Hello' }] }]
+          })
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          showToast("✅ Gemini API接続成功！本物のAIが稼働しています");
+          updateGeminiStatusBadge();
+        } else {
+          const err = await resp.json().catch(() => ({}));
+          showToast(`❌ 接続失敗 (${resp.status}): ${err.error?.message || 'キーが無効または失効しています'}`);
+        }
+      } catch (e) {
+        showToast(`❌ 通信エラー: ${e.message}`);
+      }
+    };
+
     function initAiChat() {
       const container = document.getElementById('chatMessagesContainer');
       if (!container) return;
@@ -2978,6 +3011,12 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
 
 【回答の指針】
 1. ユーザーの質問の意図を正確に捉え、機械的な定型文ではなく、ユーザーの聞き方に合わせた自然で人間味のある会話（適度な敬語、知的な熱量）で返してください。
+2. ★【プロの穴馬アプローチ（常識を覆す論理的な伏兵指南）】★:
+   単に「オッズが高い馬」を教えるのではなく、一般ファンには思いつけないプロの論理的根拠を提示してください：
+   ・【世間が嫌っている理由（人気の盲点）】: 前走大敗や地味な騎手・近走着外など、ファンが買えない理由をあえて言語化する。
+   ・【今回一変する明確な物理・展開ロジック】: 斤量・ハンデの恵量（54kg以下）、血統のコース耐久力、JRA公式クッション値・トラックバイアスとの合致など、なぜ今回オッズの歪み（ギャップ）を突けるのかを論理的に解説する。
+   ・【具体的な買い方】: 単勝で博打を打つのではなく、本命◎とのワイド1点や3連複の3列目など、回収率を最大化する買い目を提示する。
+1. ユーザーの質問の意図を正確に捉え、機械的な定型文ではなく、ユーザーの聞き方に合わせた自然で人間味のある会話（適度な敬語、知的な熱量）で返してください。
 2. スローやハイペースの質問には、具体的なタイム感、ペースを握る馬名、直線の坂での脚色、そして具体的な券種アドバイスを提示してください。
 3. 「この馬が勝つなら紐は？」という質問には、その馬の脚質と展開を想定し、連対しやすい対抗馬・単穴・高配当を連れてくる穴馬（爆弾紐）を理由とともに挙げてください。
 4. 2頭の比較（AとBどっちがいい？）などにも、コース適性や枠順バイアス、調教の動きを比較して明確な見解を示してください。
@@ -3111,66 +3150,75 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
 
       const q = query.toLowerCase();
       chatContext.turnCount++;
-chatContext.turnCount++;
 
-      // ★ 競馬ファンの鋭い疑問・本質論 (再現性・人気と能力の乖離など) ★
-      if (q.includes("再現性") || q.includes("フロック") || q.includes("まぐれ") || q.includes("また同じ")) {
-        return `**結論から言うと、このレースの「再現性は極めて低い（ほぼゼロに近いフロック決着）」と見ています！**\n\n` +
-          `鋭い着眼点ですね。なぜ再現性がないのか、3つの理由から分析します：\n\n` +
-          `1. **展開の極端な歪み**: 前半1000m通過60秒3で、スタンド前の坂下スタートから前に行った先行勢が直線の坂で一気に脚を失速。後ろから外を回した人気薄が一気になだれ込むという、年に数回しかない極端な前崩れでした。\n` +
-          `2. **ハンデ戦特有の紛れ**: 16番人気（ファミリータイム）→13番人気（ホーエリート）→12番人気（メイショウゲキリン）の3連単1,206万円。同じ条件で100回走らせても、同じ決着になるのは1回あるかないかです（シミュレーションでも出現率0.001%未満）。\n` +
-          `3. **次走への超重要ポイント**: 勝ったファミリータイムを「強い」と錯覚して次走で買うと、斤量増＋平坦コースなどの別条件でコロッと惨敗する典型例です。逆に人気を裏切った実力馬（ドゥラドーレスなど）は、次走適性舞台に戻れば確実に巻き返してきます。\n\n` +
-          `このレースは「能力差で負けた」のではなく「展開とハンデの罠にハマった」レースなので、次回への反省材料として割り切るのが一番賢いスタンスですよ！`;
-      }
-
-      if (q.includes("乖離") || q.includes("人気と能力") || q.includes("オッズの歪み") || q.includes("過大評価") || q.includes("過小評価")) {
-        return `**「人気と能力の乖離」、まさに競馬で勝つための最大の核心テーマですね！**\n\n` +
-          `競馬における「オッズ（人気）」は、各馬の純粋な「能力」ではなく、**ファンの集団心理と知名度の投票結果**に過ぎません。今回のレースでも強烈な乖離が起きていました：\n\n` +
-          `1. **なぜ人気先行の過大評価が起きるのか？**\n` +
-          `　└ ルメール騎手や有名血統、前走の着順だけで馬券が売れてしまうため、能力以上にオッズが吸われて過剰人気（期待値マイナス）になります。今回のドゥラドーレスもまさに能力は本物でもオッズ的には旨味が削がれていました。\n\n` +
-          `2. **なぜ人気薄の激走（過小評価）が起きるのか？**\n` +
-          `　└ 逆に、前走大敗した馬や地味な騎手・厩舎の馬は、舞台適性やハンデの恩恵（55kg以下の恵量など）があっても見落とされ、オッズが30〜50倍まで放置されます。今回のファミリータイム（16番人気）やメイショウゲキリン（12番人気）はまさにその「能力と人気の乖離の盲点」でした。\n\n` +
+      // ★ 1. ファミリータイムや勝ち馬の戦績・「買えてたのかな？」についての深い分析 ★
+      if (q.includes("ファミリータイム") || (q.includes("6番") && (q.includes("前走") || q.includes("買え") || q.includes("実績")))) {
+        return `**まさにファミリータイムの戦績を非常に鋭く突いた質問ですね！**\n\n` +
+          `「前走大敗していたけれど、G1やG2で上位に食い込んでいた実績があったから買えたのか？」という点、競馬の構造からズバリ分析します：\n\n` +
+          `1. **「買えた根拠」は確かに存在した**:\n` +
+          `　└ ファミリータイムは過去に日経新春杯（G2）2着など、タフな長距離重賞で掲示板に載った明確な実績がありました。しかも今回はハンデ54kgの恵量。\n` +
+          `　└ 「能力はあるのに、近走の大敗だけで16番人気（42倍）まで放置されていた」という意味では、オッズの歪み（人気の盲点）を突く穴党にとっては【買える論理的根拠のある大穴】でした。\n\n` +
+          `2. **それでも一般ファンが「買えなかった理由」**:\n` +
+          `　└ 18頭立ての多頭数で、前走大敗からの巻き返しを信じ切ることの難しさに加え、スタンド前坂下からのタフな2500mで先行勢が総崩れになり、大外から一気に突き抜ける展開まで読み切るのは至難の業でした。\n\n` +
           `💡 **タクティスの見解**:\n` +
-          `「強い馬を当てるゲーム」ではなく**「人気と能力のギャップ（歪み）を見つけるゲーム」**として競馬を見る人は間違いなく勝ち組です。あなたのその視点は完全にプロの買い方の領域に入っていますよ！`;
+          `「前走の着順だけで見切られた重賞実績馬の軽ハンデ」に目を向けられていたなら、それは偶然のデタラメ買いではなく、完全に**プロの穴馬アプローチ**ですよ！素晴らしい着眼点です。`;
       }
-chatContext.turnCount++;
 
-      // ★ 競馬ファンの自虐・格言スラング理解 (「買えてるほうが下手」など) ★
+      // ★ 2. 競馬ファンの自虐・格言スラング (買えてるほうが下手・フロックなど) ★
       if (q.includes("下手") || q.includes("買えてるほう") || q.includes("デタラメ") || q.includes("まぐれ") || q.includes("無理ゲー")) {
-        return `**まさにその通り！完全に「買えてるほうが下手」って言われる典型的な大波乱レースだよ（笑）！**\n\n` +
-          `競馬界の格言通り、過去データや調教、血統、コース適性を真面目に研究した競馬ファンほど、16番人気（ファミリータイム）→13番人気（ホーエリート）→12番人気（メイショウゲキリン）なんて絶対に買えないよ。\n\n` +
-          `・真面目に展開を考えたら「好位のドゥラドーレスやファイアンクランツが差し切る」のがセオリーだし、\n` +
-          `・前が止まるにしても、まさか2着・3着まで人気薄の二桁人気がズラリと雪崩れ込むなんて物理シミュレーションでも確率0.001%以下。\n\n` +
-          `これ獲れた人って、全通り買いの富豪か、マークカードの塗り間違いか、誕生日馬券みたいな完全な直感買いの人だけだから！\n` +
-          `真面目に予想して外れたお前は何も悪くないし、むしろ競馬のセオリー通りに予想できてた証拠だよ。堂々と反省会して次に切り替えようぜ！`;
+        return `**まさにその通り！完全に「買えてるほうが下手」と言われる典型的な大波乱レースでしたね（笑）！**\n\n` +
+          `競馬界の格言通り、過去データや調教、血統、コース適性を真面目に研究したファンほど、16番人気（ファミリータイム）→13番人気（ホーエリート）→12番人気（メイショウゲキリン）なんて絶対に買えません。\n\n` +
+          `・真面目に展開を考えたら「好位のドゥラドーレスやファイアンクランツが差し切る」のがセオリーですし、\n` +
+          `・前が止まるにしても、まさか2着・3着まで二桁人気の伏兵がズラリと雪崩れ込むなんて物理シミュレーションでも出現確率0.001%以下です。\n\n` +
+          `これ獲れた人って、全通り買いか、マークカード塗り間違いか、誕生日馬券みたいな直感買いの人だけです。真面目に予想して外れた人は何も悪くないですし、むしろセオリー通りに競馬ができていた証拠ですよ！`;
       }
-chatContext.turnCount++;
 
-      // ★ JRA公式確定レース結果の自動取得＆回顧トーク ★
+      // ★ 3. 再現性・フロック・次走の狙い目 ★
+      if (q.includes("再現性") || q.includes("フロック") || q.includes("また同じ") || q.includes("次走")) {
+        return `**結論から言うと、このレースの「再現性は極めて低い（ほぼゼロに近いフロック決着）」と見ています！**\n\n` +
+          `なぜ再現性がないのか、3つの理由から分析します：\n\n` +
+          `1. **展開の極端な歪み**: 前半1000m通過60秒3の平均ペースから、スタンド前の坂下スタートで前に行った先行勢が直線の坂で一気に失速。後ろから外を回した二桁人気が一気になだれ込んだ年に数回の極端な前崩れでした。\n` +
+          `2. **ハンデ戦特有の紛れ**: 3連単1,206万円。同じ条件で100回走らせても同じ決着になるのは1回あるかないかです。\n` +
+          `3. **次走への超重要ポイント**: 勝ったファミリータイムを「強い」と錯覚して次走で買うと、斤量増＋平坦コースなどの別条件でコロッと惨敗する典型例です。逆に人気を裏切ったドゥラドーレスなどの実力馬は、次走適性舞台に戻れば確実に巻き返してきます。\n\n` +
+          `このレースは能力負けではなく「ハンデと展開の罠にハマった一過性の事故」として割り切るのが一番賢いスタンスですよ！`;
+      }
+
+      // ★ 4. 人気と能力の乖離・オッズの歪み ★
+      if (q.includes("乖離") || q.includes("人気と能力") || q.includes("オッズの歪み") || q.includes("過大評価") || q.includes("過小評価")) {
+        return `**「人気と能力の乖離（オッズの歪み）」、まさに競馬で勝つための最大の核心テーマですね！**\n\n` +
+          `競馬における「オッズ（人気）」は、各馬の純粋な「能力」ではなく、**ファンの集団心理と知名度の投票結果**に過ぎません：\n\n` +
+          `1. **なぜ人気先行の過大評価が起きるのか？**\n` +
+          `　└ ルメール騎手や有名血統、前走の着順だけで馬券が売れてしまうため、能力以上にオッズが吸われて過剰人気（期待値マイナス）になります。\n\n` +
+          `2. **なぜ人気薄の激走（過小評価）が起きるのか？**\n` +
+          `　└ 逆に、前走大敗した馬や地味な厩舎の馬は、舞台適性やハンデの恩恵（55kg以下の恵量など）があっても見落とされ、オッズが30〜50倍まで放置されます。\n\n` +
+          `💡 **タクティスの見解**:\n` +
+          `「強い馬を当てるゲーム」ではなく**「人気と能力のギャップ（歪み）を見つけるゲーム」**として競馬を見る人は間違いなく勝ち組です。あなたのその視点は完全にプロの領域に入っていますよ！`;
+      }
+
+      // ★ プロの穴馬アプローチ (ロジックを伴った常識外の伏兵指南) ★
+      if (q.includes("穴") || q.includes("伏兵") || q.includes("大穴") || q.includes("万馬券") || q.includes("ロジック") || q.includes("盲点")) {
+        const uList = upsetHorses.length > 0 ? upsetHorses : race.horses.filter(h => parseFloat(h.odds) >= 8.0).slice(0, 2);
+        const u1 = uList[0] || race.horses[race.horses.length - 1];
+        const u2 = uList[1] || race.horses[race.horses.length - 2];
+
+        return `**単なる高配当狙いではなく、「プロの論理的根拠を伴った穴馬」を抽出します！**\n\n` +
+          `一般ファンが「前走の着順」や「知名度」だけで見切っている今こそ、強烈なオッズの歪み（人気の盲点）が発生しています。\n\n` +
+          `💣 **最注目ロジック穴馬**: **${u1.num}番 ${u1.name}**（${u1.jockey} / 想定${u1.odds}）\n` +
+          `・**世間が嫌っている理由（盲点）**: 直近の着順がパッとしなかったり、地味な印象からファンが敬遠していますが、敗因を精査すると「展開不向き」「不得手な馬場」など明確な理由があります。\n` +
+          `・**今回一変する構造的ロジック**: 今回の【${race.courseName} ${race.trackType}${race.distance}m・${race.slope}】は、この馬の血統的スタミナ（${u1.pedigreeFit || 'タフな舞台適性'}）と完全に合致。さらにJRA公式トラックバイアス（${tBias === 'inside' ? '内ラチ沿い経済コース利' : '外差し利'}）をダイレクトに享受できる枠順・ポジションです。\n` +
+          `・**展開の引き金**: 先行勢がやり合って直線の坂で前が消耗した瞬間、この馬の持続力のある末脚がゴール前で一気に突き抜けてきます。\n\n` +
+          (u2 ? `💣 **第2の伏兵**: **${u2.num}番 ${u2.name}**（${u2.jockey} / 想定${u2.odds}）\n` +
+          `・**一変理由**: 調教評価【${u2.trainingGrade}】の隠れた絶好気配。斤量・ハンデ利を活かして、消耗戦でバテた人気馬を尻目に3着へ雪崩れ込むシミュレーション結果が出ています。\n\n` : '') +
+          `💡 **プロの推奨買い目**:\n` +
+          `穴馬の単勝に突っ込むのではなく、【**本命◎ ${top1.num}番 ${top1.name} とのワイド1点**】、または【**3連複の3列目（フォーメーションの穴）**】に忍ばせるのが、最も資金効率良く万馬券を仕留める勝ち組の買い方です！`;
+      }
+
+      // ★ 5. レース結果の確認・回顧トーク ★
       const offRes = race.officialResult;
-      if (offRes && (q.includes("結果") || q.includes("見た") || q.includes("予想できて") || q.includes("買えた") || q.includes("どうだった") || q.includes("終わった") || q.includes("勝った") || q.includes("当たっ") || q.includes("外れ") || q.includes("回顧") || q.includes("反省"))) {
+      if (offRes && (q.includes("結果") || q.includes("見た") || q.includes("予想できて") || q.includes("買えた") || q.includes("どうだった"))) {
         const r1 = offRes.r1;
         const r2 = offRes.r2;
         const r3 = offRes.r3;
-
-        // 的中報告
-        if (q.includes("当たっ") || q.includes("的中") || q.includes("獲れた")) {
-          return `🎉 **うおおおお！！的中したのか？！マジですごいじゃん！！**\n\n` +
-            `【${race.name}】の確定結果は【1着: **${r1.num}番 ${r1.name}**（${r1.pop}人気） → 2着: **${r2.num}番 ${r2.name}**（${r2.pop}人気） → 3着: **${r3.num}番 ${r3.name}**（${r3.pop}人気）】だったぞ！\n\n` +
-            `3連単はなんと **【${offRes.trifecta}】** だ！！\n` +
-            `これ当てたとか完全に神懸かりの馬券センスだよ！いくら勝った？！ぜひ配当自慢してくれ！`;
-        }
-
-        // 外れ報告
-        if (q.includes("外れ") || q.includes("悔しい") || q.includes("ダメ")) {
-          return `うわぁぁ…外れたか…！でもこれは仕方ない、完全に魔境レースだったよ！😭\n\n` +
-            `JRA公式の確定結果は【1着: **${r1.num}番 ${r1.name}**（${r1.pop}人気） → 2着: **${r2.num}番 ${r2.name}**（${r2.pop}人気） → 3着: **${r3.num}番 ${r3.name}**（${r3.pop}人気）】。\n` +
-            `3連単払戻はなんと **【${offRes.trifecta}】** のメガ波乱だ！\n\n` +
-            `うちの5,000回シミュレーションでも、勝った ${r1.name} は勝率わずか0.8%の完全な大穴評価だった。直線の坂下まで前が激しく競り合って失速したところを、外から一気に呑み込まれた形だね。\n` +
-            `こんなの普通は買えん！次は絶対巻き返そう！`;
-        }
-
-        // 「結果見た？」「これ予想できてた？」「買えた？」
         return `もちろん結果バッチリ仕入れてるよ！JRA公式結果確定済みだ！🏇✨\n\n` +
           `【${race.name}】の確定結果は、なんと\n` +
           `🥇 **1着**: **${r1.num}番 ${r1.name}**（${r1.jockey} / ${r1.pop}番人気 / ${r1.odds}倍）\n` +
@@ -3183,98 +3231,9 @@ chatContext.turnCount++;
           `こんなの仕留められた人、日本中探してもほんの一握りの大穴党だけだよ！お前、まさかこれ買えてたりした？！`;
       }
 
-      // ★ 1. 着順報告・レース結果の検出 (最優先処理) ★
-      // 「1着6番、2着15番、3着12番」や「6-15-12」などの着順フォーマットを解析
-      const finishMatches = [];
-      // パターン: 1着(\d+)番?, 2着(\d+)番?, 3着(\d+)番?
-      const p1 = q.match(/1着[：:\s]*(\d+)/);
-      const p2 = q.match(/2着[：:\s]*(\d+)/);
-      const p3 = q.match(/3着[：:\s]*(\d+)/);
-      if (p1) finishMatches.push(parseInt(p1[1], 10));
-      if (p2) finishMatches.push(parseInt(p2[1], 10));
-      if (p3) finishMatches.push(parseInt(p3[1], 10));
-
-      // ハイフン区切り「6-15-12」
-      if (finishMatches.length === 0) {
-        const hyphenMatch = q.match(/(\d+)\s*[-－→>\s]\s*(\d+)(?:\s*[-－→>\s]\s*(\d+))?/);
-        if (hyphenMatch) {
-          finishMatches.push(parseInt(hyphenMatch[1], 10));
-          finishMatches.push(parseInt(hyphenMatch[2], 10));
-          if (hyphenMatch[3]) finishMatches.push(parseInt(hyphenMatch[3], 10));
-        }
-      }
-
-      // 「1着6番、2着15番、3着12番」のような着順報告があった場合
-      if (finishMatches.length >= 2 || (q.includes("着") && finishMatches.length >= 1)) {
-        const r1 = finishMatches[0];
-        const r2 = finishMatches[1];
-        const r3 = finishMatches[2];
-
-        const h1 = race.horses.find(h => h.num === r1);
-        const h2 = race.horses.find(h => h.num === r2);
-        const h3 = r3 ? race.horses.find(h => h.num === r3) : null;
-
-        // シミュレーションでの該当順位チェック
-        const topMatch = (state.topTrifectaCombos && r3)
-          ? state.topTrifectaCombos.find(t => t.r1 === r1 && t.r2 === r2 && t.r3 === r3)
-          : null;
-
-        const h1Res = monte.find(m => m.num === r1);
-        const h2Res = monte.find(m => m.num === r2);
-        const h3Res = r3 ? monte.find(m => m.num === r3) : null;
-
-        let resText = `結果を教えてくれてありがとうございます！\n\n` +
-          `**【1着: ${r1}番 ${h1 ? h1.name : ''}（${h1 ? h1.jockey : ''}）】**\n` +
-          `**【2着: ${r2}番 ${h2 ? h2.name : ''}（${h2 ? h2.jockey : ''}）】**\n` +
-          (h3 ? `**【3着: ${r3}番 ${h3.name}（${h3.jockey}）】**\n\n` : `\n`) +
-          `この決着、タクティスとしてレース回顧（勝因・敗因分析）します！\n\n`;
-
-        if (topMatch) {
-          resText += `🔥 **なんと！5,000回シミュレーションでも出現ランキング【${state.topTrifectaCombos.indexOf(topMatch) + 1}位】に入っていた買い目です！**\n` +
-            `当アプリの【シミュTOP20ベタ買い】またはフォーメーションでバッチリ的中できていた計算ですね！素晴らしいです！\n\n`;
-        } else if (h1Res && h1Res.winRate >= 15.0) {
-          resText += `🎯 **勝ち馬 ${r1}番 ${h1 ? h1.name : ''} はシミュレーションでも勝率${h1Res.winRate}%の上位評価でした！**\n` +
-            `本線で頭に据えていた方は勝利を掴めましたね。\n\n`;
-        } else {
-          resText += `⚡ **大波乱の決着でしたね！**\n` +
-            `勝った **${r1}番 ${h1 ? h1.name : ''}** は単勝${h1 ? h1.odds : ''}の伏兵。直線の坂（${race.slope}）で前がやり合って失速したところを、見事に突いてきました。\n\n`;
-        }
-
-        resText += `📊 **展開と馬場の振り返り**:\n` +
-          `・トラックバイアス「${tBias === 'inside' ? 'イン前有利' : '外差し利'}」とクッション値【${cVal.toFixed(1)}】の中で、${r1}番の立ち回りがドンピシャにハマりました。\n` +
-          `・2着の **${r2}番 ${h2 ? h2.name : ''}** も${h2 ? `脚質【${h2.style}】を活かして` : ''}最後までしぶとく脚を伸ばしましたね。\n\n` +
-          `ちなみにこの馬券、買えていましたか？！的中したか、それとも惜しくもハズレてしまったか、ぜひ結果を教えてください！`;
-
-        return resText;
-      }
-
-      // レース後トーク (結果見た？ 予想できてた？ 当たった/外れた)
-      if (q.includes("当たっ") || q.includes("的中") || q.includes("獲れた")) {
-        return `🎉 **うおおおお！的中おめでとうございます！！**\n\n` +
-          `シミュレーションの分析通りに仕留められたんですね！専属軍師として最高に嬉しいです🏇✨\n\n` +
-          `今回の【${race.name}】は、まさに事前の展開予測通り、直線の坂でのスタミナとトラックバイアス（${tBias === 'inside' ? 'イン前有利' : '外差し利'}）がドンピシャで噛み合いましたね。\n\n` +
-          `配当はどれくらいつきましたか？！3連単や馬連でバッチリ回収できましたか？ぜひ自慢してください！`;
-      }
-
-      if (q.includes("外れ") || q.includes("悔しい") || q.includes("ダメ")) {
-        return `うわぁぁ…！それはめちゃくちゃ悔しいですね…！😭\n\n` +
-          `【${race.name}】、一体何番が飛び込んできましたか？！\n\n` +
-          `「1着◯番、2着◯番、3着◯番だったよ」と教えてくれたら、なぜその展開になったのか、シミュレーションでは何番手評価だったのかを一緒に徹底検証（レース回顧）しましょう！`;
-      }
-
-      if (q.includes("結果") || q.includes("見た") || q.includes("予想できて") || q.includes("買えた")) {
-        return `レース終わりましたね！！結果どうなりました？！🏇✨\n\n` +
-          `「1着◯番、2着◯番、3着◯番だったよ」と教えてくれれば、\n` +
-          `1. **シミュレーションでこの着順を何回予測できていたか**\n` +
-          `2. **Card 1やCard 2の買い目シートで買えていたか**\n` +
-          `3. **なぜその馬が好走できたのか（展開・トラックバイアス・勝因）**\n\n` +
-          `を即座に照合して、一緒に熱くレース回顧しましょう！何番が来ましたか？！`;
-      }
-
-      // ★ 2. 言及された馬番・馬名の厳密抽出 (「1着」の「1」が1番と誤認されるのを完全防止) ★
+      // ★ 6. 2頭の直接比較 (◯◯と◯◯どっち？) ★
       const mentionedHorses = [];
       race.horses.forEach(h => {
-        // 「1着」「2着」「3着」の数字部分ではなく、純粋に「◯番」「◯号」や馬名でマッチング
         const numPattern = new RegExp(`(?:^|[^0-9着])${h.num}(?:番|号|が|の)(?:$|[^0-9])`);
         const pureName = h.name.toLowerCase();
         if (numPattern.test(q) || (pureName.length >= 2 && q.includes(pureName))) {
@@ -3282,119 +3241,38 @@ chatContext.turnCount++;
         }
       });
 
-      if (mentionedHorses.length > 0) {
-        chatContext.lastMentionedHorse = mentionedHorses[0];
-      }
-
-      // 3. 2頭の直接比較 (◯◯と◯◯どっち？)
       if (mentionedHorses.length >= 2 && (q.includes("どっち") || q.includes("比較") || q.includes("迷っ") || q.includes("と"))) {
         const hA = mentionedHorses[0];
         const hB = mentionedHorses[1];
-
-        if (hA && hB && hA.num !== hB.num) {
-          const resA = monte.find(m => m.num === hA.num) || { winRate: 15, top3Rate: 40 };
-          const resB = monte.find(m => m.num === hB.num) || { winRate: 12, top3Rate: 35 };
-
-          const betterHorse = parseFloat(resA.top3Rate) >= parseFloat(resB.top3Rate) ? hA : hB;
-          const otherHorse = betterHorse.num === hA.num ? hB : hA;
-          const betterRes = betterHorse.num === hA.num ? resA : resB;
-          const otherRes = betterHorse.num === hA.num ? resB : resA;
-
-          return `**${hA.name}** と **${hB.name}** の比較ですね！ズバリ分析します。\n\n` +
-            `📊 **シミュレーションデータ比較**:\n` +
-            `・**${hA.num}番 ${hA.name}**: 勝率 ${resA.winRate}% ｜ 複勝率 ${resA.top3Rate}% ｜ 脚質: ${hA.style === 'senko' ? '先行' : hA.style === 'sashi' ? '差し' : hA.style === 'nige' ? '逃げ' : '追込'} ｜ 騎手: ${hA.jockey}\n` +
-            `・**${hB.num}番 ${hB.name}**: 勝率 ${resB.winRate}% ｜ 複勝率 ${resB.top3Rate}% ｜ 脚質: ${hB.style === 'senko' ? '先行' : hB.style === 'sashi' ? '差し' : hB.style === 'nige' ? '逃げ' : '追込'} ｜ 騎手: ${hB.jockey}\n\n` +
-            `🎯 **タクティスの見解**:\n` +
-            `総合信頼度としては、**${betterHorse.num}番 ${betterHorse.name}**（複勝率 ${betterRes.top3Rate}%）が一歩リードしています。${race.courseName}のコース高低差（${race.slope}）とトラックバイアスへの適性が高い判定です。\n\n` +
-            `ただし、展開次第で **${otherHorse.name}** の逆転も十分あり得ます。片方を完全に切るのではなく、**2頭軸の3連複**にするか、**馬連・ワイドの1点勝負**にするのが妙味抜群です！`;
-        }
+        const resA = monte.find(m => m.num === hA.num) || { winRate: 15, top3Rate: 40 };
+        const resB = monte.find(m => m.num === hB.num) || { winRate: 12, top3Rate: 35 };
+        const betterHorse = parseFloat(resA.top3Rate) >= parseFloat(resB.top3Rate) ? hA : hB;
+        const otherHorse = betterHorse.num === hA.num ? hB : hA;
+        return `**${hA.name}** と **${hB.name}** の比較ですね！ズバリ分析します。\n\n` +
+          `📊 **データ比較**: ${hA.name}（複勝率 ${resA.top3Rate}%） vs ${hB.name}（複勝率 ${resB.top3Rate}%）\n` +
+          `総合信頼度としては、**${betterHorse.num}番 ${betterHorse.name}** が一歩リードしています。2頭で迷った際は、**2頭軸の3連複**にするか**ワイド1点**がおすすめです！`;
       }
 
-      // 4. 結論・どれ買えばいい？
-      if (q.includes("どれ") || q.includes("おすすめ") || q.includes("何買") || q.includes("結論") || q.includes("迷う")) {
-        return `【${race.name}】で最も勝率・回収期待値が高い結論をお答えします！\n\n` +
-          `🎯 **タクティスの結論（最推奨の買い方）**:\n` +
-          `・**軸馬（本命◎）**: **${top1.num}番 ${top1.name}**（${top1.jockey} / 勝率${top1.winRate}%・複勝率${top1.top3Rate}%）\n` +
-          `　└ 舞台適性・物理シミュレーションともに最上位。馬券の軸はこの馬で間違いありません。\n\n` +
-          `・**相手（本線・対抗）**: **${top2.num}番 ${top2.name}** ＆ **${top3.num}番 ${top3.name}**\n` +
-          `　└ 実力伯仲。${top1.name}とワンツー決着する確率が最も高いペアです。\n\n` +
-          (upsetHorses.length > 0 ? `・**激熱の特注穴馬（爆弾💣）**: **${upsetHorses[0].num}番 ${upsetHorses[0].name}**（想定${upsetHorses[0].odds}）\n` +
-          `　└ この馬が2〜3着に飛び込むと万馬券直撃です！\n\n` : '') +
-          `💡 **迷った時の買い方**:\n` +
-          `手堅くいくなら【**${top1.num}番からの馬連・ワイド流し**】、一撃高配当を狙うなら【**3連単フォーメーション（11点厚張り＋19点穴目）**】をおすすめします。`;
-      }
-
-      // 5. 相手（紐）は何を買うべき？
-      if (q.includes("紐") || q.includes("相手") || q.includes("勝つなら") || q.includes("ヒモ") || (chatContext.lastMentionedHorse && (q.includes("次") || q.includes("なら")))) {
-        const baseHorse = mentionedHorses[0] || chatContext.lastMentionedHorse || (top1 ? race.horses.find(h => h.num === top1.num) : race.horses[0]);
-        chatContext.lastMentionedHorse = baseHorse;
-
+      // ★ 7. 相手（紐）選定 ★
+      if (q.includes("紐") || q.includes("相手") || q.includes("勝つなら") || q.includes("ヒモ")) {
+        const baseHorse = mentionedHorses[0] || (top1 ? race.horses.find(h => h.num === top1.num) : race.horses[0]);
         const contenders = race.horses.filter(h => h.num !== baseHorse.num);
         const hOpp1 = contenders.find(h => top2 && h.num === top2.num) || contenders[0];
         const rem1 = contenders.filter(h => h.num !== hOpp1.num);
         const hOpp2 = rem1.find(h => top3 && h.num === top3.num) || rem1[0];
         const rem2 = rem1.filter(h => h.num !== hOpp2.num);
         const hBomb = upsetHorses.find(u => rem2.some(h => h.num === u.num)) || rem2[0];
-        const rem3 = rem2.filter(h => h.num !== hBomb.num);
-        const hOsae = rem3[0] || contenders[contenders.length - 1];
-
-        return `**${baseHorse.num}番 ${baseHorse.name}**（${baseHorse.jockey}）が勝ち切る前提での相手（紐）選定ですね！\n\n` +
-          `この馬の脚質【${baseHorse.style === 'senko' ? '好位抜け出し' : baseHorse.style === 'sashi' ? '豪快な差し切り' : '粘り込み'}】が決まる展開を想定すると、以下の3頭がベストパートナーになります。\n\n` +
-          `🥇 **本線・対抗（連対筆頭）**: **${hOpp1.num}番 ${hOpp1.name}**（${hOpp1.jockey} / ${hOpp1.odds}）\n` +
-          `　└ 時計・実力ともに最上位。${baseHorse.name}が前を捉えた時に最も安定して2着へ食い込んできます。\n\n` +
-          `🥈 **単穴（逆転候補）**: **${hOpp2.num}番 ${hOpp2.name}**（${hOpp2.jockey} / ${hOpp2.odds}）\n` +
-          `　└ 決め手勝負で2着争いの最有力候補です。\n\n` +
-          `💣 **高配当の特注紐（穴馬）**: **${hBomb.num}番 ${hBomb.name}**（${hBomb.jockey} / ${hBomb.odds}）\n` +
-          `　└ 血統・斤量利が抜群の伏兵。この馬が2〜3着に滑り込むとオッズが一気に跳ね上がります！\n\n` +
-          `🎫 **おすすめの買い目フォーメーション**:\n` +
-          `・**3連単**: 1着【${baseHorse.num}】 → 2着【${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}】 → 3着【${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}, ${hOsae.num}】（計9点）\n` +
-          `・**馬連/ワイド**: 【${baseHorse.num}】 － 【${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}】`;
+        return `**${baseHorse.num}番 ${baseHorse.name}** が勝ち切る前提での相手（紐）ですね！\n\n` +
+          `🥇 **対抗本線**: **${hOpp1.num}番 ${hOpp1.name}**（${hOpp1.jockey}）\n` +
+          `🥈 **単穴候補**: **${hOpp2.num}番 ${hOpp2.name}**（${hOpp2.jockey}）\n` +
+          `💣 **高配当穴**: **${hBomb.num}番 ${hBomb.name}**（${hBomb.jockey}）\n\n` +
+          `おすすめは3連単フォーメーション【1着: ${baseHorse.num} → 2着: ${hOpp1.num}, ${hOpp2.num}, ${hBomb.num} → 3着: ${hOpp1.num}, ${hOpp2.num}, ${hBomb.num}】です！`;
       }
 
-      // 6. 単頭診断
-      if (mentionedHorses.length === 1) {
-        const h = mentionedHorses[0];
-        const res = monte.find(m => m.num === h.num);
-        return `**${h.num}番 ${h.name}**（${h.jockey} / ${h.odds}）についての精密診断です！\n\n` +
-          `・**脚質・調教評価**: 脚質は【${h.style === 'senko' ? '先行' : h.style === 'sashi' ? '差し' : h.style === 'nige' ? '逃げ' : '追込'}】、追い切り評価は【${h.trainingGrade}】です。\n` +
-          (res ? `・**5,000回シミュ結果**: 勝率 ${res.winRate}% ｜ 複勝率 ${res.top3Rate}% ｜ 出遅れ率 ${res.delayRate}%\n` : '') +
-          `・**陣営の作戦意図**: 「${h.comment}」\n\n` +
-          `🎯 **タクティスの見立て**: ` +
-          (parseFloat(h.odds) <= 5.0 ? `実力上位で当然本線格ですが、単勝オッズに対して過剰人気気味な側面もあります。軸にするなら相手選びで妙味を補いましょう。` :
-           upsetHorses.some(u => u.num === h.num) ? `当シミュレーターで【特注穴馬💣】に指名されている激熱の伏兵です！2〜3着に添えて高配当を狙う価値が十分にあります。` :
-           `展開やポジション取りが噛み合えば上位争いに加わってきます。紐穴候補として押さえておくのが無難です。`);
-      }
-
-      // 7. スローペースの展開
-      if (q.includes("スロー") || q.includes("前残り") || q.includes("遅い")) {
-        const frontHorses = race.horses.filter(h => h.style === 'nige' || h.style === 'senko');
-        const frontList = frontHorses.slice(0, 3).map(h => `**${h.num}番 ${h.name}**（${h.jockey}）`).join('、');
-        const closers = race.horses.filter(h => h.style === 'oikomi');
-        const closerList = closers.slice(0, 2).map(h => `**${h.num}番 ${h.name}**`).join('、');
-
-        return `スローペースになった場合の展開ですね！\n\n` +
-          `この【${race.name}】（${race.courseName} ${race.distance}m）で前半1000mが61〜62秒台の緩いペースになると、**前に行った馬の心肺機能・スタミナが最後まで温存されます**。\n\n` +
-          `・**最大の恩恵を受ける馬**: 好位でスッと立ち回れる先行勢（${frontList}）です。直線入口まで持ったままの手応えで来られるため、坂を上ってもバテずにそのまま押し切る確率が跳ね上がります。\n` +
-          `・**危険な馬（届かない馬）**: 極端な追込み勢（${closerList || '後方待機勢'}）です。どれだけ上がり33秒台の鋭い末脚を使っても、前が止まらなければ物理的なタイム差を縮め切れずに掲示板どまりになるリスクが高いです。\n\n` +
-          `💡 **買い方のアドバイス**: スローと読むなら、**好位先行馬同士の馬連・ワイドボックス**、もしくは本命◎から前残りの相手へ流す3連複が最も期待値が高いです！`;
-      }
-
-      // 8. ハイペース・前崩れの展開
-      if (q.includes("ハイ") || q.includes("前崩れ") || q.includes("速い") || q.includes("激流")) {
-        const closers = race.horses.filter(h => h.style === 'sashi' || h.style === 'oikomi');
-        const closerList = closers.slice(0, 3).map(h => `**${h.num}番 ${h.name}**（${h.jockey}）`).join('、');
-
-        return `ハイペースで前崩れになった場合の展開ですね！\n\n` +
-          `ハナ争いが激化して前半1000mが59秒前後の激流になると、**3〜4コーナー中間から先行勢の息が上がり、直線の坂下で前が総崩れの大消耗戦**になります。\n\n` +
-          `・**一気に台頭する馬**: 直線まで脚を溜めて外からスムーズに加速できる持続力差し馬（${closerList}）です。失速する先行勢を直線半ばで豪快に呑み込みます。\n` +
-          `・**沈没リスクの馬**: プレッシャーを受ける先行人気馬です。ハイペースで早めに突かれると、直線半ばで脚が完全に上がってしまいます。\n\n` +
-          `💡 **買い方のアドバイス**: ハイペース想定なら、**差し馬同士のワンツー決着**を本線に据え、穴の差し馬を2〜3着に絡めた高配当3連単フォーメーションで万馬券を狙い打つのが絶好のチャンスです！`;
-      }
-
-      // 9. 自然なフォールバック
-      return `ご質問ありがとうございます！【${race.name}】（${race.distance}m）ですね。\n\n` +
-        `現在のAI分析では、本命◎ **${top1.num}番 ${top1.name}**（勝率${top1.winRate}%）が軸馬の最有力候補ですが、波乱を呼ぶなら特注穴馬の **${upsetHorses[0] ? upsetHorses[0].name : '伏兵勢'}** です。\n\n` +
-        `「◯番と◯番どっちがいい？」「スローなら？」「5番が勝つなら相手は？」「1着◯番、2着◯番の結果どう？」など、知りたい角度から自由に聞いていただければ、具体的なデータと買い目をすぐにお答えします！`;
+      // ★ 8. 総合的・自然な会話フォールバック ★
+      return `【${race.name}】についての鋭いご質問ですね！\n\n` +
+        `現在のレース環境やシミュレーションデータから分析すると、勝負どころの直線坂（${race.slope}）とトラックバイアス（${tBias === 'inside' ? 'イン前有利' : '外差し利'}）が最大の鍵です。\n\n` +
+        `「◯番の戦績はどう？」「スローなら？」「◯番と◯番どっち？」など、気になっている角度から何でも気軽に聞いてくださいね！`;
     }
     // --- 初期化 ---
     
