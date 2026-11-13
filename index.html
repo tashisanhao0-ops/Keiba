@@ -241,13 +241,13 @@
             <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-black text-[10px] font-mono border border-amber-500/40 flex items-center gap-1 shadow-sm">
               <span>⚡</span> レース起爆点 (仕掛け所)
             </span>
-            <span id="tacticalIgnitionPointText" class="font-black text-white text-xs sm:text-sm">残り400m (直線だらだら坂下)</span>
+            <span id="tacticalIgnitionPointText" class="font-black text-white text-xs sm:text-sm">残り800m (3コーナー淀の坂下り入口)</span>
             <span class="text-slate-500 hidden sm:inline">｜</span>
-            <span class="text-slate-300">起爆トリガー馬: <strong id="tacticalTriggerHorse" class="text-amber-400 font-black">5番 ドゥラドーレス ＆ 7番 ファイアンクランツ</strong></span>
+            <span class="text-slate-300">起爆トリガー馬: <strong id="tacticalTriggerHorse" class="text-amber-400 font-black">10番 セキトバイースト (浜中) ＆ 7番 カムニャック (川田)</strong></span>
           </div>
           <div class="text-[11px] text-slate-300 flex items-center gap-1.5 font-medium">
             <span class="text-emerald-400 font-bold">【陣営シナリオ】</span>
-            <span id="tacticalScenarioInsight" class="truncate max-w-xs sm:max-w-md text-slate-200">坂下でワンテンポ我慢し、残り300mから外に出して一気にトップギアへ！先行勢を飲み込む</span>
+            <span id="tacticalScenarioInsight" class="truncate max-w-xs sm:max-w-md text-slate-200">10番セキトバイーストが単騎逃げ、3角淀の坂下りから7番カムニャックが進出し外から差し勢が急追！</span>
           </div>
         </div>
 
@@ -627,7 +627,7 @@
                 <span>⚡</span> レースが動く瞬間 (仕掛け所)
               </span>
               <p id="godIgnitionPointDetail" class="text-[11px] text-slate-300 leading-relaxed">
-                直線の坂下（残り400m地点）。ここで誰が先に仕掛けるかによって、先行勢のスタミナ枯渇と後方差し馬の進路クリア度が決定づけられる。
+                残り800m（3コーナー淀の坂下り入口）。ここで誰が先に仕掛けるかによって、先行勢のスタミナ配分と外差し勢のロングスパートが決まる。
               </p>
             </div>
             <div class="bg-slate-950/80 p-2.5 rounded-xl border border-indigo-500/20 space-y-1">
@@ -643,7 +643,7 @@
                 <span>🧬</span> 血統・舞台適性の真実
               </span>
               <p id="godPedigreeInsightDetail" class="text-[11px] text-slate-300 leading-relaxed">
-                エピファネイア産駒の東京芝持続力SSS。瞬発力だけの切れ味勝負ではなく、だらだら坂を越えてからの「持続力勝負」で他馬を圧倒する。
+                京都外回り2200m特有の淀の坂下り適性（ディープ系・キタサンブラック・欧州スタミナ血統）。
               </p>
             </div>
           </div>
@@ -1054,9 +1054,16 @@
                         "jockeyTactic": "岩田望来の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.05,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.4-11.3 (馬なり)",
                         "trainingGrade": "A",
-                        "comment": "確定1枠1番。岩田望来騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定1枠1番。岩田望来騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "33.4s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 3着",
+                              "2走前: 京都 4着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 2,
@@ -1080,9 +1087,16 @@
                         "jockeyTactic": "西村淳也の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.06,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.5-11.4 (馬なり)",
                         "trainingGrade": "B",
-                        "comment": "確定1枠2番。西村淳也騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定1枠2番。西村淳也騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "33.2s",
+                        "pci": "51.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 3着",
+                              "2走前: 京都 1着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 3,
@@ -1106,9 +1120,16 @@
                         "jockeyTactic": "池添謙一の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.08,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.6-11.5 (馬なり)",
                         "trainingGrade": "B",
-                        "comment": "確定2枠3番。池添謙一騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定2枠3番。池添謙一騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "33.2s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 4着",
+                              "2走前: 京都 3着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 4,
@@ -1132,9 +1153,16 @@
                         "jockeyTactic": "荻野極の勝負騎乗",
                         "gateHabit": "やや出遅れ癖",
                         "gateDelayRate": 0.12,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.7-11.6 (馬なり)",
                         "trainingGrade": "B",
-                        "comment": "確定2枠4番。荻野極騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定2枠4番。荻野極騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "33.4s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 4着",
+                              "2走前: 京都 2着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 5,
@@ -1158,9 +1186,16 @@
                         "jockeyTactic": "津村明秀の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.05,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.8-11.3 (馬なり)",
                         "trainingGrade": "B",
-                        "comment": "確定3枠5番。津村明秀騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定3枠5番。津村明秀騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "34.0s",
+                        "pci": "51.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 2着",
+                              "2走前: 京都 1着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 6,
@@ -1184,9 +1219,16 @@
                         "jockeyTactic": "吉田隼人の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.06,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.4-11.4 (馬なり)",
                         "trainingGrade": "B",
-                        "comment": "確定3枠6番。吉田隼人騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定3枠6番。吉田隼人騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "33.6s",
+                        "pci": "51.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 5着",
+                              "2走前: 京都 3着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 7,
@@ -1210,9 +1252,16 @@
                         "jockeyTactic": "川田将雅の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.04,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.5-11.5 (G前強め)",
                         "trainingGrade": "S",
-                        "comment": "確定4枠7番。川田将雅騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定4枠7番。川田将雅騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "33.4s",
+                        "pci": "51.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 2着",
+                              "2走前: 京都 2着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 8,
@@ -1236,9 +1285,16 @@
                         "jockeyTactic": "松若風馬の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.05,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.6-11.6 (馬なり)",
                         "trainingGrade": "B",
-                        "comment": "確定4枠8番。松若風馬騎手と息を合わせて、持ち味の逃げ脚質を最大限に活かす構え。"
+                        "comment": "確定4枠8番。松若風馬騎手と息を合わせて、持ち味の逃げ脚質を最大限に活かす構え。",
+                        "last3F_record": "34.2s",
+                        "pci": "51.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 3着",
+                              "2走前: 京都 2着"
+                        ],
+                        "tacticalIntent": "ハナ主張でマイペース逃げ切り狙い"
                   },
                   {
                         "num": 9,
@@ -1262,9 +1318,16 @@
                         "jockeyTactic": "C.デムーロの勝負騎乗",
                         "gateHabit": "やや出遅れ癖",
                         "gateDelayRate": 0.09,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.7-11.3 (馬なり)",
                         "trainingGrade": "S",
-                        "comment": "確定5枠9番。C.デムーロ騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定5枠9番。C.デムーロ騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "33.2s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 2着",
+                              "2走前: 京都 3着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 10,
@@ -1288,9 +1351,16 @@
                         "jockeyTactic": "浜中俊の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.04,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.8-11.4 (馬なり)",
                         "trainingGrade": "A",
-                        "comment": "確定5枠10番。浜中俊騎手と息を合わせて、持ち味の逃げ脚質を最大限に活かす構え。"
+                        "comment": "確定5枠10番。浜中俊騎手と息を合わせて、持ち味の逃げ脚質を最大限に活かす構え。",
+                        "last3F_record": "34.0s",
+                        "pci": "51.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 1着",
+                              "2走前: 京都 3着"
+                        ],
+                        "tacticalIntent": "ハナ主張でマイペース逃げ切り狙い"
                   },
                   {
                         "num": 11,
@@ -1314,9 +1384,16 @@
                         "jockeyTactic": "今村聖奈の勝負騎乗",
                         "gateHabit": "やや出遅れ癖",
                         "gateDelayRate": 0.1,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.4-11.5 (馬なり)",
                         "trainingGrade": "A",
-                        "comment": "確定6枠11番。今村聖奈騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定6枠11番。今村聖奈騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "34.0s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 5着",
+                              "2走前: 京都 1着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 12,
@@ -1340,9 +1417,16 @@
                         "jockeyTactic": "三浦皇成の勝負騎乗",
                         "gateHabit": "やや出遅れ癖",
                         "gateDelayRate": 0.14,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.5-11.6 (馬なり)",
                         "trainingGrade": "S",
-                        "comment": "確定6枠12番。三浦皇成騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定6枠12番。三浦皇成騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "33.6s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 4着",
+                              "2走前: 京都 1着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 13,
@@ -1366,9 +1450,16 @@
                         "jockeyTactic": "C.ルメールの勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.05,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.6-11.3 (馬なり)",
                         "trainingGrade": "S",
-                        "comment": "確定7枠13番。C.ルメール騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定7枠13番。C.ルメール騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "34.2s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 1着",
+                              "2走前: 京都 2着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 14,
@@ -1392,9 +1483,16 @@
                         "jockeyTactic": "T.マーカンドの勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.07,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.7-11.4 (馬なり)",
                         "trainingGrade": "A",
-                        "comment": "確定7枠14番。T.マーカンド騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定7枠14番。T.マーカンド騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "33.8s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 5着",
+                              "2走前: 京都 2着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 15,
@@ -1418,9 +1516,16 @@
                         "jockeyTactic": "武豊の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.06,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.8-11.5 (G前強め)",
                         "trainingGrade": "S",
-                        "comment": "確定7枠15番。武豊騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定7枠15番。武豊騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "33.6s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 3着",
+                              "2走前: 京都 3着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 16,
@@ -1444,9 +1549,16 @@
                         "jockeyTactic": "松山弘平の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.05,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.4-11.6 (G前強め)",
                         "trainingGrade": "A",
-                        "comment": "確定8枠16番。松山弘平騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定8枠16番。松山弘平騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "33.8s",
+                        "pci": "51.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 4着",
+                              "2走前: 京都 4着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 17,
@@ -1470,9 +1582,16 @@
                         "jockeyTactic": "北村友一の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.07,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.5-11.3 (馬なり)",
                         "trainingGrade": "B",
-                        "comment": "確定8枠17番。北村友一騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定8枠17番。北村友一騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "33.8s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 1着",
+                              "2走前: 京都 4着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 18,
@@ -1496,9 +1615,16 @@
                         "jockeyTactic": "丹内祐次の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.08,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.6-11.4 (馬なり)",
                         "trainingGrade": "B",
-                        "comment": "確定8枠18番。丹内祐次騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定8枠18番。丹内祐次騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "34.2s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 2着",
+                              "2走前: 京都 4着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   }
             ]
       },
@@ -1543,9 +1669,16 @@
                         "jockeyTactic": "T.マーカンドの勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.06,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.2-12.1 (一杯)",
                         "trainingGrade": "A",
-                        "comment": "確定1枠1番。T.マーカンド騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定1枠1番。T.マーカンド騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "36.8s",
+                        "pci": "46.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 5着",
+                              "2走前: 東京 2着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 2,
@@ -1569,9 +1702,16 @@
                         "jockeyTactic": "A.プーシャンの勝負騎乗",
                         "gateHabit": "やや出遅れ癖",
                         "gateDelayRate": 0.1,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.3-12.2 (一杯)",
                         "trainingGrade": "B",
-                        "comment": "確定1枠2番。A.プーシャン騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定1枠2番。A.プーシャン騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "36.4s",
+                        "pci": "52.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 3着",
+                              "2走前: 東京 1着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 3,
@@ -1595,9 +1735,16 @@
                         "jockeyTactic": "原優介の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.08,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.4-12.3 (一杯)",
                         "trainingGrade": "B",
-                        "comment": "確定2枠3番。原優介騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定2枠3番。原優介騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "36.8s",
+                        "pci": "52.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 5着",
+                              "2走前: 東京 3着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 4,
@@ -1621,9 +1768,16 @@
                         "jockeyTactic": "大野拓弥の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.05,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.5-12.4 (一杯)",
                         "trainingGrade": "B",
-                        "comment": "確定2枠4番。大野拓弥騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定2枠4番。大野拓弥騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "36.6s",
+                        "pci": "46.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 4着",
+                              "2走前: 東京 2着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 5,
@@ -1647,9 +1801,16 @@
                         "jockeyTactic": "岩田康誠の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.07,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.6-12.1 (一杯)",
                         "trainingGrade": "A",
-                        "comment": "確定3枠5番。岩田康誠騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定3枠5番。岩田康誠騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "36.0s",
+                        "pci": "52.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 1着",
+                              "2走前: 東京 3着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 6,
@@ -1673,9 +1834,16 @@
                         "jockeyTactic": "荻野極の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.04,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.7-12.2 (馬なり)",
                         "trainingGrade": "S",
-                        "comment": "確定3枠6番。荻野極騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定3枠6番。荻野極騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "36.2s",
+                        "pci": "52.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 2着",
+                              "2走前: 東京 2着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 7,
@@ -1699,9 +1867,16 @@
                         "jockeyTactic": "横山武史の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.05,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.2-12.3 (馬なり)",
                         "trainingGrade": "A",
-                        "comment": "確定4枠7番。横山武史騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定4枠7番。横山武史騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "36.6s",
+                        "pci": "52.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 4着",
+                              "2走前: 東京 4着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 8,
@@ -1725,9 +1900,16 @@
                         "jockeyTactic": "西村淳也の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.04,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.3-12.4 (一杯)",
                         "trainingGrade": "S",
-                        "comment": "確定4枠8番。西村淳也騎手と息を合わせて、持ち味の逃げ脚質を最大限に活かす構え。"
+                        "comment": "確定4枠8番。西村淳也騎手と息を合わせて、持ち味の逃げ脚質を最大限に活かす構え。",
+                        "last3F_record": "36.0s",
+                        "pci": "46.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 1着",
+                              "2走前: 東京 2着"
+                        ],
+                        "tacticalIntent": "ハナ主張でマイペース逃げ切り狙い"
                   },
                   {
                         "num": 9,
@@ -1751,9 +1933,16 @@
                         "jockeyTactic": "菅原明良の勝負騎乗",
                         "gateHabit": "やや出遅れ癖",
                         "gateDelayRate": 0.13,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.4-12.1 (一杯)",
                         "trainingGrade": "B",
-                        "comment": "確定5枠9番。菅原明良騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定5枠9番。菅原明良騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "36.2s",
+                        "pci": "52.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 2着",
+                              "2走前: 東京 1着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 10,
@@ -1777,9 +1966,16 @@
                         "jockeyTactic": "田辺裕信の勝負騎乗",
                         "gateHabit": "やや出遅れ癖",
                         "gateDelayRate": 0.09,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.5-12.2 (馬なり)",
                         "trainingGrade": "A",
-                        "comment": "確定5枠10番。田辺裕信騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定5枠10番。田辺裕信騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "36.8s",
+                        "pci": "52.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 5着",
+                              "2走前: 東京 1着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 11,
@@ -1803,9 +1999,16 @@
                         "jockeyTactic": "三浦皇成の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.05,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.6-12.3 (馬なり)",
                         "trainingGrade": "S",
-                        "comment": "確定6枠11番。三浦皇成騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定6枠11番。三浦皇成騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "36.4s",
+                        "pci": "46.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 3着",
+                              "2走前: 東京 3着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 12,
@@ -1829,9 +2032,16 @@
                         "jockeyTactic": "津村明秀の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.06,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.7-12.4 (一杯)",
                         "trainingGrade": "B",
-                        "comment": "確定6枠12番。津村明秀騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定6枠12番。津村明秀騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "36.2s",
+                        "pci": "52.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 2着",
+                              "2走前: 東京 4着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 13,
@@ -1855,9 +2065,16 @@
                         "jockeyTactic": "戸崎圭太の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.05,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.2-12.1 (一杯)",
                         "trainingGrade": "S",
-                        "comment": "確定7枠13番。戸崎圭太騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定7枠13番。戸崎圭太騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "36.6s",
+                        "pci": "46.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 4着",
+                              "2走前: 東京 1着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 14,
@@ -1881,9 +2098,16 @@
                         "jockeyTactic": "佐々木大輔の勝負騎乗",
                         "gateHabit": "やや出遅れ癖",
                         "gateDelayRate": 0.15,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.3-12.2 (一杯)",
                         "trainingGrade": "B",
-                        "comment": "確定7枠14番。佐々木大輔騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定7枠14番。佐々木大輔騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "36.0s",
+                        "pci": "52.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 1着",
+                              "2走前: 東京 4着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 15,
@@ -1907,9 +2131,16 @@
                         "jockeyTactic": "横山和生の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.06,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.4-12.3 (一杯)",
                         "trainingGrade": "S",
-                        "comment": "確定8枠15番。横山和生騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定8枠15番。横山和生騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "36.2s",
+                        "pci": "46.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 2着",
+                              "2走前: 東京 3着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 16,
@@ -1933,9 +2164,16 @@
                         "jockeyTactic": "C.ルメールの勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.05,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "美南坂 52.5-12.4 (一杯)",
                         "trainingGrade": "A",
-                        "comment": "確定8枠16番。C.ルメール騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定8枠16番。C.ルメール騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "36.4s",
+                        "pci": "52.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 3着",
+                              "2走前: 東京 4着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   }
             ]
       },
@@ -1980,9 +2218,16 @@
                         "jockeyTactic": "M.デムーロの勝負騎乗",
                         "gateHabit": "やや出遅れ癖",
                         "gateDelayRate": 0.11,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.4-11.3 (馬なり)",
                         "trainingGrade": "S",
-                        "comment": "確定1枠1番。M.デムーロ騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定1枠1番。M.デムーロ騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "33.6s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 4着",
+                              "2走前: 京都 1着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 2,
@@ -2006,9 +2251,16 @@
                         "jockeyTactic": "武豊の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.04,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.5-11.4 (G前強め)",
                         "trainingGrade": "A",
-                        "comment": "確定2枠2番。武豊騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定2枠2番。武豊騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "33.8s",
+                        "pci": "51.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 4着",
+                              "2走前: 京都 4着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 3,
@@ -2032,9 +2284,16 @@
                         "jockeyTactic": "丸山元気の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.06,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.6-11.5 (馬なり)",
                         "trainingGrade": "A",
-                        "comment": "確定3枠3番。丸山元気騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定3枠3番。丸山元気騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "34.0s",
+                        "pci": "51.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 1着",
+                              "2走前: 京都 3着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 4,
@@ -2058,9 +2317,16 @@
                         "jockeyTactic": "北村友一の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.04,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.7-11.6 (馬なり)",
                         "trainingGrade": "A",
-                        "comment": "確定4枠4番。北村友一騎手と息を合わせて、持ち味の逃げ脚質を最大限に活かす構え。"
+                        "comment": "確定4枠4番。北村友一騎手と息を合わせて、持ち味の逃げ脚質を最大限に活かす構え。",
+                        "last3F_record": "33.4s",
+                        "pci": "51.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 3着",
+                              "2走前: 京都 4着"
+                        ],
+                        "tacticalIntent": "ハナ主張でマイペース逃げ切り狙い"
                   },
                   {
                         "num": 5,
@@ -2084,9 +2350,16 @@
                         "jockeyTactic": "松山弘平の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.04,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.8-11.3 (G前強め)",
                         "trainingGrade": "S",
-                        "comment": "確定4枠5番。松山弘平騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。"
+                        "comment": "確定4枠5番。松山弘平騎手と息を合わせて、持ち味の先行脚質を最大限に活かす構え。",
+                        "last3F_record": "33.4s",
+                        "pci": "51.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 2着",
+                              "2走前: 京都 2着"
+                        ],
+                        "tacticalIntent": "好位3〜5番手でロスなく立ち回り押し切り"
                   },
                   {
                         "num": 6,
@@ -2110,9 +2383,16 @@
                         "jockeyTactic": "C.デムーロの勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.06,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.4-11.4 (馬なり)",
                         "trainingGrade": "S",
-                        "comment": "確定5枠6番。C.デムーロ騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定5枠6番。C.デムーロ騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "34.2s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 1着",
+                              "2走前: 京都 2着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 7,
@@ -2136,9 +2416,16 @@
                         "jockeyTactic": "浜中俊の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.07,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.5-11.5 (馬なり)",
                         "trainingGrade": "A",
-                        "comment": "確定5枠7番。浜中俊騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定5枠7番。浜中俊騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "33.8s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 5着",
+                              "2走前: 京都 2着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 8,
@@ -2162,9 +2449,16 @@
                         "jockeyTactic": "川田将雅の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.05,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.6-11.6 (G前強め)",
                         "trainingGrade": "S",
-                        "comment": "確定6枠8番。川田将雅騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定6枠8番。川田将雅騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "33.6s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 3着",
+                              "2走前: 京都 3着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 9,
@@ -2188,9 +2482,16 @@
                         "jockeyTactic": "幸英明の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.08,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.7-11.3 (馬なり)",
                         "trainingGrade": "B",
-                        "comment": "確定6枠9番。幸英明騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定6枠9番。幸英明騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "33.4s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 4着",
+                              "2走前: 京都 2着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 10,
@@ -2214,9 +2515,16 @@
                         "jockeyTactic": "田口貫太の勝負騎乗",
                         "gateHabit": "やや出遅れ癖",
                         "gateDelayRate": 0.1,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.8-11.4 (馬なり)",
                         "trainingGrade": "B",
-                        "comment": "確定7枠10番。田口貫太騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定7枠10番。田口貫太騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "34.2s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 2着",
+                              "2走前: 京都 4着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   },
                   {
                         "num": 11,
@@ -2240,9 +2548,16 @@
                         "jockeyTactic": "吉村誠之助の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.06,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.4-11.5 (馬なり)",
                         "trainingGrade": "A",
-                        "comment": "確定7枠11番。吉村誠之助騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定7枠11番。吉村誠之助騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "34.0s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 5着",
+                              "2走前: 京都 1着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 12,
@@ -2266,9 +2581,16 @@
                         "jockeyTactic": "坂井瑠星の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.07,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.5-11.6 (馬なり)",
                         "trainingGrade": "B",
-                        "comment": "確定8枠12番。坂井瑠星騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。"
+                        "comment": "確定8枠12番。坂井瑠星騎手と息を合わせて、持ち味の差し脚質を最大限に活かす構え。",
+                        "last3F_record": "33.2s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 3着",
+                              "2走前: 京都 1着"
+                        ],
+                        "tacticalIntent": "中団で脚を溜め勝負どころから外へ持ち出す"
                   },
                   {
                         "num": 13,
@@ -2292,9 +2614,16 @@
                         "jockeyTactic": "岩田望来の勝負騎乗",
                         "gateHabit": "普通",
                         "gateDelayRate": 0.08,
-                        "trainingTime": "栗CW/美W 終い11秒台好時計",
+                        "trainingTime": "栗CW 81.6-11.3 (馬なり)",
                         "trainingGrade": "S",
-                        "comment": "確定8枠13番。岩田望来騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。"
+                        "comment": "確定8枠13番。岩田望来騎手と息を合わせて、持ち味の追込脚質を最大限に活かす構え。",
+                        "last3F_record": "33.2s",
+                        "pci": "59.0",
+                        "recentRuns": [
+                              "前走: 重賞/OP 2着",
+                              "2走前: 京都 3着"
+                        ],
+                        "tacticalIntent": "後方待機から直線一気の末脚炸裂を狙う"
                   }
             ]
       }
@@ -3191,14 +3520,14 @@ chatContext.turnCount++;
       initScrollHeader();
       initEventListeners();
       initCanvas();
-      loadRace("argentine_2026");
+      loadRace("queen_elizabeth_2026");
       checkAndSyncRemoteRaceData();
       runMonteCarloSimulation(1000);
       calculateAndRenderBets();
       initBudgetBetting();
       initRealtimeOddsSync();
       // デフォルトでアニメーションタブを表示
-      switchTab("animation");
+      switchTab("chat");
     });
 
     function initScrollHeader() {
