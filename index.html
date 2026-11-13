@@ -875,33 +875,32 @@
       <!-- ==================== TAB 6: 競馬の神 AIチャット (LINE風) ==================== -->
     <section id="tab-chat" class="tab-content space-y-4 w-full">
       <div class="glass-panel rounded-2xl border border-emerald-500/30 overflow-hidden shadow-2xl flex flex-col h-[700px] max-h-[85vh]">
-        <!-- LINE風 ヘッダーバー -->
-        <div class="bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="relative">
-              <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-emerald-500 flex items-center justify-center text-xl shadow-md border-2 border-amber-300">
+        <!-- LINE風 ヘッダーバー (スマホ幅完全対応・押し出し防止) -->
+        <div class="bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 px-3 sm:px-4 py-2.5 border-b border-slate-800 flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5 min-w-0 flex-1">
+            <div class="relative shrink-0">
+              <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-tr from-amber-500 to-emerald-500 flex items-center justify-center text-lg sm:text-xl shadow-md border-2 border-amber-300">
                 🏇
               </div>
-              <span id="geminiHeaderPulse" class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-950"></span>
+              <span id="geminiHeaderPulse" class="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500 border-2 border-slate-950"></span>
             </div>
-            <div>
+            <div class="min-w-0 flex-1">
               <div class="flex items-center gap-1.5 flex-wrap">
-                <h2 class="text-sm sm:text-base font-black text-white">タクティス (競馬専用Gemini / 専属軍師)</h2>
-                <span id="geminiModeBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30 font-mono">🧠 競馬専属アナリスト稼働</span>
+                <h2 class="text-xs sm:text-base font-black text-white truncate">タクティス</h2>
+                <span id="geminiModeBadge" class="text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30 font-mono whitespace-nowrap">🧠 アナリスト稼働</span>
               </div>
-              <p id="chatRaceContextSubtitle" class="text-[11px] text-slate-400 truncate max-w-xs sm:max-w-md">
-                対象レース: 第51回 エリザベス女王杯 G1 ｜ 全頭データ・5,000回シミュ完全学習済
+              <p id="chatRaceContextSubtitle" class="text-[10px] sm:text-[11px] text-slate-400 truncate">
+                対象: 第51回 エリザベス女王杯 G1
               </p>
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="toggleGeminiSettings()" title="Gemini API設定" class="text-xs text-amber-300 hover:text-white px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-amber-400 transition flex items-center gap-1.5 cursor-pointer shadow-sm">
-              <span>⚙️</span>
-              <span class="hidden sm:inline font-bold">Gemini API設定</span>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button onclick="toggleGeminiSettings()" title="Gemini API設定" class="text-[11px] sm:text-xs text-amber-300 hover:text-white px-2.5 py-1.5 rounded-xl bg-slate-900 border border-amber-500/40 hover:border-amber-400 transition flex items-center gap-1 cursor-pointer shadow-sm font-bold whitespace-nowrap">
+              <span>🔑</span>
+              <span>API設定</span>
             </button>
-            <button onclick="clearChatHistory()" title="会話履歴をクリア" class="text-slate-400 hover:text-white text-xs px-2.5 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition flex items-center gap-1 cursor-pointer">
+            <button onclick="clearChatHistory()" title="会話履歴をクリア" class="text-slate-400 hover:text-white text-xs px-2 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition flex items-center gap-1 cursor-pointer shrink-0">
               <span>🗑️</span>
-              <span class="hidden sm:inline">履歴クリア</span>
             </button>
           </div>
         </div>
