@@ -407,6 +407,45 @@
               </div>
             </div>
           </div>
+
+          <!-- ★ 雨天・含水率 ＆ 馬群進路（内コース集中 vs 外持ち出し）コントローラー ★ -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-800/80">
+            <!-- 馬場状態 & 含水率スライダー -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-slate-400 font-bold">🌧️ 天候・馬場 ＆ 含水率:</span>
+                <span id="moistureValDisplay" class="font-black font-mono-num text-cyan-400">良 (9.0% / 乾燥標準)</span>
+              </div>
+              <div class="grid grid-cols-4 gap-1 text-[10px]">
+                <button onclick="setTrackCondMode('良', 9.0)" id="condGoodBtn" class="cond-btn p-1 rounded-lg border border-emerald-400 bg-emerald-500/20 text-emerald-300 font-black text-center transition">☀️ 良</button>
+                <button onclick="setTrackCondMode('稍重', 13.5)" id="condYayaBtn" class="cond-btn p-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition">☁️ 稍重</button>
+                <button onclick="setTrackCondMode('重', 16.5)" id="condOmoBtn" class="cond-btn p-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition">🌧️ 重</button>
+                <button onclick="setTrackCondMode('不良', 19.5)" id="condFuryoBtn" class="cond-btn p-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition">⛈️ 不良</button>
+              </div>
+              <input type="range" id="moistureInput" min="6.0" max="22.0" step="0.5" value="9.0" oninput="onMoistureChange(this.value)" class="w-full accent-cyan-400 bg-slate-800 rounded-lg h-1.5 cursor-pointer">
+              <div class="flex justify-between text-[9px] text-slate-500 font-mono-num">
+                <span>6% (高速)</span>
+                <span>13%+ (道悪突入)</span>
+                <span>18%+ (極悪タフ)</span>
+              </div>
+            </div>
+
+            <!-- 雨天時・馬群全体の進路取り -->
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="text-slate-400 font-bold">🐎 馬群のコース取り (内 vs 外):</span>
+                <span id="packPathDisplay" class="font-bold font-mono text-cyan-300 text-[10px]">標準 (枠なり)</span>
+              </div>
+              <div class="grid grid-cols-3 gap-1 text-[10px]">
+                <button onclick="setPackPath('pack_inside')" id="packInsideBtn" class="pack-btn p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition">🌿 内ラチ集中</button>
+                <button onclick="setPackPath('normal')" id="packNormalBtn" class="pack-btn p-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition">⚖️ 枠順なり</button>
+                <button onclick="setPackPath('pack_outside')" id="packOutsideBtn" class="pack-btn p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition">🌊 馬群外回し</button>
+              </div>
+              <p class="text-[9px] text-slate-400 leading-tight">
+                雨で内が荒れて全馬が外へ持ち出す「馬群外回し」か、水はけ良く「内ラチ集中」かを加味して演算します。
+              </p>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -949,6 +988,7 @@
             <span class="text-[10px] text-amber-400 font-black shrink-0 flex items-center gap-1">
               <span>💡</span> おすすめ質問:
             </span>
+            <button onclick="sendQuickPrompt('雨が降って含水率15%、クッション値8.5で馬群が外を走るならどの馬が有利？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 hover:text-white transition whitespace-nowrap active:scale-95 font-black">🌧️ 雨・含水率と馬群進路</button>
             <button onclick="sendQuickPrompt('スローペースやったら展開はどうなる？')" class="quick-chat-pill shrink-0 px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition whitespace-nowrap active:scale-95">
               🐢 スローペースなら？
             </button>
@@ -2689,6 +2729,9 @@
       currentRaceKey: "queen_elizabeth_2026",
       selectedTrials: 1000,
       activeTab: "chat",
+      activeTrackCond: "良",
+      activeMoisture: 9.0,
+      activePackPath: "normal",
       headerCollapsed: false,
       monteResults: null,
       simResults: null,
@@ -2923,6 +2966,82 @@
       showToast(`❌ 接続失敗 (${lastStatus || '通信エラー'}): ${lastMsg || 'キーまたはネットワークを確認してください'}`);
     };
 
+    
+    // --- 雨天・馬場状態・含水率 ＆ 馬群コース取り制御 ---
+    window.setTrackCondMode = function(cond, defaultMoisture) {
+      state.activeTrackCond = cond;
+      state.activeMoisture = defaultMoisture;
+      const mSlider = document.getElementById('moistureInput');
+      if (mSlider) mSlider.value = defaultMoisture;
+
+      const btnMap = { '良': 'condGoodBtn', '稍重': 'condYayaBtn', '重': 'condOmoBtn', '不良': 'condFuryoBtn' };
+      document.querySelectorAll('.cond-btn').forEach(b => {
+        b.className = "cond-btn p-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition";
+      });
+      const activeBtn = document.getElementById(btnMap[cond]);
+      if (activeBtn) {
+        activeBtn.className = "cond-btn p-1 rounded-lg border border-emerald-400 bg-emerald-500/20 text-emerald-300 font-black text-center transition";
+      }
+
+      // 良→重・不良の時はデフォルトの馬群進路ヒントも通知
+      updateMoistureDisplayLabel();
+      showToast(`🌧️ 馬場状態を「${cond}（含水率 ${defaultMoisture}%）」に設定しました`);
+      runMonteCarloSimulation(state.selectedTrials || 1000);
+    };
+
+    window.onMoistureChange = function(val) {
+      const m = parseFloat(val) || 9.0;
+      state.activeMoisture = m;
+      if (m >= 18.0) state.activeTrackCond = '不良';
+      else if (m >= 15.0) state.activeTrackCond = '重';
+      else if (m >= 12.0) state.activeTrackCond = '稍重';
+      else state.activeTrackCond = '良';
+
+      const btnMap = { '良': 'condGoodBtn', '稍重': 'condYayaBtn', '重': 'condOmoBtn', '不良': 'condFuryoBtn' };
+      document.querySelectorAll('.cond-btn').forEach(b => {
+        b.className = "cond-btn p-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition";
+      });
+      const activeBtn = document.getElementById(btnMap[state.activeTrackCond]);
+      if (activeBtn) {
+        activeBtn.className = "cond-btn p-1 rounded-lg border border-emerald-400 bg-emerald-500/20 text-emerald-300 font-black text-center transition";
+      }
+
+      updateMoistureDisplayLabel();
+      runMonteCarloSimulation(state.selectedTrials || 1000);
+    };
+
+    function updateMoistureDisplayLabel() {
+      const m = state.activeMoisture || 9.0;
+      const cond = state.activeTrackCond || '良';
+      const el = document.getElementById('moistureValDisplay');
+      if (el) {
+        const desc = m >= 16.0 ? '極悪タフ道悪' : m >= 13.0 ? '道悪・パワー要' : '乾燥標準';
+        el.textContent = `${cond} (${m.toFixed(1)}% / ${desc})`;
+      }
+    }
+
+    window.setPackPath = function(pathMode) {
+      state.activePackPath = pathMode;
+      const labels = {
+        pack_inside: "内ラチ集中 (イン突き有利)",
+        normal: "標準 (枠なり)",
+        pack_outside: "馬群外回し (外グリーンベルト)"
+      };
+      const btnIds = { pack_inside: "packInsideBtn", normal: "packNormalBtn", pack_outside: "packOutsideBtn" };
+      const disp = document.getElementById('packPathDisplay');
+      if (disp) disp.textContent = labels[pathMode] || "標準";
+
+      document.querySelectorAll('.pack-btn').forEach(b => {
+        b.className = "pack-btn p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition";
+      });
+      const ab = document.getElementById(btnIds[pathMode]);
+      if (ab) {
+        ab.className = "pack-btn p-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition";
+      }
+      showToast(`🐎 馬群進路を「${labels[pathMode]}」にセットしました`);
+      runMonteCarloSimulation(state.selectedTrials || 1000);
+    };
+
     function initAiChat() {
       const container = document.getElementById('chatMessagesContainer');
       if (!container) return;
@@ -3115,6 +3234,8 @@
 【現在のレース環境】
 JRA公式レース結果: ${race && race.officialResult ? `【確定着順】1着: ${race.officialResult.r1.num}番 ${race.officialResult.r1.name} (${race.officialResult.r1.jockey}, ${race.officialResult.r1.pop}人気)、2着: ${race.officialResult.r2.num}番 ${race.officialResult.r2.name} (${race.officialResult.r2.jockey}, ${race.officialResult.r2.pop}人気)、3着: ${race.officialResult.r3.num}番 ${race.officialResult.r3.name} (${race.officialResult.r3.jockey}, ${race.officialResult.r3.pop}人気) ｜ 3連単払戻: ${race.officialResult.trifecta} (${race.officialResult.comment})` : '未確定・発走前'}
 レース名: ${race ? race.name : "重賞"} (${race ? race.courseName : ""} ${race ? race.trackType : ""}${race ? race.distance : ""}m・${race ? race.slope : ""})
+馬場状態・含水率: ${state.activeTrackCond || (race ? race.trackCondition : "良")} (含水率 ${state.activeMoisture || 9.0}%)
+雨天時・馬群のコース取り: ${state.activePackPath === 'pack_outside' ? '馬群全体が荒れたインを避けて外を走る（外持ち出し戦術）' : state.activePackPath === 'pack_inside' ? '水はけ良く馬群が内ラチ沿いに集中（イン突き経済コース）' : '標準（枠順なり）'}
 JRA公式クッション値: ${cVal} (${cVal >= 10.0 ? '硬め・高速' : cVal <= 8.5 ? '軟らかめ・タフ' : '標準'})
 トラックバイアス: ${tBias} (${tBias === 'inside' ? 'イン前有利' : tBias === 'outside' ? '外差し天国' : 'フラット'})
 展開起爆点: ${race ? race.tacticalPoint : ""}
@@ -3142,7 +3263,12 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
 2. スローやハイペースの質問には、具体的なタイム感、ペースを握る馬名、直線の坂での脚色、そして具体的な券種アドバイスを提示してください。
 3. 「この馬が勝つなら紐は？」という質問には、その馬の脚質と展開を想定し、連対しやすい対抗馬・単穴・高配当を連れてくる穴馬（爆弾紐）を理由とともに挙げてください。
 4. 2頭の比較（AとBどっちがいい？）などにも、コース適性や枠順バイアス、調教の動きを比較して明確な見解を示してください。
-5. 【レース後の振り返り・回顧トークへの対応】
+5. 【含水率・クッション値・雨天時の馬群進路（内/外）への専門的回答】
+   ユーザーが具体的な「含水率（例：15%）」や「クッション値（例：8.4）」、「雨ならどうなる？」「馬群が外を走るか内を走るか」を質問してきたら、必ずその数値を踏まえて以下を具体的に答えてください：
+   ・その含水率とクッション値の組み合わせが「高速決着」なのか「パワーとスタミナを要する道悪消耗戦」なのかを判定する。
+   ・今回の出走馬の中から、重馬場・タフな馬場に強い血統/スタミナ型と、逆に切れ味が削がれて割引になる馬を名指しする。
+   ・雨で内が荒れて馬群全体が外を回る（外持ち出し）場合はどの馬・騎手が綺麗に外へ出せるか（逆に内ラチ沿いに閉じ込められる馬は誰か）、内が生きている場合は誰がインを突くかを具体的に考察する。
+6. 【レース後の振り返り・回顧トークへの対応】
    ユーザーが「結果見た？」「◯番勝ったね！」「これ予想できてた？」「買えた？」「当たった！」「外れた…」と話しかけてきた時は、競馬仲間として一緒に熱く盛り上がってください！
    ・シミュレーションでその着順（または勝ち馬）がどれくらい出現していたかを振り返る。
    ・推奨したCard 1やCard 2のフォーメーションで的中できていたか（買えてたか）を一緒に検証する。
@@ -3455,16 +3581,47 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
           `今のシミュレーション（バイアス：${biasLabel}・風：${windMode === 'headwind' ? '向かい風' : windMode === 'tailwind' ? '追い風' : '微風'}）では、${race.tacticalAdvantage}`;
       }
 
-      // 9. トラックバイアス（内有利・外有利・クッション値・風）
-      if (ql.includes("内") || ql.includes("外") || ql.includes("バイアス") || ql.includes("クッション") || ql.includes("風") || ql.includes("枠")) {
-        const innerHorses = race.horses.filter(h => h.waku <= 3).slice(0, 3);
-        const outerHorses = race.horses.filter(h => h.waku >= 6).slice(0, 3);
-        return `【${race.name}】の枠順・馬場物理の考察だね！🌿\n\n` +
-          `・現在の設定：クッション値 **${cVal.toFixed(1)}** ／ バイアス **【${biasLabel}】** ／ 直線風 **【${windMode === 'headwind' ? '向かい風' : windMode === 'tailwind' ? '追い風' : '無風'}】**\n` +
-          `・**内枠が有利（外がダメ）な場合**: ロスなく内ラチ沿いを立ち回れる **${innerHorses.map(h => `${h.num}番 ${h.name}`).join('、')}** が浮上。\n` +
-          `・**外枠が有利（内が荒れている）な場合**: スムーズに外へ持ち出せる **${outerHorses.map(h => `${h.num}番 ${h.name}`).join('、')}** の差しが有利になるよ！\n` +
-          `当日の前レースを見てバイアスが変わっていたら、「⚡ シミュレーション」タブのボタンを切り替えて再計算してみてね！`;
+            // 9. 雨・含水率・クッション値（数値抽出対応）・馬群が内か外かの考察
+      const moistMatch = q.match(/含水率[：:\s]*(\d+(?:\.\d+)?)/) || q.match(/(\d+(?:\.\d+)?)\s*%/);
+      const cushMatch = q.match(/クッション値?[：:\s]*(\d+(?:\.\d+)?)/);
+
+      if (moistMatch || cushMatch || ql.includes("雨") || ql.includes("含水率") || ql.includes("道悪") || ql.includes("重馬場") || ql.includes("稍重") || ql.includes("不良") || ql.includes("馬群") || ql.includes("内") || ql.includes("外") || ql.includes("バイアス") || ql.includes("クッション") || ql.includes("風") || ql.includes("枠")) {
+        const effMoist = moistMatch ? parseFloat(moistMatch[1]) : (state.activeMoisture || 9.0);
+        const effCush = cushMatch ? parseFloat(cushMatch[1]) : cVal;
+        const isWet = effMoist >= 12.5 || ql.includes("雨") || ql.includes("道悪") || ql.includes("重馬場") || ql.includes("稍重") || ql.includes("不良");
+
+        // 重馬場・タフ適性候補の抽出
+        const heavySpecialists = race.horses.filter(h =>
+          h.stamina >= 92 || (h.pedigreeFit && /キタサン|欧州|サトノクラウン|ハービンジャー|ドゥラメンテ|キズナ|ゴールドシップ|ステイゴールド|ヘニー/.test(h.pedigreeFit))
+        ).slice(0, 3);
+        const outsidePackFavs = race.horses.filter(h => h.waku >= 4 && h.waku <= 7 && (h.style === 'sashi' || h.jockeyRank === 'S+' || h.jockeyRank === 'S')).slice(0, 3);
+        const insidePackFavs = race.horses.filter(h => h.waku <= 3).slice(0, 3);
+
+        let reply = `【${race.name}】の馬場数値（含水率 **${effMoist.toFixed(1)}%** ／ クッション値 **${effCush.toFixed(1)}**）と馬群コース取りの考察だね！🌧️\n\n`;
+
+        if (isWet || effCush <= 8.8) {
+          reply += `📊 **馬場状態の診断**:\n` +
+            `含水率 ${effMoist.toFixed(1)}%・クッション値 ${effCush.toFixed(1)} は、**脚抜きが悪くパワーとスタミナが問われるタフな馬場**（道悪傾向）。軽快なキレ味勝負より底力と血統適性が物を言う条件だよ！\n` +
+            `・**道悪・タフ馬場で浮上する馬**: ${heavySpecialists.map(h => `**${h.num}番 ${h.name}**（${h.jockey} / ${h.pedigreeFit}）`).join('、')}\n\n`;
+        } else if (effCush >= 10.2) {
+          reply += `📊 **馬場状態の診断**:\n` +
+            `含水率 ${effMoist.toFixed(1)}%・クッション値 ${effCush.toFixed(1)} は、**反発力が強い硬めの高速馬場**。時計勝負・上がり33秒台の瞬発力とスピード持続力が直結する条件だよ！\n\n`;
+        } else {
+          reply += `📊 **馬場状態の診断**:\n` +
+            `含水率 ${effMoist.toFixed(1)}%・クッション値 ${effCush.toFixed(1)} は**標準的でバランスの取れたコンディション**。極端な偏りがなければ能力通りに決まりやすいよ。\n\n`;
+        }
+
+        reply += `🐎 **雨天時・馬群が「外を走る」か「内を走る」かの分岐**:\n` +
+          `1. **内が荒れて馬群全体が「外」へ持ち出す場合**:\n` +
+          `　└ 1〜2枠の逃げ先行は荒れたインで脚を取られやすい。逆に中〜外枠から綺麗な芝（グリーンベルト）へ持ち出せる **${outsidePackFavs.map(h => `${h.num}番 ${h.name}（${h.jockey}）`).join('、')}** が一気に有利になる！\n` +
+          `2. **水はけが良く馬群が「内ラチ沿い」に殺到する場合**:\n` +
+          `　└ 外を回すと水分を含んだ重い馬場で距離ロスが致命的。最短距離のインを突ける **${insidePackFavs.map(h => `${h.num}番 ${h.name}`).join('、')}** が粘り込みやすいよ！\n\n` +
+          `💡 **操作ヒント**: 「⚡ シミュレーション」タブの【🌧️ 含水率＆馬群コース取り】ボタンを切り替えると、今話した条件をそのまま5,000回シミュレーションに反映できるよ！`;
+
+        return reply;
       }
+
+      // dummy block avoided
 
       // 10. 消し馬・過剰人気
       if (ql.includes("消し") || ql.includes("切る") || ql.includes("危ない") || ql.includes("過剰")) {
@@ -4076,6 +4233,46 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
               else cushionBonus -= 0.16;
             }
 
+            // ⑤ 雨天・含水率 ＆ 馬群コース取り（内集中 vs 外持ち出し）物理演算
+            const moisture = state.activeMoisture || 9.0;
+            const packPath = state.activePackPath || 'normal';
+            let rainMoistureBonus = 0.0;
+            let packCourseAdj = 0.0;
+
+            if (moisture >= 12.5) {
+              // 稍重〜不良（高含水率）：パワー血統＆スタミナ型に大きなプラス、軽量切れ味特化型は鈍る
+              const hasHeavyBlood = (h.pedigreeFit && /キタサン|欧州|サトノクラウン|ハービンジャー|ドゥラメンテ|キズナ|ゴールドシップ|ステイゴールド|パイロ|ヘニー/.test(h.pedigreeFit));
+              const powerScore = (h.stamina || 90) - (h.spurt || 90);
+              const rainFactor = Math.min(1.5, (moisture - 11.5) / 5.0); // 13.5%->0.4, 16.5%->1.0, 19.5%->1.5
+              if (hasHeavyBlood || h.stamina >= 92) {
+                rainMoistureBonus += 0.26 * rainFactor;
+              } else if (powerScore <= -2) {
+                rainMoistureBonus -= 0.18 * rainFactor;
+              }
+            }
+
+            if (packPath === 'pack_outside') {
+              // 雨等で内が荒れ、馬群全体が外（4〜5頭分外）へ持ち出す場合：
+              // 内枠で包まれず外へ出せる差し・腕利き騎手は綺麗な芝を走れる (+0.28s)
+              // 1〜2枠の逃げ先行で荒れたインを通らざるを得ない馬は消耗 (-0.28s)
+              // 8枠の大外は馬群が外にいるぶん更に外々を回され若干ロス (-0.08s)
+              const isMaster = (h.jockeyRank === 'S+' || h.jockeyRank === 'S' || h.jockeyRank === 'A+');
+              if (waku <= 2 && (h.style === 'nige' || h.style === 'senko')) {
+                packCourseAdj -= 0.28;
+              } else if ((waku >= 4 && waku <= 7) && (h.style === 'sashi' || isMaster)) {
+                packCourseAdj += 0.28;
+              } else if (waku === 8) {
+                packCourseAdj += 0.10; // 綺麗な馬場だが遠心力ロスで差し引き+0.10s
+              }
+            } else if (packPath === 'pack_inside') {
+              // 水はけ良く馬群が内ラチ沿いに殺到する場合：内枠(1〜4枠)経済コース優位 (+0.26s)、外回しはロス (-0.24s)
+              if (waku <= 4 && (h.style === 'nige' || h.style === 'senko' || h.style === 'sashi')) {
+                packCourseAdj += 0.26;
+              } else if (waku >= 7) {
+                packCourseAdj -= 0.24;
+              }
+            }
+
             // ② トラックバイアス演算 ＆ 前日騎手コメント連動「外持ち出し戦術」シミュレーション
             let biasAdj = 0.0;
             let outsideManeuverBonus = 0.0;
@@ -4153,7 +4350,7 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
             }
 
             // 走破秒数算出
-            const totalBonus = abilityDiff + tAdj + cAdj + paceAdj + pedigreeBonus + formBonus + jockeySkillBonus + railBonus + cushionBonus + (outsideManeuverBonus || 0.0) + windAdj + readinessBonus;
+            const totalBonus = abilityDiff + tAdj + cAdj + paceAdj + pedigreeBonus + formBonus + jockeySkillBonus + railBonus + cushionBonus + (outsideManeuverBonus || 0.0) + windAdj + readinessBonus + rainMoistureBonus + packCourseAdj;
             const raceTime = baseTime - totalBonus + slopePenalty + delay + traffic + greatRun + noise + wideLoss + targetPressure + temperamentPenalty;
 
             const spurtBase = (600.0 / (16.2 + (h.spurt - 90) * 0.02 + paceAdj * 0.3));
