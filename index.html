@@ -374,10 +374,38 @@
         </div>
 
         <!-- ★ JRA公式クッション値 ＆ トラックバイアス演算コントローラー (ユーザー要望) ★ -->
-        <div class="bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 p-3 rounded-xl border border-amber-500/30 space-y-2 text-xs">
-          <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 p-3 rounded-xl border border-amber-500/30 space-y-2.5 text-xs">
+          <!-- ☀️ 晴れ・良馬場 vs 🌧️ 雨・道悪 ワンタップ切り替えタブ -->
+          <div class="grid grid-cols-2 gap-2 p-1 bg-slate-950 rounded-xl border border-slate-800">
+            <button onclick="setWeatherTabMode('sunny')" id="weatherTabSunny" class="py-2 px-3 rounded-lg font-black text-xs flex items-center justify-center gap-1.5 transition bg-gradient-to-r from-amber-500/25 to-emerald-500/20 text-amber-300 border border-amber-400/60 shadow-sm cursor-pointer">
+              <span>☀️</span>
+              <span>晴れ・良馬場モード</span>
+            </button>
+            <button onclick="setWeatherTabMode('rainy')" id="weatherTabRainy" class="py-2 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition bg-slate-900 text-slate-400 hover:text-white border border-slate-800 cursor-pointer">
+              <span>🌧️</span>
+              <span>雨・道悪モード (含水率・外回し)</span>
+            </button>
+          </div>
+
+          <!-- 🌤️ パッと分かる 天候別・狙い目サマリーパネル (晴れ/雨で自動切替) -->
+          <div id="weatherSummaryPanel" class="p-2.5 rounded-xl bg-slate-950/90 border border-emerald-500/30 space-y-1.5">
+            <div class="flex items-center justify-between flex-wrap gap-1">
+              <span id="weatherSummaryTitle" class="text-[11px] font-black text-amber-300 flex items-center gap-1">
+                <span>☀️</span> 晴れ・良馬場 パッと見ポイント
+              </span>
+              <span id="weatherSummaryBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold font-mono">良 (含水率 9.0%)</span>
+            </div>
+            <p id="weatherSummaryBody" class="text-[11px] text-slate-200 leading-relaxed">
+              良馬場・標準反発力のため、持ちタイムと純粋なスピード・瞬発力（上がり3F）が素直に発揮されやすいコンディションです。
+            </p>
+            <div id="weatherSummaryHorses" class="flex flex-wrap gap-1.5 pt-0.5 text-[10px]">
+              <!-- 動的に注目馬を表示 -->
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/60">
             <span class="font-black text-amber-300 flex items-center gap-1.5">
-              <span>📊</span> JRA公式 クッション値 ＆ トラックバイアス演算
+              <span>📊</span> 詳細パラメータ微調整 (クッション値・バイアス・含水率・馬群進路)
             </span>
             <span id="cushionDescBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold font-mono">標準硬さ (9.4) ｜ イン前やや有利</span>
           </div>
@@ -2968,6 +2996,138 @@
 
     
     // --- 雨天・馬場状態・含水率 ＆ 馬群コース取り制御 ---
+    
+    // --- ☀️ 晴れ / 🌧️ 雨 タブ切り替え ＆ パッと見サマリー更新 ---
+    window.setWeatherTabMode = function(mode) {
+      state.activeWeatherTab = mode;
+      const btnSunny = document.getElementById('weatherTabSunny');
+      const btnRainy = document.getElementById('weatherTabRainy');
+
+      if (mode === 'rainy') {
+        if (btnRainy) btnRainy.className = "py-2 px-3 rounded-lg font-black text-xs flex items-center justify-center gap-1.5 transition bg-gradient-to-r from-cyan-500/25 to-blue-500/25 text-cyan-300 border border-cyan-400/70 shadow-sm cursor-pointer";
+        if (btnSunny) btnSunny.className = "py-2 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition bg-slate-900 text-slate-400 hover:text-white border border-slate-800 cursor-pointer";
+
+        // 雨モード時はデフォルトで「重 (16.5%)」＆「馬群外回し」へ即時セット（手動微調整もそのまま可能）
+        state.activeTrackCond = '重';
+        state.activeMoisture = 16.5;
+        state.activePackPath = 'pack_outside';
+        const mSlider = document.getElementById('moistureInput');
+        if (mSlider) mSlider.value = 16.5;
+
+        // ボタン表示同期
+        document.querySelectorAll('.cond-btn').forEach(b => {
+          b.className = "cond-btn p-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition";
+        });
+        const omoBtn = document.getElementById('condOmoBtn');
+        if (omoBtn) omoBtn.className = "cond-btn p-1 rounded-lg border border-emerald-400 bg-emerald-500/20 text-emerald-300 font-black text-center transition";
+
+        document.querySelectorAll('.pack-btn').forEach(b => {
+          b.className = "pack-btn p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition";
+        });
+        const packOutBtn = document.getElementById('packOutsideBtn');
+        if (packOutBtn) packOutBtn.className = "pack-btn p-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition";
+        const packDisp = document.getElementById('packPathDisplay');
+        if (packDisp) packDisp.textContent = "馬群外回し (外グリーンベルト)";
+
+        showToast("🌧️ 雨・道悪モード（重馬場 16.5%・馬群外回し）に切り替えました");
+      } else {
+        if (btnSunny) btnSunny.className = "py-2 px-3 rounded-lg font-black text-xs flex items-center justify-center gap-1.5 transition bg-gradient-to-r from-amber-500/25 to-emerald-500/20 text-amber-300 border border-amber-400/60 shadow-sm cursor-pointer";
+        if (btnRainy) btnRainy.className = "py-2 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition bg-slate-900 text-slate-400 hover:text-white border border-slate-800 cursor-pointer";
+
+        // 晴れモード時は「良 (9.0%)」＆「枠順なり」へ戻す
+        state.activeTrackCond = '良';
+        state.activeMoisture = 9.0;
+        state.activePackPath = 'normal';
+        const mSlider = document.getElementById('moistureInput');
+        if (mSlider) mSlider.value = 9.0;
+
+        document.querySelectorAll('.cond-btn').forEach(b => {
+          b.className = "cond-btn p-1 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition";
+        });
+        const goodBtn = document.getElementById('condGoodBtn');
+        if (goodBtn) goodBtn.className = "cond-btn p-1 rounded-lg border border-emerald-400 bg-emerald-500/20 text-emerald-300 font-black text-center transition";
+
+        document.querySelectorAll('.pack-btn').forEach(b => {
+          b.className = "pack-btn p-1.5 rounded-lg border border-slate-800 bg-slate-900 text-slate-400 hover:text-white text-center transition";
+        });
+        const packNormBtn = document.getElementById('packNormalBtn');
+        if (packNormBtn) packNormBtn.className = "pack-btn p-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition";
+        const packDisp = document.getElementById('packPathDisplay');
+        if (packDisp) packDisp.textContent = "標準 (枠なり)";
+
+        showToast("☀️ 晴れ・良馬場モード（良 9.0%・枠順なり）に切り替えました");
+      }
+
+      updateMoistureDisplayLabel();
+      updateWeatherSummaryPanel();
+      runMonteCarloSimulation(state.selectedTrials || 1000);
+    };
+
+    function updateWeatherSummaryPanel() {
+      const race = RACE_DATABASE[state.currentRaceKey];
+      if (!race) return;
+
+      const panel = document.getElementById('weatherSummaryPanel');
+      const titleEl = document.getElementById('weatherSummaryTitle');
+      const badgeEl = document.getElementById('weatherSummaryBadge');
+      const bodyEl = document.getElementById('weatherSummaryBody');
+      const horsesEl = document.getElementById('weatherSummaryHorses');
+      if (!panel || !titleEl || !badgeEl || !bodyEl || !horsesEl) return;
+
+      const moist = state.activeMoisture || 9.0;
+      const cond = state.activeTrackCond || '良';
+      const packPath = state.activePackPath || 'normal';
+      const isRainy = (state.activeWeatherTab === 'rainy') || moist >= 12.5 || cond !== '良';
+
+      if (isRainy) {
+        panel.className = "p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/40 space-y-1.5";
+        titleEl.className = "text-[11px] font-black text-cyan-300 flex items-center gap-1";
+        titleEl.innerHTML = '<span>🌧️</span> 雨・道悪時のパッと見攻略ポイント';
+        badgeEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-bold font-mono";
+        const pathLabel = packPath === 'pack_outside' ? '馬群外回し' : packPath === 'pack_inside' ? '内ラチ集中' : '枠なり';
+        badgeEl.textContent = `${cond} (${moist.toFixed(1)}% / ${pathLabel})`;
+
+        const heavyHorses = race.horses.filter(h =>
+          h.stamina >= 92 || (h.pedigreeFit && /キタサン|欧州|サトノクラウン|ハービンジャー|ドゥラメンテ|キズナ|ゴールドシップ|ステイゴールド|ヘニー|パイロ/.test(h.pedigreeFit))
+        ).slice(0, 3);
+        const outsideHorses = race.horses.filter(h => h.waku >= 4 && h.waku <= 7 && (h.style === 'sashi' || h.jockeyRank === 'S+' || h.jockeyRank === 'S')).slice(0, 2);
+
+        bodyEl.innerHTML = packPath === 'pack_outside'
+          ? `<strong>荒れた内を避けて馬群全体が外へ持ち出す展開！</strong> 軽快なキレ味型より<strong class="text-cyan-300">パワー血統・スタミナ型</strong>と、<strong class="text-amber-300">中〜外枠からスムーズに外グリーンベルトへ出せる騎手</strong>が大幅プラスです（1〜2枠の逃げ先行は消耗注意）。`
+          : packPath === 'pack_inside'
+          ? `<strong>水はけ良くインが生きる道悪戦！</strong> 重い馬場で外を回すと距離ロスが致命的になるため、<strong class="text-cyan-300">内枠から最短距離を突けるパワー型</strong>が粘り込みやすい条件です。`
+          : `<strong>水分を含んだタフな馬場！</strong> 持ち時計よりパワー・スタミナが問われます。重馬場巧者を中心に組み立てるのがセオリーです。`;
+
+        horsesEl.innerHTML = `
+          <span class="px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-500/40 text-cyan-200 font-bold">
+            💪 道悪・パワー浮上: ${heavyHorses.map(h => `${h.num}番${h.name}`).join('・')}
+          </span>
+          <span class="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-amber-200 font-bold">
+            🌊 外持ち出し注目: ${outsideHorses.map(h => `${h.num}番${h.name}`).join('・')}
+          </span>
+        `;
+      } else {
+        panel.className = "p-2.5 rounded-xl bg-slate-950/90 border border-emerald-500/30 space-y-1.5";
+        titleEl.className = "text-[11px] font-black text-amber-300 flex items-center gap-1";
+        titleEl.innerHTML = '<span>☀️</span> 晴れ・良馬場 パッと見ポイント';
+        badgeEl.className = "text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold font-mono";
+        badgeEl.textContent = `${cond} (含水率 ${moist.toFixed(1)}%)`;
+
+        const speedHorses = [...race.horses].sort((a, b) => ((b.speed || 90) + (b.spurt || 90)) - ((a.speed || 90) + (a.spurt || 90))).slice(0, 3);
+        const sTrainHorses = race.horses.filter(h => h.trainingGrade === 'S' || h.trainingGrade === 'A').slice(0, 2);
+
+        bodyEl.innerHTML = `良馬場・標準コンディションのため、<strong class="text-emerald-300">持ちタイムと純粋なスピード・瞬発力（上がり3F）</strong>が素直に結果に直結します。能力指数上位と追い切り高評価馬を素直に信頼できる馬場です。`;
+        horsesEl.innerHTML = `
+          <span class="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 font-bold">
+            ⚡ 能力・瞬発上位: ${speedHorses.map(h => `${h.num}番${h.name}`).join('・')}
+          </span>
+          <span class="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-500/40 text-amber-200 font-bold">
+            ⏱️ 調教好調: ${sTrainHorses.map(h => `${h.num}番${h.name}`).join('・')}
+          </span>
+        `;
+      }
+    }
+
     window.setTrackCondMode = function(cond, defaultMoisture) {
       state.activeTrackCond = cond;
       state.activeMoisture = defaultMoisture;
@@ -2985,6 +3145,7 @@
 
       // 良→重・不良の時はデフォルトの馬群進路ヒントも通知
       updateMoistureDisplayLabel();
+      if (typeof updateWeatherSummaryPanel === "function") updateWeatherSummaryPanel();
       showToast(`🌧️ 馬場状態を「${cond}（含水率 ${defaultMoisture}%）」に設定しました`);
       runMonteCarloSimulation(state.selectedTrials || 1000);
     };
@@ -3007,6 +3168,7 @@
       }
 
       updateMoistureDisplayLabel();
+      if (typeof updateWeatherSummaryPanel === "function") updateWeatherSummaryPanel();
       runMonteCarloSimulation(state.selectedTrials || 1000);
     };
 
@@ -3038,6 +3200,7 @@
       if (ab) {
         ab.className = "pack-btn p-1.5 rounded-lg border border-amber-400 bg-amber-500/20 text-amber-300 font-black text-center transition";
       }
+      if (typeof updateWeatherSummaryPanel === "function") updateWeatherSummaryPanel();
       showToast(`🐎 馬群進路を「${labels[pathMode]}」にセットしました`);
       runMonteCarloSimulation(state.selectedTrials || 1000);
     };
@@ -3415,7 +3578,7 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
       const overbetHorse = getTrulyOverbetHorse(race, monte);
       const cVal = state.activeCushionValue || (race.cushionValue || 9.5);
       const tBias = state.activeTrackBias || (race.trackBias || "flat");
-      const windMode = state.activeWindMode || "headwind";
+      const windMode = state.activeWindMode || "calm";
       const biasLabel = tBias === 'inside' ? 'イン前有利' : tBias === 'outside' ? '外差し有利' : 'フラット';
       const styleNames = { nige: "逃げ", senko: "先行", sashi: "差し", oikomi: "追込" };
 
@@ -3923,6 +4086,7 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
       const elGodPedi = document.getElementById('godPedigreeInsightDetail');
       if (elGodPedi) elGodPedi.textContent = tacPedi;
 
+      if (typeof updateWeatherSummaryPanel === "function") updateWeatherSummaryPanel();
       renderRacecard(race);
       resetAnimation();
     }
@@ -4139,7 +4303,7 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
           }
 
           const trialHorses = race.horses.map(h => {
-            const abilityDiff = ((h.speed - 90) * 0.06) + ((h.spurt - 90) * 0.03);
+            const abilityDiff = ((h.speed - 90) * 0.08) + ((h.spurt - 90) * 0.05);
             const tAdj = trainPts[h.trainingGrade] || 0.05;
             const cAdj = (h.commentScore || 0) * 0.08;
 
@@ -4286,14 +4450,14 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
               
               if (canManeuverOutside && Math.random() < 0.85) {
                 // 85%の確率で外のグリーンベルトへ綺麗に持ち出し成功 (+0.28s)
-                outsideManeuverBonus = 0.28;
+                outsideManeuverBonus = 0.16;
               }
 
               if (waku >= 6) {
-                biasAdj += 0.32; // 外枠スムーズ加速利
+                biasAdj += 0.16; // 外枠スムーズ加速利
               } else if (waku <= 2 && !canManeuverOutside) {
                 // 内枠で包まれて荒れたインに閉じ込められた場合の失速ペナルティ (-0.28s)
-                biasAdj -= 0.28;
+                biasAdj -= 0.18;
               }
             } else if (tBias === 'inside') {
               // 前日騎手コメント「外がダメ・外回し大損」連動:
@@ -4304,14 +4468,14 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
 
               if (canHugRail && Math.random() < 0.85) {
                 // 最短距離をロスなく立ち回るインピタボーナス (+0.28s)
-                outsideManeuverBonus = 0.28;
+                outsideManeuverBonus = 0.16;
               }
 
               if (waku <= 3) {
-                biasAdj += 0.30; // 内ラチ沿い経済コース利
+                biasAdj += 0.18; // 内ラチ沿い経済コース利
               } else if (waku >= 7) {
                 // 外枠で外を回らされた場合の距離ロス＆遠心力ペナルティ (-0.30s)
-                biasAdj -= 0.30;
+                biasAdj -= 0.18;
               }
             } else {
               // フラット
@@ -4324,7 +4488,7 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
 
             // ② 人気先行馬のマーク集中・ハイペース消耗ペナルティ
             const isTargetedFav = (parseFloat(h.odds) <= 3.5 && (h.style === 'senko' || h.style === 'nige'));
-            const targetPressure = (isTargetedFav && (pace === 'high' || Math.random() < 0.25)) ? 0.30 : 0.0;
+            const targetPressure = (isTargetedFav && pace === 'high') ? 0.14 : 0.0;
 
             // ③ 気性難・出遅れ・折り合い不発リスク（馬ごとの出遅れ率 gateDelayRate に連動）
             const delayProb = h.gateDelayRate || 0.05;
@@ -4333,10 +4497,10 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
 
             // ③ 直線風向き力学 (向かい風の風除け消耗 vs 追い風スピード持続)
             let windAdj = 0.0;
-            const windMode = state.activeWindMode || 'headwind';
+            const windMode = state.activeWindMode || 'calm';
             if (windMode === 'headwind') {
-              if (h.style === 'nige' || h.style === 'senko') windAdj -= 0.22;
-              else if (h.style === 'sashi' || h.style === 'oikomi') windAdj += 0.20;
+              if (h.style === 'nige' || h.style === 'senko') windAdj -= 0.15;
+              else if (h.style === 'sashi' || h.style === 'oikomi') windAdj += 0.14;
             } else if (windMode === 'tailwind') {
               if (h.style === 'nige' || h.style === 'senko') windAdj += 0.25;
             }
@@ -4345,7 +4509,7 @@ ${(state.topTrifectaCombos || []).slice(0, 10).map((t, i) => `${i+1}位: ${t.r1}
             let readinessBonus = 0.0;
             if (h.targetReadiness === 'meichi' || (parseFloat(h.odds) >= 12.0 && h.trainingGrade === 'S')) {
               readinessBonus = 0.24; // ここが年間最大目標・メイチ勝負気配
-            } else if (h.targetReadiness === 'tatakidai' || (parseFloat(h.odds) <= 3.5 && (h.comment.includes('次') || h.comment.includes('先')))) {
+            } else if (h.targetReadiness === 'tatakidai' || (parseFloat(h.odds) <= 3.5 && (h.comment.includes('叩き台') || h.comment.includes('ステップ') || h.comment.includes('次走目標')))) {
               readinessBonus = -0.20; // 次走G1ステップ・叩き台取りこぼしリスク
             }
 
