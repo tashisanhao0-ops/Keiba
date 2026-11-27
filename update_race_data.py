@@ -1,5 +1,5 @@
 """
-KeibaSim Pro - JRA公式重賞データ自動取得＆完全同期スクリプト (Perpetual Auto-Updater v2.1)
+KeibaSim Pro - JRA公式重賞データ自動取得＆精密能力計算スクリプト (v3)
 """
 
 import os
@@ -36,7 +36,11 @@ COURSE_META = {
     "函館": {"name": "函館競馬場", "straight": 262, "slope": "高低差 3.5m (洋芝・小回りタフ)"},
 }
 
-TOP_JOCKEYS = ["ルメール", "川田", "武豊", "戸崎", "横山武", "横山典", "松山", "坂井", "モレイラ", "レーン", "ムーア", "バルザローナ", "C.デムーロ", "M.デムーロ"]
+TOP_JOCKEYS = [
+    "ルメール", "川田", "武豊", "戸崎", "横山武", "横山典", "松山", "坂井",
+    "モレイラ", "レーン", "ムーア", "バルザローナ", "ビュイック", "マーカンド",
+    "C.デムーロ", "Ｃデムーロ", "M.デムーロ", "Ｍデムーロ"
+]
 
 
 def fetch_html(url):
@@ -87,7 +91,7 @@ def parse_schedule_html(html, now_jst):
         grade = "G1" if re.search(r"\bG1\b|GI(?!I)", row_text) else \
                 "G2" if re.search(r"\bG2\b|GII(?!I)", row_text) else \
                 "G3" if re.search(r"\bG3\b|GIII", row_text) else ""
-        if "JG" in row_text:
+        if "JG" in row_text or not grade:
             continue
 
         race_id = None
@@ -143,8 +147,100 @@ def find_graded_races_from_race_list(now_jst):
     return results
 
 
-def parse_shutuba_html(html, race_id, grade_hint="", date_hint=""):
+def parse_shutuba_past_html(html):
     soup = BeautifulSoup(html, "html.parser")
+    past_map = {}
+
+    for row in soup.select("tr.HorseList"):
+        umaban_el = row.select_one("td[class*='Umaban'], td.Umaban")
+        name_el = row.select_one(".HorseInfo .HorseName a, .HorseName a, .HorseName")
+        key_name = name_el.get_text(strip=True) if name_el else ""
+        key_num = int(umaban_el.get_text(strip=True)) if (umaban_el and umaban_el.get_text(strip=True).isdigit()) else None
+        if not key_name and key_num is None:
+            continue
+
+        runs = []
+        pos_list = []
+        last3f_list = []
+        perf_score = 0.0
+
+        past_cells = row.select("td.Past")
+        if not past_cells:
+            past_cells = row.select("td")[5:]
+
+        for cell_idx, cell in enumerate(past_cells[:5]):
+            text = cell.get_text(" ", strip=True)
+            if not text or "休養" in text:
+                continue
+
+            rank_val = None
+            m_rank = re.search(r"(?:^|\s)(\d{1,2})\s+(?=[^\d\s])", text)
+            if m_rank:
+                cand_r = int(m_rank.group(1))
+                if 1 <= cand_r <= 18:
+                    rank_val = cand_r
+
+            grade_mult = 1.6 if re.search(r"G[I1]\b|GI(?!I)", text) else \
+                         1.3 if re.search(r"GII\b|G2\b", text) else \
+                         1.15 if re.search(r"GIII\b|G3\b", text) else 1.0
+
+            weight_recency = max(0.4, 1.0 - cell_idx * 0.15)
+            if rank_val is not None:
+                if rank_val == 1:
+                    perf_score += 10.0 * grade_mult * weight_recency
+                elif rank_val == 2:
+                    perf_score += 7.0 * grade_mult * weight_recency
+                elif rank_val == 3:
+                    perf_score += 5.0 * grade_mult * weight_recency
+                elif rank_val <= 5:
+                    perf_score += 2.5 * grade_mult * weight_recency
+                else:
+                    perf_score += 0.5 * weight_recency
+
+            m_pos = re.search(r"(\d{1,2})(?:-(\d{1,2})){1,3}", text)
+            if m_pos:
+                nums = [int(x) for x in m_pos.group(0).split("-")]
+                pos_list.append(sum(nums[:2]) / min(2, len(nums)))
+
+            m_3f = re.search(r"\((\d{2}\.\d)\)", text)
+            if m_3f:
+                val_3f = float(m_3f.group(1))
+                if 31.0 <= val_3f <= 42.0:
+                    last3f_list.append(val_3f)
+
+            m_race = re.search(r"([^\s\d]+(?:賞|杯|記念|S|ステークス|ダービー|オークス|皐月賞|菊花賞|天皇賞|宝塚|有馬|ジャパンC)[^\s]*)", text)
+            if m_race and rank_val is not None:
+                runs.append(f"{'前走' if cell_idx == 0 else f'{cell_idx+1}走前'}: {m_race.group(1)} {rank_val}着")
+
+        avg_pos = (sum(pos_list) / len(pos_list)) if pos_list else None
+        if avg_pos is not None:
+            if avg_pos <= 2.2:
+                style = "nige"
+            elif avg_pos <= 6.5:
+                style = "senko"
+            elif avg_pos <= 10.5:
+                style = "sashi"
+            else:
+                style = "oikomi"
+        else:
+            style = None
+
+        avg_3f = (sum(last3f_list) / len(last3f_list)) if last3f_list else None
+        info = {
+            "style": style,
+            "perf_score": round(perf_score, 2),
+            "avg_3f": round(avg_3f, 2) if avg_3f else None,
+            "recentRuns": runs[:3],
+        }
+        if key_name:
+            past_map[key_name] = info
+        if key_num is not None:
+            past_map[f"num:{key_num}"] = info
+
+    return past_map
+def parse_shutuba_html(html, race_id, grade_hint="", date_hint="", past_map=None):
+    soup = BeautifulSoup(html, "html.parser")
+    past_map = past_map or {}
 
     title_el = soup.select_one(".RaceName")
     race_name = title_el.get_text(" ", strip=True) if title_el else f"重賞レース ({race_id})"
@@ -169,6 +265,8 @@ def parse_shutuba_html(html, race_id, grade_hint="", date_hint=""):
 
     raw_horses = []
     rows = soup.select("tr.HorseList")
+    has_live_odds = False
+
     for idx, row in enumerate(rows):
         umaban_el = row.select_one("td[class*='Umaban']")
         waku_el = row.select_one("td[class*='Waku']")
@@ -201,12 +299,20 @@ def parse_shutuba_html(html, race_id, grade_hint="", date_hint=""):
                 break
 
         odds_str = odds_el.get_text(strip=True).replace(",", "") if odds_el else ""
+        odds_val = None
         try:
-            odds_val = float(odds_str)
-            if odds_val <= 1.0:
-                odds_val = 99.9
+            parsed_o = float(odds_str)
+            if parsed_o > 1.0:
+                odds_val = parsed_o
+                has_live_odds = True
         except ValueError:
-            odds_val = 18.0 + idx * 3.5
+            odds_val = None
+
+        past_info = past_map.get(name) or past_map.get(f"num:{num}") or {}
+        is_top_jockey = any(k in jockey for k in TOP_JOCKEYS)
+        perf_score = past_info.get("perf_score", 0.0)
+        if is_top_jockey:
+            perf_score += 4.5
 
         raw_horses.append({
             "num": num,
@@ -218,6 +324,11 @@ def parse_shutuba_html(html, race_id, grade_hint="", date_hint=""):
             "trainer": trainer,
             "odds_val": odds_val,
             "confirmed": is_umaban_confirmed,
+            "is_top_jockey": is_top_jockey,
+            "past_style": past_info.get("style"),
+            "perf_score": perf_score,
+            "avg_3f": past_info.get("avg_3f"),
+            "recentRuns": past_info.get("recentRuns", []),
         })
 
     if not raw_horses:
@@ -226,15 +337,32 @@ def parse_shutuba_html(html, race_id, grade_hint="", date_hint=""):
     confirmed_count = sum(1 for h in raw_horses if h["confirmed"])
     is_confirmed = confirmed_count > 0 and confirmed_count >= len(raw_horses) // 2
 
-    sorted_by_odds = sorted(enumerate(raw_horses), key=lambda x: x[1]["odds_val"])
-    pop_rank_map = {orig_idx: rank + 1 for rank, (orig_idx, _) in enumerate(sorted_by_odds)}
+    if has_live_odds:
+        for h in raw_horses:
+            if h["odds_val"] is None:
+                h["odds_val"] = 99.9
+        sorted_indices = sorted(range(len(raw_horses)), key=lambda i: raw_horses[i]["odds_val"])
+    else:
+        sorted_indices = sorted(range(len(raw_horses)), key=lambda i: (-raw_horses[i]["perf_score"], raw_horses[i]["num"]))
+        for rank_idx, orig_idx in enumerate(sorted_indices):
+            raw_horses[orig_idx]["odds_val"] = round(3.2 * (1.26 ** rank_idx), 1)
+
+    pop_rank_map = {orig_idx: rank + 1 for rank, orig_idx in enumerate(sorted_indices)}
 
     horses = []
     for idx, h in enumerate(raw_horses):
         pop = pop_rank_map[idx]
         jockey = h["jockey"]
-        is_top_jockey = any(k in jockey for k in TOP_JOCKEYS)
-        base_stat = max(84, 99 - (pop - 1) // 2)
+        is_top_jockey = h["is_top_jockey"]
+        perf_bonus = min(6, int(h["perf_score"] // 6))
+        odds_base = max(84, 96 - (pop - 1) // 2)
+        speed = min(100, max(84, int(odds_base * 0.65 + (86 + perf_bonus) * 0.35)))
+        stamina = min(100, max(84, odds_base + (2 if h["perf_score"] >= 18 else 0)))
+        spurt_bonus = 3 if (h["avg_3f"] and h["avg_3f"] <= 34.2) else (1 if (h["avg_3f"] and h["avg_3f"] <= 35.0) else 0)
+        spurt = min(100, max(84, odds_base + spurt_bonus))
+
+        style = h["past_style"] or ("senko" if idx % 3 == 0 else ("sashi" if idx % 3 == 1 else "oikomi"))
+        style_label = {"nige": "逃げ", "senko": "先行", "sashi": "差し", "oikomi": "追込"}.get(style, "差し")
 
         horses.append({
             "num": h["num"],
@@ -244,26 +372,28 @@ def parse_shutuba_html(html, race_id, grade_hint="", date_hint=""):
             "weight": h["weight"],
             "jockey": jockey,
             "trainer": h["trainer"],
-            "style": "senko" if idx % 3 == 0 else ("sashi" if idx % 3 == 1 else "oikomi"),
-            "odds": f"{h['odds_val']:.1f}倍 ({pop}人気)",
-            "speed": min(100, base_stat + (1 if h["waku"] <= 3 else 0)),
-            "stamina": base_stat,
-            "spurt": min(100, base_stat + (1 if pop <= 4 else 0)),
-            "gate": 90 if is_top_jockey else 86,
+            "style": style,
+            "odds": f"{h['odds_val']:.1f}倍 ({pop}人気)" if has_live_odds else f"{h['odds_val']:.1f}倍 (推定{pop}人気)",
+            "speed": speed,
+            "stamina": stamina,
+            "spurt": spurt,
+            "gate": 91 if is_top_jockey else 86,
             "sire": "JRA重賞適性血統",
             "bms": "サンデー/欧州・米国系",
             "pedigreeFit": "S (コース適性)" if pop <= 3 else "A (コース適性)",
-            "formEval": "絶頂・上積み大" if pop <= 3 else ("上昇気配" if pop <= 8 else "順調"),
+            "formEval": "絶頂・上積み大" if (pop <= 3 or h["perf_score"] >= 20) else ("上昇気配" if pop <= 8 else "順調"),
             "jockeyRank": "S+" if is_top_jockey else "A",
-            "jockeyTactic": f"{jockey}騎手・{'ロスなく好位進出' if h['waku'] <= 4 else '外からスムーズに伸び脚勝負'}",
+            "jockeyTactic": f"{jockey}騎手・過去走ベース{style_label}戦法",
             "gateHabit": "普通",
             "gateDelayRate": 0.04 if is_top_jockey else 0.06,
             "trainingTime": "好時計",
             "trainingGrade": "S" if pop <= 3 else ("A" if pop <= 8 else "B"),
-            "comment": f"{'確定' if is_confirmed else '登録'}{h['waku']}枠{h['num']}番。{jockey}騎手で{race_name}へ挑む。"
+            "last3F_record": f"{h['avg_3f']}s" if h["avg_3f"] else "34.5s",
+            "recentRuns": h["recentRuns"] or [f"{style_label}脚質で重賞へ参戦"],
+            "comment": f"{'確定' if is_confirmed else '登録'}{h['waku']}枠{h['num']}番({style_label})。{jockey}騎手で{race_name}へ挑む。"
         })
 
-    fav_horse = raw_horses[sorted_by_odds[0][0]]
+    fav_horse = raw_horses[sorted_indices[0]]
     status_label = f"確定{len(horses)}頭" if is_confirmed else f"登録{len(horses)}頭・枠順未確定"
 
     return {
@@ -278,10 +408,10 @@ def parse_shutuba_html(html, race_id, grade_hint="", date_hint=""):
         "trackBias": "flat",
         "straight": c_meta["straight"],
         "slope": c_meta["slope"],
-        "bias": f"{c_meta['name']} {track_type}{distance}m（{date_hint or '今週開催'}）の最新データ。",
+        "bias": f"{c_meta['name']} {track_type}{distance}m（{date_hint or '今週開催'}）の最新精密同期データ。",
         "tacticalPoint": "残り600m〜直線入口",
         "triggerHorse": f"{fav_horse['num']}番 {fav_horse['name']} ({fav_horse['jockey']})",
-        "triggerAction": "JRA最新出馬表データに基づき自動展開生成",
+        "triggerAction": "過去5走の脚質・上がり3F・最新オッズから精密展開を自動生成",
         "tacticalAdvantage": "コース形態と当日の馬場バイアスを活かせる好位・差し勢",
         "pedigreeInsight": f"{c_meta['name']} {track_type}{distance}m 適性上位血統",
         "horses": horses
@@ -297,7 +427,7 @@ def grade_sort_key(item):
 def update_race():
     now_jst = datetime.datetime.now(JST)
     now_str = now_jst.strftime("%Y-%m-%d %H:%M:%S JST")
-    print(f"[{now_str}] --- JRA重賞データ自動取得バッチ開始 ---")
+    print(f"[{now_str}] --- JRA重賞データ精密自動取得バッチ開始 ---")
     os.makedirs(DATA_DIR, exist_ok=True)
 
     current_data = {}
@@ -326,10 +456,18 @@ def update_race():
         try:
             shutuba_url = f"https://race.netkeiba.com/race/shutuba.html?race_id={rid}"
             html = fetch_html(shutuba_url)
-            parsed = parse_shutuba_html(html, rid, grade_hint=grade, date_hint=date_str)
+            past_map = {}
+            try:
+                past_url = f"https://race.netkeiba.com/race/shutuba_past.html?race_id={rid}"
+                past_html = fetch_html(past_url)
+                past_map = parse_shutuba_past_html(past_html)
+            except Exception as pe:
+                print(f"past fetch warning for {rid}: {pe}")
+
+            parsed = parse_shutuba_html(html, rid, grade_hint=grade, date_hint=date_str, past_map=past_map)
             if parsed and len(parsed["horses"]) >= 5:
                 fetched_races[parsed["id"]] = parsed
-                print(f"Parsed {parsed['name']} ({len(parsed['horses'])}頭, confirmed={parsed['isConfirmed']})")
+                print(f"Parsed {parsed['name']} ({len(parsed['horses'])}頭, past={len(past_map)})")
         except Exception as e:
             print(f"Failed to parse race_id={rid}: {e}")
 
@@ -344,7 +482,7 @@ def update_race():
             current_data["status"] = "confirmed"
 
     current_data["last_updated"] = now_str
-    current_data["update_cycle"] = "毎週月・金・土・日 GitHub Actions自動同期 (schedule.html + 出馬表)"
+    current_data["update_cycle"] = "土曜朝〜日曜夕方 1時間ごと自動精密同期 (過去5走+オッズ)"
 
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         json.dump(current_data, f, ensure_ascii=False, indent=2)
@@ -353,7 +491,7 @@ def update_race():
         first_key = next(iter(current_data["races"]))
         with open(LATEST_RACE_FILE, "w", encoding="utf-8") as f:
             json.dump(current_data["races"][first_key], f, ensure_ascii=False, indent=2)
-            
+
     print(f"[{now_str}] 同期完了！")
 
 
