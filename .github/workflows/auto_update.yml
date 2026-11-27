@@ -2,21 +2,14 @@ name: Auto Update Keiba Race Data
 
 on:
   schedule:
-    # 毎週月曜日 09:00 JST (UTC 00:00) : 今週の重賞データ・特別登録馬更新
     - cron: '0 0 * * 1'
-    # 毎週金曜日 10:15 JST (UTC 01:15) : JRA公式枠順確定直後の第1回自動取得
     - cron: '15 1 * * 5'
-    # 毎週金曜日 11:00 JST (UTC 02:00) : JRA公式枠順確定後の全頭データ完全同期
     - cron: '0 2 * * 5'
-    # 毎週金曜日 18:00 JST (UTC 09:00) : 金曜夕方オッズ・枠順再検証
     - cron: '0 9 * * 5'
-    # 毎週土曜日 09:00 JST (UTC 00:00) : 土曜重賞・公式クッション値・確定オッズ更新
-    - cron: '0 0 * * 6'
-    # 毎週日曜日 09:00 JST (UTC 00:00) : 日曜重賞・公式クッション値・確定オッズ更新
-    - cron: '0 0 * * 0'
-    # 毎週日曜日 14:00 JST (UTC 05:00) : 発走直前リアルタイムオッズ更新
-    - cron: '0 5 * * 0'
-  workflow_dispatch: # GitHub画面から手動でワンクリック即時実行も可能
+    - cron: '0 22,23 * * 5'
+    - cron: '0 * * * 6'
+    - cron: '0 0-7 * * 0'
+  workflow_dispatch:
 
 jobs:
   update-race:
@@ -36,7 +29,7 @@ jobs:
         run: |
           pip install beautifulsoup4 requests lxml
 
-      - name: 最新レースデータ自動取得スクリプト実行 (枠順確定全頭同期)
+      - name: 最新レースデータ自動取得＆精密能力計算実行
         run: |
           python update_race_data.py
 
@@ -48,7 +41,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "変更はありませんでした（最新状態維持）。"
           else
-            git commit -m "Auto Update: JRA枠順確定・今週の重賞全頭データ自動同期 [skip ci]"
+            git commit -m "Auto Update: JRA重賞精密データ＆最新オッズ1時間ごと自動同期 [skip ci]"
             git pull --rebase origin main || git pull --rebase || true
             git push
           fi
