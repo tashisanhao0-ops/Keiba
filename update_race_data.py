@@ -353,5 +353,9 @@ def update_race():
         first_key = next(iter(current_data["races"]))
         with open(LATEST_RACE_FILE, "w", encoding="utf-8") as f:
             json.dump(current_data["races"][first_key], f, ensure_ascii=False, indent=2)
+            
+    print(f"[{now_str}] 同期完了！")
 
-    print(f"[{now_str
+
+if __name__ == "__main__":
+    update_race()
