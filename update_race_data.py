@@ -1,16 +1,10 @@
 """
-KeibaSim Pro - JRA公式重賞データ自動取得＆完全同期スクリプト (Perpetual Auto-Updater v2)
-====================================================================================
-毎週月曜・金曜・土曜・日曜にGitHub Actionsが自動実行し、
-netkeibaの重賞日程表 (schedule.html) および開催日別レース一覧 (race_list_sub.html) から
-今週の重賞（G1〜G3）の race_id を確実に特定し、出馬表データを抽出して
-data/races_this_week.json を最新化する。
+KeibaSim Pro - JRA公式重賞データ自動取得＆完全同期スクリプト (Perpetual Auto-Updater v2.1)
 """
 
 import os
 import re
 import json
-import time
 import datetime
 import requests
 from bs4 import BeautifulSoup
@@ -46,7 +40,6 @@ TOP_JOCKEYS = ["ルメール", "川田", "武豊", "戸崎", "横山武", "横�
 
 
 def fetch_html(url):
-    """netkeibaのEUC-JP / UTF-8を自動判別して安全にデコード"""
     resp = requests.get(url, headers=HEADERS, timeout=20)
     resp.raise_for_status()
     raw = resp.content
@@ -62,13 +55,11 @@ def fetch_html(url):
 
 
 def get_target_week_dates(now_jst):
-    """今週の開催日ウィンドウ（昨日〜5日後）を返す"""
     today = now_jst.date()
     return [today + datetime.timedelta(days=d) for d in range(-1, 6)]
 
 
 def find_graded_races_from_schedule(now_jst):
-    """netkeiba重賞日程ページ(schedule.html)から今週の重賞候補を抽出"""
     url = "https://race.netkeiba.com/top/schedule.html"
     html = fetch_html(url)
     return parse_schedule_html(html, now_jst)
@@ -97,7 +88,7 @@ def parse_schedule_html(html, now_jst):
                 "G2" if re.search(r"\bG2\b|GII(?!I)", row_text) else \
                 "G3" if re.search(r"\bG3\b|GIII", row_text) else ""
         if "JG" in row_text:
-            continue  # 障害重賞は対象外（必要なら外せる）
+            continue
 
         race_id = None
         for a in tr.find_all("a", href=True):
@@ -114,11 +105,10 @@ def parse_schedule_html(html, now_jst):
 
 
 def find_graded_races_from_race_list(now_jst):
-    """schedule.htmlにrace_idが未掲載の場合のフォールバック：開催日別一覧からG1〜G3を取得"""
     results = []
     seen = set()
     for d in get_target_week_dates(now_jst):
-        if d.weekday() not in (4, 5, 6, 0):  # 金・土・日・月のみ確認
+        if d.weekday() not in (4, 5, 6, 0):
             continue
         kaisai_date = d.strftime("%Y%m%d")
         url = f"https://race.netkeiba.com/top/race_list_sub.html?kaisai_date={kaisai_date}"
@@ -127,7 +117,8 @@ def find_graded_races_from_race_list(now_jst):
         except Exception:
             continue
         soup = BeautifulSoup(html, "html.parser")
-        for li in soup.select("li.RaceList_DataItem, dd a, a"):
+        items = soup.select("li.RaceList_DataItem") or soup.select("dd a, a")
+        for li in items:
             a = li if li.name == "a" else li.find("a", href=True)
             if not a or not a.get("href"):
                 continue
@@ -140,11 +131,11 @@ def find_graded_races_from_race_list(now_jst):
             block_text = li.get_text(" ", strip=True)
             html_str = str(li)
             grade = ""
-            if "Icon_GradeType1" in html_str or re.search(r"\bG1\b", block_text):
+            if re.search(r"Icon_GradeType1(?!\d)", html_str) or re.search(r"(?<![A-Za-z0-9])G1(?![A-Za-z0-9])", block_text):
                 grade = "G1"
-            elif "Icon_GradeType2" in html_str or re.search(r"\bG2\b", block_text):
+            elif re.search(r"Icon_GradeType2(?!\d)", html_str) or re.search(r"(?<![A-Za-z0-9])G2(?![A-Za-z0-9])", block_text):
                 grade = "G2"
-            elif "Icon_GradeType3" in html_str or re.search(r"\bG3\b", block_text):
+            elif re.search(r"Icon_GradeType3(?!\d)", html_str) or re.search(r"(?<![A-Za-z0-9])G3(?![A-Za-z0-9])", block_text):
                 grade = "G3"
             if grade:
                 seen.add(rid)
@@ -153,7 +144,6 @@ def find_graded_races_from_race_list(now_jst):
 
 
 def parse_shutuba_html(html, race_id, grade_hint="", date_hint=""):
-    """出馬表HTMLから確定枠順・馬番・騎手・斤量・想定オッズを抽出"""
     soup = BeautifulSoup(html, "html.parser")
 
     title_el = soup.select_one(".RaceName")
@@ -203,7 +193,6 @@ def parse_shutuba_html(html, race_id, grade_hint="", date_hint=""):
         sex_age = barei_el.get_text(strip=True) if barei_el else "牡4"
         trainer = trainer_el.get_text(strip=True) if trainer_el else "JRA厩舎"
 
-        # 斤量抽出（53.0〜60.0の数値セルを探す）
         weight_val = 57.0
         for td in row.select("td"):
             t = td.get_text(strip=True)
@@ -237,7 +226,6 @@ def parse_shutuba_html(html, race_id, grade_hint="", date_hint=""):
     confirmed_count = sum(1 for h in raw_horses if h["confirmed"])
     is_confirmed = confirmed_count > 0 and confirmed_count >= len(raw_horses) // 2
 
-    # オッズ順で人気ランクを計算し、能力値を人気・実績ベースで整合させる
     sorted_by_odds = sorted(enumerate(raw_horses), key=lambda x: x[1]["odds_val"])
     pop_rank_map = {orig_idx: rank + 1 for rank, (orig_idx, _) in enumerate(sorted_by_odds)}
 
@@ -366,8 +354,4 @@ def update_race():
         with open(LATEST_RACE_FILE, "w", encoding="utf-8") as f:
             json.dump(current_data["races"][first_key], f, ensure_ascii=False, indent=2)
 
-    print(f"[{now_str}] 同期完了！")
-
-
-if __name__ == "__main__":
-    update_race()
+    print(f"[{now_str
