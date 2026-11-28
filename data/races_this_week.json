@@ -1385,7 +1385,7 @@
           "num": 16,
           "waku": 8,
           "name": "ビッグシーザー",
-          "sexAge": "牡6",
+          "sexAge": "牡4",
           "weight": 57,
           "jockey": "斎藤",
           "trainer": "栗東杉山晴",
@@ -1475,6 +1475,6 @@
     }
   },
   "status": "confirmed",
-  "last_updated": "2026-11-28 08:47:32 JST",
+  "last_updated": "2026-11-28 09:46:49 JST",
   "update_cycle": "土曜朝〜日曜夕方 1時間ごと自動精密同期 (過去5走+オッズ)"
 }
